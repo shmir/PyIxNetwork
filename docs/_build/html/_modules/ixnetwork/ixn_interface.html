@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ixnetwork.ixn_interface &mdash; ixnetwork 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="ixnetwork 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">ixnetwork 0.9 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ixnetwork.ixn_interface</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module implements classes and utility functions to manage IXN protocol interface objects.</span>
+
+<span class="sd">@author yoram@ignissoft.com</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">trafficgenerator.tgn_utils</span> <span class="kn">import</span> <span class="n">TgnError</span>
+<span class="kn">from</span> <span class="nn">trafficgenerator.tgn_tcl</span> <span class="kn">import</span> <span class="n">is_true</span>
+<span class="kn">from</span> <span class="nn">trafficgenerator.tgn_object</span> <span class="kn">import</span> <span class="n">TgnL3</span>
+
+<span class="kn">from</span> <span class="nn">ixn_object</span> <span class="kn">import</span> <span class="n">IxnObject</span>
+
+
+<div class="viewcode-block" id="filter_ints_based_on_vlan"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_interface.filter_ints_based_on_vlan">[docs]</a><span class="k">def</span> <span class="nf">filter_ints_based_on_vlan</span><span class="p">(</span><span class="n">interfaces</span><span class="p">,</span> <span class="n">vlan</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Filter list of interfaces based on VLAN presence or absence criteria.</span>
+
+<span class="sd">    :param interfaces: list of interfaces to filter.</span>
+<span class="sd">    :param vlan: boolean indicating whether to filter interfaces with or without VLAN.</span>
+<span class="sd">    :param vlan: number of expected VLANs (note that when vlanEnable == False, vlanCount == 1)</span>
+<span class="sd">    :return: interfaces with VLAN(s) if vlan == True and vlanCount == count else interfaces without</span>
+<span class="sd">        VLAN(s).</span>
+
+<span class="sd">    :todo: add vlanEnable and vlanCount to interface/range/deviceGroup classes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">filtered_interfaces</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">interfaces</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">interface</span><span class="o">.</span><span class="n">obj_type</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;interface&#39;</span><span class="p">:</span>
+            <span class="n">ixn_vlan</span> <span class="o">=</span> <span class="n">interface</span><span class="o">.</span><span class="n">get_object_by_type</span><span class="p">(</span><span class="s">&#39;vlan&#39;</span><span class="p">)</span>
+            <span class="n">vlanEnable</span> <span class="o">=</span> <span class="n">is_true</span><span class="p">(</span><span class="n">ixn_vlan</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s">&#39;vlanEnable&#39;</span><span class="p">))</span>
+            <span class="n">vlanCount</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ixn_vlan</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s">&#39;vlanCount&#39;</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">interface</span><span class="o">.</span><span class="n">obj_type</span><span class="p">()</span> <span class="o">==</span> <span class="s">&#39;range&#39;</span><span class="p">:</span>
+            <span class="n">ixn_vlan</span> <span class="o">=</span> <span class="n">interface</span><span class="o">.</span><span class="n">get_object_by_type</span><span class="p">(</span><span class="s">&#39;vlanRange&#39;</span><span class="p">)</span>
+            <span class="n">vlanEnable</span> <span class="o">=</span> <span class="n">is_true</span><span class="p">(</span><span class="n">ixn_vlan</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s">&#39;enabled&#39;</span><span class="p">))</span>
+            <span class="n">vlanCount</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ixn_vlan</span><span class="o">.</span><span class="n">get_objects_by_type</span><span class="p">(</span><span class="s">&#39;vlanIdInfo&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ixn_vlan</span> <span class="o">=</span> <span class="n">interface</span><span class="o">.</span><span class="n">get_object_by_type</span><span class="p">(</span><span class="s">&#39;ethernet&#39;</span><span class="p">)</span>
+            <span class="n">vlanEnable</span> <span class="o">=</span> <span class="n">is_true</span><span class="p">(</span><span class="n">ixn_vlan</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s">&#39;useVlans&#39;</span><span class="p">))</span>
+            <span class="n">vlanCount</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ixn_vlan</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s">&#39;vlanCount&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">vlanEnable</span> <span class="o">^</span> <span class="n">vlan</span><span class="p">)</span> <span class="ow">and</span> <span class="n">vlanCount</span> <span class="o">==</span> <span class="n">count</span><span class="p">:</span>
+            <span class="n">filtered_interfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interface</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">filtered_interfaces</span>
+
+</div>
+<div class="viewcode-block" id="IxnInterface"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_interface.IxnInterface">[docs]</a><span class="k">class</span> <span class="nc">IxnInterface</span><span class="p">(</span><span class="n">IxnObject</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Create new protocol interface object in the API.</span>
+
+<span class="sd">        :param parent: parent interface object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">data</span><span class="p">[</span><span class="s">&#39;objType&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;interface&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">IxnInterface</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Create new interface on IxNetwork.</span>
+
+<span class="sd">        Set enabled and description (==name).</span>
+
+<span class="sd">        :return: interface object reference.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">int_ref</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">IxnInterface</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_create</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">setAttributes</span><span class="p">(</span><span class="n">int_ref</span><span class="p">,</span> <span class="n">enabled</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s">&#39;name&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">setAttributes</span><span class="p">(</span><span class="n">int_ref</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">int_ref</span>
+
+<div class="viewcode-block" id="IxnInterface.send_arp_ns"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_interface.IxnInterface.send_arp_ns">[docs]</a>    <span class="k">def</span> <span class="nf">send_arp_ns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;sendArpAndNS&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnInterface.send_rs"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_interface.IxnInterface.send_rs">[docs]</a>    <span class="k">def</span> <span class="nf">send_rs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;sendRs&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnInterface.ping"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_interface.IxnInterface.ping">[docs]</a>    <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="p">):</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;sendPing&#39;</span><span class="p">,</span> <span class="n">ip</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s">&#39;failed&#39;</span> <span class="ow">in</span> <span class="n">rc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">TgnError</span><span class="p">(</span><span class="n">rc</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnInterface.get_name"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_interface.IxnInterface.get_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s">&#39;description&#39;</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="IxnInterfaceL3"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_interface.IxnInterfaceL3">[docs]</a><span class="k">class</span> <span class="nc">IxnInterfaceL3</span><span class="p">(</span><span class="n">IxnObject</span><span class="p">,</span> <span class="n">TgnL3</span><span class="p">):</span>
+
+<div class="viewcode-block" id="IxnInterfaceL3.ip"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_interface.IxnInterfaceL3.ip">[docs]</a>    <span class="k">def</span> <span class="nf">ip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s">&#39;ip&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnInterfaceL3.num_ips"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_interface.IxnInterfaceL3.num_ips">[docs]</a>    <span class="k">def</span> <span class="nf">num_ips</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">1</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">ixnetwork 0.9 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Author.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

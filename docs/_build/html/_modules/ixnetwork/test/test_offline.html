@@ -1,0 +1,310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ixnetwork.test.test_offline &mdash; ixnetwork 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="ixnetwork 0.9 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">ixnetwork 0.9 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ixnetwork.test.test_offline</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">IxNetwork package tests that can run in offline mode.</span>
+
+<span class="sd">These tests serve two purposes:</span>
+<span class="sd">- Unit test for IxNetwork package.</span>
+<span class="sd">- Code snippet showing how to work with IxNetwork package.</span>
+
+<span class="sd">@author yoram@ignissoft.com</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+<span class="kn">from</span> <span class="nn">trafficgenerator.tgn_tcl</span> <span class="kn">import</span> <span class="n">build_obj_ref_list</span>
+<span class="kn">from</span> <span class="nn">trafficgenerator.test.tgn_test</span> <span class="kn">import</span> <span class="n">TgnTest</span>
+
+<span class="kn">from</span> <span class="nn">ixnetwork.ixn_app</span> <span class="kn">import</span> <span class="n">IxnApp</span>
+<span class="kn">from</span> <span class="nn">ixnetwork.ixn_object</span> <span class="kn">import</span> <span class="n">IxnObject</span>
+<span class="kn">from</span> <span class="nn">ixnetwork.ixn_port</span> <span class="kn">import</span> <span class="n">IxnPort</span>
+<span class="kn">from</span> <span class="nn">ixnetwork.ixn_interface</span> <span class="kn">import</span> <span class="n">IxnInterface</span>
+<span class="kn">from</span> <span class="nn">ixnetwork.ixn_traffic</span> <span class="kn">import</span> <span class="n">IxnL23TrafficItem</span>
+<span class="kn">from</span> <span class="nn">ixnetwork.ixn_topology</span> <span class="kn">import</span> <span class="n">IxnTopology</span><span class="p">,</span> <span class="n">IxnDeviceGroup</span><span class="p">,</span> <span class="n">IxnNgpfEthernet</span><span class="p">,</span> <span class="n">IxnNgpfIpv4</span>
+
+<span class="n">ixn_config_files</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;configs/test_config.ixncfg&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;configs/ngpf_config.ixncfg&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="IxnTestOffline"><a class="viewcode-back" href="../../../ixnetwork.test.html#ixnetwork.test.test_offline.IxnTestOffline">[docs]</a><span class="k">class</span> <span class="nc">IxnTestOffline</span><span class="p">(</span><span class="n">TgnTest</span><span class="p">):</span>
+
+    <span class="n">TgnTest</span><span class="o">.</span><span class="n">config_file</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="s">&#39;IxNetwork.ini&#39;</span><span class="p">)</span>
+    <span class="n">ixn_config_file</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="n">ixn_config_files</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">ixn</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="IxnTestOffline.setUp"><a class="viewcode-back" href="../../../ixnetwork.test.html#ixnetwork.test.test_offline.IxnTestOffline.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">IxnTestOffline</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ixn</span> <span class="o">=</span> <span class="n">IxnApp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;IxNetwork&#39;</span><span class="p">,</span> <span class="s">&#39;install_dir&#39;</span><span class="p">),</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;Tcl&#39;</span><span class="p">,</span> <span class="s">&#39;tgn_lib&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ixn</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;IxNetwork&#39;</span><span class="p">,</span> <span class="s">&#39;tcl_server&#39;</span><span class="p">),</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;IxNetwork&#39;</span><span class="p">,</span> <span class="s">&#39;tcl_port&#39;</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="IxnTestOffline.tearDown"><a class="viewcode-back" href="../../../ixnetwork.test.html#ixnetwork.test.test_offline.IxnTestOffline.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="IxnTestOffline.test_testHelloWorld"><a class="viewcode-back" href="../../../ixnetwork.test.html#ixnetwork.test.test_offline.IxnTestOffline.test_testHelloWorld">[docs]</a>    <span class="k">def</span> <span class="nf">test_testHelloWorld</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="IxnTestOffline.testAnalyzeConfig"><a class="viewcode-back" href="../../../ixnetwork.test.html#ixnetwork.test.test_offline.IxnTestOffline.testAnalyzeConfig">[docs]</a>    <span class="k">def</span> <span class="nf">testAnalyzeConfig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Test configuration load. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">IxnTestOffline</span><span class="o">.</span><span class="n">testAnalyzeConfig</span><span class="o">.</span><span class="n">__doc__</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ixn_config_file</span><span class="p">)</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ixn</span><span class="o">.</span><span class="n">root</span>
+
+        <span class="n">root</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s">&#39;vport&#39;</span><span class="p">)</span>
+        <span class="n">port1_obj</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">get_object_by_name</span><span class="p">(</span><span class="s">&#39;Port 1&#39;</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;Port1 object reference = &quot;</span><span class="p">,</span> <span class="n">port1_obj</span><span class="o">.</span><span class="n">obj_ref</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s">&quot;Port1 name = &quot;</span><span class="p">,</span> <span class="n">port1_obj</span><span class="o">.</span><span class="n">obj_name</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s">&#39;Ports = &#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">.</span><span class="n">get_objects_by_type</span><span class="p">(</span><span class="s">&#39;vport&#39;</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&#39;Port 1 all attributes: &#39;</span><span class="p">,</span> <span class="n">port1_obj</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">()</span>
+        <span class="k">print</span> <span class="s">&#39;Port 1 some attributes: &#39;</span><span class="p">,</span> <span class="n">port1_obj</span><span class="o">.</span><span class="n">get_attributes</span><span class="p">(</span><span class="s">&#39;state&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&#39;Port 1 state: &#39;</span> <span class="o">+</span> <span class="n">port1_obj</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s">&#39;state&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">ixn_port</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">get_objects_by_type</span><span class="p">(</span><span class="s">&#39;vport&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">ixn_int</span> <span class="ow">in</span> <span class="n">ixn_port</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s">&#39;interface&#39;</span><span class="p">):</span>
+                <span class="k">print</span> <span class="n">ixn_int</span><span class="o">.</span><span class="n">obj_name</span><span class="p">(),</span> <span class="s">&#39; = &#39;</span><span class="p">,</span> <span class="n">ixn_int</span><span class="o">.</span><span class="n">obj_ref</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">ixn_ipv4</span> <span class="ow">in</span> <span class="n">ixn_int</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s">&#39;ipv4&#39;</span><span class="p">):</span>
+                    <span class="k">print</span> <span class="n">ixn_ipv4</span><span class="o">.</span><span class="n">obj_name</span><span class="p">(),</span> <span class="s">&#39; = &#39;</span><span class="p">,</span> <span class="n">ixn_ipv4</span><span class="o">.</span><span class="n">obj_ref</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">ixn_port</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">get_objects_by_type</span><span class="p">(</span><span class="s">&#39;vport&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">ixn_obj</span> <span class="ow">in</span> <span class="n">ixn_port</span><span class="o">.</span><span class="n">get_children</span><span class="p">():</span>
+                <span class="k">print</span> <span class="n">ixn_obj</span><span class="o">.</span><span class="n">obj_name</span><span class="p">(),</span> <span class="s">&#39; = &#39;</span><span class="p">,</span> <span class="n">ixn_obj</span><span class="o">.</span><span class="n">obj_ref</span><span class="p">()</span>
+
+        <span class="n">vports</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">get_objects_by_type</span><span class="p">(</span><span class="s">&#39;vport&#39;</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">vports</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">vports</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="ow">is</span> <span class="n">IxnPort</span><span class="p">)</span>
+
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="IxnTestOffline.testBasicConfig"><a class="viewcode-back" href="../../../ixnetwork.test.html#ixnetwork.test.test_offline.IxnTestOffline.testBasicConfig">[docs]</a>    <span class="k">def</span> <span class="nf">testBasicConfig</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Test configuration build with basic objects - ports, interfaces, traffic items... &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">IxnTestOffline</span><span class="o">.</span><span class="n">testBasicConfig</span><span class="o">.</span><span class="n">__doc__</span><span class="p">)</span>
+
+        <span class="n">num_ports</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">num_ints</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">ixn_ports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_config</span><span class="p">(</span><span class="n">num_ports</span><span class="p">,</span> <span class="n">num_ints</span><span class="p">)</span>
+
+        <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ixn_ports</span><span class="p">)</span> <span class="o">==</span> <span class="n">num_ports</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ixn_port</span> <span class="ow">in</span> <span class="n">ixn_ports</span><span class="p">:</span>
+            <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ixn_ports</span><span class="p">[</span><span class="n">ixn_port</span><span class="p">])</span> <span class="o">==</span> <span class="n">num_ints</span><span class="p">)</span>
+
+        <span class="n">ixn_protocols</span> <span class="o">=</span> <span class="n">ixn_ports</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_child_static</span><span class="p">(</span><span class="s">&#39;protocols&#39;</span><span class="p">)</span>
+        <span class="n">ixn_bgp</span> <span class="o">=</span> <span class="n">ixn_protocols</span><span class="o">.</span><span class="n">get_child_static</span><span class="p">(</span><span class="s">&#39;bgp&#39;</span><span class="p">)</span>
+        <span class="n">ixn_bgp</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="n">ixn_ipv4_neighbor</span> <span class="o">=</span> <span class="n">IxnObject</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">ixn_bgp</span><span class="p">,</span> <span class="n">objType</span><span class="o">=</span><span class="s">&#39;neighborRange&#39;</span><span class="p">)</span>
+        <span class="n">ixn_ipv4_neighbor</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">bgpId</span><span class="o">=</span><span class="s">&#39;1.1.1.1&#39;</span><span class="p">)</span>
+        <span class="n">ixn_ipv4_neighbor</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">interfaces</span><span class="o">=</span><span class="n">ixn_ports</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">obj_ref</span><span class="p">())</span>
+        <span class="n">ixn_ipv4_neighbor</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">localIpAddress</span><span class="o">=</span><span class="s">&#39;0.0.0.0&#39;</span><span class="p">)</span>
+
+        <span class="n">ixn_ti</span> <span class="o">=</span> <span class="n">IxnL23TrafficItem</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;One interface&#39;</span><span class="p">)</span>
+        <span class="n">ixn_ti</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">trafficType</span><span class="o">=</span><span class="s">&#39;ipv4&#39;</span><span class="p">)</span>
+        <span class="n">ixn_ti_es</span> <span class="o">=</span> <span class="n">IxnObject</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">ixn_ti</span><span class="p">,</span> <span class="n">objType</span><span class="o">=</span><span class="s">&#39;endpointSet&#39;</span><span class="p">)</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="n">ixn_ports</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_objects_by_type</span><span class="p">(</span><span class="s">&#39;interface&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">obj_ref</span><span class="p">()</span>
+        <span class="n">destinations</span> <span class="o">=</span> <span class="n">ixn_ports</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get_objects_by_type</span><span class="p">(</span><span class="s">&#39;interface&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">obj_ref</span><span class="p">()</span>
+        <span class="n">ixn_ti_es</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">sources</span><span class="p">,</span> <span class="n">destinations</span><span class="o">=</span><span class="n">destinations</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_config</span><span class="p">()</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="IxnTestOffline.testFlowGroups"><a class="viewcode-back" href="../../../ixnetwork.test.html#ixnetwork.test.test_offline.IxnTestOffline.testFlowGroups">[docs]</a>    <span class="k">def</span> <span class="nf">testFlowGroups</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Test configuration build with various flow group types. &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">IxnTestOffline</span><span class="o">.</span><span class="n">testFlowGroups</span><span class="o">.</span><span class="n">__doc__</span><span class="p">)</span>
+
+        <span class="n">num_ports</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">num_ints</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">ixn_ports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_config</span><span class="p">(</span><span class="n">num_ports</span><span class="p">,</span> <span class="n">num_ints</span><span class="p">)</span>
+
+        <span class="n">ixn_ti</span> <span class="o">=</span> <span class="n">IxnL23TrafficItem</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;IPv4 TI with two EPs&#39;</span><span class="p">)</span>
+        <span class="n">ixn_ti</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">trafficType</span><span class="o">=</span><span class="s">&#39;ipv4&#39;</span><span class="p">)</span>
+
+        <span class="n">ixn_ti_es</span> <span class="o">=</span> <span class="n">IxnObject</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">ixn_ti</span><span class="p">,</span> <span class="n">objType</span><span class="o">=</span><span class="s">&#39;endpointSet&#39;</span><span class="p">)</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="n">build_obj_ref_list</span><span class="p">(</span><span class="n">ixn_ports</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">destinations</span> <span class="o">=</span> <span class="n">build_obj_ref_list</span><span class="p">(</span><span class="n">ixn_ports</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">ixn_ti_es</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">sources</span><span class="p">,</span> <span class="n">destinations</span><span class="o">=</span><span class="n">destinations</span><span class="p">)</span>
+
+        <span class="n">ixn_ti_es</span> <span class="o">=</span> <span class="n">IxnObject</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">ixn_ti</span><span class="p">,</span> <span class="n">objType</span><span class="o">=</span><span class="s">&#39;endpointSet&#39;</span><span class="p">)</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="n">build_obj_ref_list</span><span class="p">(</span><span class="n">ixn_ports</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">destinations</span> <span class="o">=</span> <span class="n">build_obj_ref_list</span><span class="p">(</span><span class="n">ixn_ports</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ixn_ti_es</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">sources</span><span class="p">,</span> <span class="n">destinations</span><span class="o">=</span><span class="n">destinations</span><span class="p">)</span>
+
+        <span class="n">ixn_ti</span> <span class="o">=</span> <span class="n">IxnL23TrafficItem</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;Raw TI with two EPs&#39;</span><span class="p">)</span>
+        <span class="n">ixn_ti</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">trafficType</span><span class="o">=</span><span class="s">&#39;raw&#39;</span><span class="p">)</span>
+
+        <span class="n">ixn_ti_es</span> <span class="o">=</span> <span class="n">IxnObject</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">ixn_ti</span><span class="p">,</span> <span class="n">objType</span><span class="o">=</span><span class="s">&#39;endpointSet&#39;</span><span class="p">)</span>
+        <span class="n">ixn_ti_es</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="n">ixn_ports</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">obj_ref</span><span class="p">()</span> <span class="o">+</span> <span class="s">&#39;/protocols&#39;</span>
+        <span class="n">destinations</span> <span class="o">=</span> <span class="n">ixn_ports</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">obj_ref</span><span class="p">()</span> <span class="o">+</span> <span class="s">&#39;/protocols&#39;</span>
+        <span class="n">ixn_ti_es</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">sources</span><span class="p">,</span> <span class="n">destinations</span><span class="o">=</span><span class="n">destinations</span><span class="p">)</span>
+        <span class="n">ixn_ti_es</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">ixn_ti_hls</span> <span class="o">=</span> <span class="n">IxnObject</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">ixn_ti</span><span class="p">,</span> <span class="n">objType</span><span class="o">=</span><span class="s">&#39;highLevelStream&#39;</span><span class="p">)</span>
+        <span class="n">ixn_ti_hls</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">endpointSetId</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">ixn_ti_es</span> <span class="o">=</span> <span class="n">IxnObject</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">ixn_ti</span><span class="p">,</span> <span class="n">objType</span><span class="o">=</span><span class="s">&#39;endpointSet&#39;</span><span class="p">)</span>
+        <span class="n">ixn_ti_es</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">sources</span> <span class="o">=</span> <span class="n">ixn_ports</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">obj_ref</span><span class="p">()</span> <span class="o">+</span> <span class="s">&#39;/protocols&#39;</span>
+        <span class="n">destinations</span> <span class="o">=</span> <span class="n">ixn_ports</span><span class="o">.</span><span class="n">keys</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">obj_ref</span><span class="p">()</span> <span class="o">+</span> <span class="s">&#39;/protocols&#39;</span>
+        <span class="n">ixn_ti_es</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">sources</span><span class="p">,</span> <span class="n">destinations</span><span class="o">=</span><span class="n">destinations</span><span class="p">)</span>
+        <span class="n">ixn_ti_es</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="n">ixn_ti_hls</span> <span class="o">=</span> <span class="n">IxnObject</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">ixn_ti</span><span class="p">,</span> <span class="n">objType</span><span class="o">=</span><span class="s">&#39;highLevelStream&#39;</span><span class="p">)</span>
+        <span class="n">ixn_ti_hls</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">endpointSetId</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_config</span><span class="p">()</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="IxnTestOffline.testTopologies"><a class="viewcode-back" href="../../../ixnetwork.test.html#ixnetwork.test.test_offline.IxnTestOffline.testTopologies">[docs]</a>    <span class="k">def</span> <span class="nf">testTopologies</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Test configuration build with topologies &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">IxnTestOffline</span><span class="o">.</span><span class="n">testTopologies</span><span class="o">.</span><span class="n">__doc__</span><span class="p">)</span>
+
+        <span class="n">num_ports</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">num_ints</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">ixn_ports</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_config</span><span class="p">(</span><span class="n">num_ports</span><span class="p">,</span> <span class="n">num_ints</span><span class="p">)</span>
+
+        <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ixn_ports</span><span class="p">)</span> <span class="o">==</span> <span class="n">num_ports</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ixn_port</span> <span class="ow">in</span> <span class="n">ixn_ports</span><span class="p">:</span>
+            <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ixn_ports</span><span class="p">[</span><span class="n">ixn_port</span><span class="p">])</span> <span class="o">==</span> <span class="n">num_ints</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">topo_num</span><span class="p">,</span> <span class="n">ixn_port</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_ports</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">ixn_ports</span><span class="p">):</span>
+            <span class="n">topo_name</span> <span class="o">=</span> <span class="s">&#39;Topo {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">topo_num</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Create Topo &quot;{}&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">topo_name</span><span class="p">))</span>
+            <span class="n">ixn_topo</span> <span class="o">=</span> <span class="n">IxnTopology</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">topo_name</span><span class="p">)</span>
+            <span class="n">ixn_topo</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">vports</span><span class="o">=</span><span class="n">ixn_port</span><span class="o">.</span><span class="n">obj_ref</span><span class="p">())</span>
+            <span class="n">ixn_dg</span> <span class="o">=</span> <span class="n">IxnDeviceGroup</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">ixn_topo</span><span class="p">)</span>
+            <span class="n">ixn_dg</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">multiplier</span><span class="o">=</span><span class="n">topo_num</span><span class="p">)</span>
+            <span class="n">ixn_eth</span> <span class="o">=</span> <span class="n">IxnNgpfEthernet</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">ixn_dg</span><span class="p">)</span>
+            <span class="n">ixn_eth</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s">&#39;mac&#39;</span><span class="p">)</span>
+            <span class="n">ixn_ipv4</span> <span class="o">=</span> <span class="n">IxnNgpfIpv4</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">ixn_eth</span><span class="p">)</span>
+
+    <span class="c">#</span>
+    <span class="c"># Auxiliary functions, no testing inside.</span>
+    <span class="c">#</span>
+</div>
+    <span class="k">def</span> <span class="nf">_load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_file</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ixn</span><span class="o">.</span><span class="n">new_config</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ixn</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ixn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_build_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_ports</span><span class="p">,</span> <span class="n">num_ints</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ixn</span><span class="o">.</span><span class="n">new_config</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Build config with {} ports and {} interfaces per port&#39;</span><span class="o">.</span>
+                         <span class="n">format</span><span class="p">(</span><span class="n">num_ports</span><span class="p">,</span> <span class="n">num_ints</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">port_num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_ports</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">port_name</span> <span class="o">=</span> <span class="s">&#39;Port {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port_num</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Create Port &quot;{}&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port_name</span><span class="p">))</span>
+            <span class="n">ixn_port</span> <span class="o">=</span> <span class="n">IxnPort</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">port_name</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ixn</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">int_num</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_ints</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">int_name</span> <span class="o">=</span> <span class="s">&#39;{} int {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port_name</span><span class="p">,</span> <span class="n">int_num</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Build Device &quot;{}&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">int_name</span><span class="p">))</span>
+                <span class="n">ixn_int</span> <span class="o">=</span> <span class="n">IxnInterface</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">int_name</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">ixn_port</span><span class="p">)</span>
+                <span class="n">ixn_int_eth</span> <span class="o">=</span> <span class="n">ixn_int</span><span class="o">.</span><span class="n">get_child_static</span><span class="p">(</span><span class="s">&#39;ethernet&#39;</span><span class="p">)</span>
+                <span class="n">macAddress</span> <span class="o">=</span> <span class="s">&#39;00:11:22:33:{}:{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port_num</span><span class="p">,</span> <span class="n">int_num</span><span class="p">)</span>
+                <span class="n">ixn_int_eth</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">macAddress</span><span class="o">=</span><span class="n">macAddress</span><span class="p">)</span>
+                <span class="n">ixn_int_ip</span> <span class="o">=</span> <span class="n">IxnObject</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">ixn_int</span><span class="p">,</span> <span class="n">objType</span><span class="o">=</span><span class="s">&#39;ipv4&#39;</span><span class="p">)</span>
+                <span class="n">ip</span> <span class="o">=</span> <span class="s">&#39;1.2.{}.{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port_num</span><span class="p">,</span> <span class="n">int_num</span><span class="p">)</span>
+                <span class="n">ixn_int_ip</span><span class="o">.</span><span class="n">set_attributes</span><span class="p">(</span><span class="n">ip</span><span class="o">=</span><span class="n">ip</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ixn</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+        <span class="n">ixn_ports</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">ixn_port</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ixn</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s">&#39;vport&#39;</span><span class="p">):</span>
+            <span class="n">ixn_ports</span><span class="p">[</span><span class="n">ixn_port</span><span class="p">]</span> <span class="o">=</span> <span class="n">ixn_port</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="s">&#39;interface&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ixn_ports</span>
+
+    <span class="k">def</span> <span class="nf">_save_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">test_name</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()[</span><span class="mi">1</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ixn</span><span class="o">.</span><span class="n">save_config</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span> <span class="s">&#39;configs&#39;</span><span class="p">,</span> <span class="n">test_name</span> <span class="o">+</span> <span class="s">&#39;.ixncfg&#39;</span><span class="p">))</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">ixnetwork 0.9 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Author.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

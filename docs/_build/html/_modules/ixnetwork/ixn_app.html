@@ -1,0 +1,317 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ixnetwork.ixn_app &mdash; ixnetwork 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="ixnetwork 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">ixnetwork 0.9 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ixnetwork.ixn_app</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module implements classes and utility functions to manage IXN application.</span>
+
+<span class="sd">@author yoram@ignissoft.com</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">trafficgenerator.tgn_tcl</span> <span class="kn">import</span> <span class="n">build_obj_ref_list</span><span class="p">,</span> <span class="n">is_true</span>
+<span class="kn">from</span> <span class="nn">trafficgenerator.trafficgenerator</span> <span class="kn">import</span> <span class="n">TrafficGenerator</span>
+<span class="kn">from</span> <span class="nn">trafficgenerator.tgn_utils</span> <span class="kn">import</span> <span class="n">TgnError</span>
+
+<span class="kn">from</span> <span class="nn">ixn_tcl</span> <span class="kn">import</span> <span class="n">IxnTcl</span>
+<span class="kn">from</span> <span class="nn">ixn_object</span> <span class="kn">import</span> <span class="n">IxnObject</span>
+<span class="kn">from</span> <span class="nn">ixn_port</span> <span class="kn">import</span> <span class="n">IxnPort</span>
+<span class="kn">from</span> <span class="nn">ixn_traffic</span> <span class="kn">import</span> <span class="n">IxnTrafficItem</span><span class="p">,</span> <span class="n">IxnL23TrafficItem</span>
+<span class="kn">from</span> <span class="nn">ixn_protocol</span> <span class="kn">import</span> <span class="p">(</span><span class="n">IxnBgpRouter</span><span class="p">,</span> <span class="n">IxnOspfRouter</span><span class="p">,</span> <span class="n">IxnOspfV3Router</span><span class="p">,</span> <span class="n">IxnBgpRouteRange</span><span class="p">,</span> <span class="n">IxnOspfRouteRange</span><span class="p">,</span>
+                          <span class="n">IxnPimsmRouter</span><span class="p">,</span> <span class="n">IxnIgmpHost</span><span class="p">,</span> <span class="n">IxnIgmpQuerier</span><span class="p">,</span> <span class="n">IxnPimsmSource</span><span class="p">,</span> <span class="n">IxnStpBridge</span><span class="p">,</span> <span class="n">IxnOpenFlowDevice</span><span class="p">,</span>
+                          <span class="n">IxnLacp</span><span class="p">,</span> <span class="n">IxnIsisRouter</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ixn_interface</span> <span class="kn">import</span> <span class="n">IxnInterface</span><span class="p">,</span> <span class="n">IxnInterfaceL3</span>
+<span class="kn">from</span> <span class="nn">ixn_topology</span> <span class="kn">import</span> <span class="n">IxnTopology</span><span class="p">,</span> <span class="n">IxnDeviceGroup</span><span class="p">,</span> <span class="n">IxnNgpfEthernet</span><span class="p">,</span> <span class="n">IxnNgpfIpv4</span>
+<span class="kn">from</span> <span class="nn">ixn_statistics_view</span> <span class="kn">import</span> <span class="n">IxnStatisticsView</span>
+<span class="kn">from</span> <span class="nn">ixn_root</span> <span class="kn">import</span> <span class="n">IxnRoot</span>
+<span class="kn">from</span> <span class="nn">ixn_protocol_stack</span> <span class="kn">import</span> <span class="n">IxnRange</span>
+
+
+<div class="viewcode-block" id="IxnApp"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp">[docs]</a><span class="k">class</span> <span class="nc">IxnApp</span><span class="p">(</span><span class="n">TrafficGenerator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; IxNetwork driver. Equivalent to IxNetwork Application. &quot;&quot;&quot;</span>
+
+    <span class="n">root</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="n">TYPE_2_OBJECT</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;bridge&#39;</span><span class="p">:</span> <span class="n">IxnStpBridge</span><span class="p">,</span>
+                     <span class="s">&#39;device&#39;</span><span class="p">:</span> <span class="n">IxnOpenFlowDevice</span><span class="p">,</span>
+                     <span class="s">&#39;deviceGroup&#39;</span><span class="p">:</span> <span class="n">IxnDeviceGroup</span><span class="p">,</span>
+                     <span class="s">&#39;ethernet&#39;</span><span class="p">:</span> <span class="n">IxnNgpfEthernet</span><span class="p">,</span>
+                     <span class="s">&#39;host&#39;</span><span class="p">:</span> <span class="n">IxnIgmpHost</span><span class="p">,</span>
+                     <span class="s">&#39;interface&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;vport&#39;</span><span class="p">:</span> <span class="n">IxnInterface</span><span class="p">},</span>
+                     <span class="s">&#39;ipv4&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;interface&#39;</span><span class="p">:</span> <span class="n">IxnInterfaceL3</span><span class="p">,</span>
+                              <span class="s">&#39;etherenet&#39;</span><span class="p">:</span> <span class="n">IxnNgpfIpv4</span><span class="p">},</span>
+                     <span class="s">&#39;ipv6&#39;</span><span class="p">:</span> <span class="n">IxnInterfaceL3</span><span class="p">,</span>
+                     <span class="s">&#39;lacp&#39;</span><span class="p">:</span> <span class="n">IxnLacp</span><span class="p">,</span>
+                     <span class="s">&#39;neighborRange&#39;</span><span class="p">:</span> <span class="n">IxnBgpRouter</span><span class="p">,</span>
+                     <span class="s">&#39;querier&#39;</span><span class="p">:</span> <span class="n">IxnIgmpQuerier</span><span class="p">,</span>
+                     <span class="s">&#39;range&#39;</span><span class="p">:</span> <span class="n">IxnRange</span><span class="p">,</span>
+                     <span class="s">&#39;router&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;ospf&#39;</span><span class="p">:</span> <span class="n">IxnOspfRouter</span><span class="p">,</span>
+                                <span class="s">&#39;ospfV3&#39;</span><span class="p">:</span> <span class="n">IxnOspfV3Router</span><span class="p">,</span>
+                                <span class="s">&#39;pimsm&#39;</span><span class="p">:</span> <span class="n">IxnPimsmRouter</span><span class="p">,</span>
+                                <span class="s">&#39;isis&#39;</span><span class="p">:</span> <span class="n">IxnIsisRouter</span><span class="p">},</span>
+                     <span class="s">&#39;routeRange&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;bgp&#39;</span><span class="p">:</span> <span class="n">IxnBgpRouteRange</span><span class="p">,</span>
+                                    <span class="s">&#39;ospf&#39;</span><span class="p">:</span> <span class="n">IxnOspfRouteRange</span><span class="p">},</span>
+                     <span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s">&#39;interface&#39;</span><span class="p">:</span> <span class="n">IxnPimsmSource</span><span class="p">},</span>
+                     <span class="s">&#39;topology&#39;</span><span class="p">:</span> <span class="n">IxnTopology</span><span class="p">,</span>
+                     <span class="s">&#39;trafficItem&#39;</span><span class="p">:</span> <span class="n">IxnTrafficItem</span><span class="p">,</span>
+                     <span class="s">&#39;vport&#39;</span><span class="p">:</span> <span class="n">IxnPort</span><span class="p">,</span>
+                     <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">ixn_install_dir</span><span class="p">,</span> <span class="n">tgnlib_dir</span><span class="p">,</span> <span class="n">tcl_interp</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span> <span class="o">=</span> <span class="n">IxnTcl</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">ixn_install_dir</span><span class="p">,</span> <span class="n">tgnlib_dir</span><span class="p">,</span> <span class="n">tcl_interp</span><span class="p">)</span>
+        <span class="n">IxnObject</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span>
+        <span class="n">IxnObject</span><span class="o">.</span><span class="n">api</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span>
+        <span class="n">IxnObject</span><span class="o">.</span><span class="n">str_2_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TYPE_2_OBJECT</span>
+
+<div class="viewcode-block" id="IxnApp.connect"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tcl_server</span><span class="o">=</span><span class="s">&#39;localhost&#39;</span><span class="p">,</span> <span class="n">tcl_port</span><span class="o">=</span><span class="mi">8009</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">tcl_server</span><span class="p">,</span> <span class="n">tcl_port</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">IxnRoot</span><span class="p">(</span><span class="n">objRef</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">getRoot</span><span class="p">(),</span> <span class="n">objType</span><span class="o">=</span><span class="s">&#39;root&#39;</span><span class="p">)</span>
+        <span class="n">IxnObject</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
+
+    <span class="c">#</span>
+    <span class="c"># IxNetwork operation commands.</span>
+    <span class="c">#</span>
+</div>
+<div class="viewcode-block" id="IxnApp.commit"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.commit">[docs]</a>    <span class="k">def</span> <span class="nf">commit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="IxnApp.load_config"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.load_config">[docs]</a>    <span class="k">def</span> <span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configFileName</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">loadConfig</span><span class="p">(</span><span class="n">configFileName</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="IxnApp.new_config"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.new_config">[docs]</a>    <span class="k">def</span> <span class="nf">new_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">newConfig</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="IxnApp.save_config"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.save_config">[docs]</a>    <span class="k">def</span> <span class="nf">save_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">configFileName</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">saveConfig</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">configFileName</span><span class="p">))</span>
+
+    <span class="c">#</span>
+    <span class="c"># IxNetwork GUI commands.</span>
+    <span class="c">#</span>
+</div>
+<div class="viewcode-block" id="IxnApp.send_arp_ns"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.send_arp_ns">[docs]</a>    <span class="k">def</span> <span class="nf">send_arp_ns</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;sendArpAll&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;sendNsAll&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnApp.send_rs"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.send_rs">[docs]</a>    <span class="k">def</span> <span class="nf">send_rs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;sendRsAll&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnApp.protocols_start"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.protocols_start">[docs]</a>    <span class="k">def</span> <span class="nf">protocols_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Start all protocols.</span>
+
+<span class="sd">        It is the calling function responsibility to wait for all protocols to start.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;startAllProtocols&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnApp.protocols_stop"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.protocols_stop">[docs]</a>    <span class="k">def</span> <span class="nf">protocols_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Stop all protocols.</span>
+
+<span class="sd">        It is the calling function responsibility to wait for all protocols to stop.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;stopAllProtocols&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnApp.traffic_apply"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.traffic_apply">[docs]</a>    <span class="k">def</span> <span class="nf">traffic_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">get_child_static</span><span class="p">(</span><span class="s">&#39;traffic&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;apply&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnApp.l23_traffic_start"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.l23_traffic_start">[docs]</a>    <span class="k">def</span> <span class="nf">l23_traffic_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">get_child_static</span><span class="p">(</span><span class="s">&#39;traffic&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;startStatelessTraffic&#39;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnApp.l23_traffic_stop"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.l23_traffic_stop">[docs]</a>    <span class="k">def</span> <span class="nf">l23_traffic_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">get_child_static</span><span class="p">(</span><span class="s">&#39;traffic&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s">&#39;stopStatelessTraffic&#39;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnApp.protocol_action"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.protocol_action">[docs]</a>    <span class="k">def</span> <span class="nf">protocol_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">action_state</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;start&#39;</span><span class="p">:</span> <span class="s">&#39;started&#39;</span><span class="p">,</span> <span class="s">&#39;stop&#39;</span><span class="p">:</span> <span class="s">&#39;stopped&#39;</span><span class="p">,</span> <span class="s">&#39;stop&#39;</span><span class="p">:</span> <span class="s">&#39;stopped&#39;</span><span class="p">}</span>
+        <span class="n">protocol_objs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">get_objects_by_type</span><span class="p">(</span><span class="s">&#39;vport&#39;</span><span class="p">):</span>
+            <span class="n">protocols</span> <span class="o">=</span> <span class="n">port</span><span class="o">.</span><span class="n">get_child_static</span><span class="p">(</span><span class="s">&#39;protocols&#39;</span><span class="p">)</span>
+            <span class="n">protocol_obj</span> <span class="o">=</span> <span class="n">protocols</span><span class="o">.</span><span class="n">get_child_static</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_true</span><span class="p">(</span><span class="n">protocol_obj</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s">&#39;enabled&#39;</span><span class="p">)):</span>
+                <span class="n">protocol_obj</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+                <span class="n">protocol_objs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">protocol_obj</span><span class="p">)</span>
+        <span class="c"># Must wait before reading state</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">protocol_obj</span> <span class="ow">in</span> <span class="n">protocol_objs</span><span class="p">:</span>
+            <span class="n">runningState</span> <span class="o">=</span> <span class="n">protocol_obj</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s">&#39;runningState&#39;</span><span class="p">)</span>
+            <span class="n">timer</span> <span class="o">=</span> <span class="mi">16</span>
+            <span class="k">while</span> <span class="n">timer</span> <span class="ow">and</span> <span class="n">runningState</span> <span class="o">!=</span> <span class="n">action_state</span><span class="p">[</span><span class="n">action</span><span class="p">]:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">runningState</span> <span class="o">=</span> <span class="n">protocol_obj</span><span class="o">.</span><span class="n">get_attribute</span><span class="p">(</span><span class="s">&#39;runningState&#39;</span><span class="p">)</span>
+                <span class="n">timer</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">runningState</span> <span class="o">!=</span> <span class="n">action_state</span><span class="p">[</span><span class="n">action</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="n">TgnError</span><span class="p">(</span><span class="s">&#39;Failed to {} port {} protocol {}&#39;</span><span class="o">.</span>
+                               <span class="n">format</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">port</span><span class="o">.</span><span class="n">obj_name</span><span class="p">(),</span> <span class="n">protocol</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="IxnApp.protocol_start"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.protocol_start">[docs]</a>    <span class="k">def</span> <span class="nf">protocol_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Start a protocol and wait for all protocols to start.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TgnError: if some protocol failed to start.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_action</span><span class="p">(</span><span class="n">protocol</span><span class="p">,</span> <span class="s">&#39;start&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnApp.protocol_stop"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.protocol_stop">[docs]</a>    <span class="k">def</span> <span class="nf">protocol_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Stop all protocols and wait for all protocols to stop.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TgnError: if some protocol failed to stop.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_action</span><span class="p">(</span><span class="n">protocol</span><span class="p">,</span> <span class="s">&#39;stop&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnApp.protocol_abort"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.protocol_abort">[docs]</a>    <span class="k">def</span> <span class="nf">protocol_abort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">protocol</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Abort all protocols and wait for all protocols to stop.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TgnError: if some protocol failed to stop.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_action</span><span class="p">(</span><span class="n">protocol</span><span class="p">,</span> <span class="s">&#39;abort&#39;</span><span class="p">)</span>
+
+    <span class="c">#</span>
+    <span class="c"># Not tested beyond this point.</span>
+    <span class="c">#</span>
+</div>
+<div class="viewcode-block" id="IxnApp.l23TrafficOperation"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.l23TrafficOperation">[docs]</a>    <span class="k">def</span> <span class="nf">l23TrafficOperation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">tis</span> <span class="o">=</span> <span class="n">build_obj_ref_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_objects</span><span class="p">(</span><span class="n">IxnL23TrafficItem</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">action</span> <span class="o">+</span> <span class="s">&#39;StatelessTraffic&#39;</span><span class="p">,</span> <span class="n">tis</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnApp.l47TrafficOperation"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.l47TrafficOperation">[docs]</a>    <span class="k">def</span> <span class="nf">l47TrafficOperation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">action</span> <span class="o">+</span> <span class="s">&#39;ApplicationTraffic&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="s">&#39;/traffic&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnApp.l47TrafficApply"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.l47TrafficApply">[docs]</a>    <span class="k">def</span> <span class="nf">l47TrafficApply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l47TrafficOperation</span><span class="p">(</span><span class="s">&#39;apply&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnApp.l47TrafficStart"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.l47TrafficStart">[docs]</a>    <span class="k">def</span> <span class="nf">l47TrafficStart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l47TrafficOperation</span><span class="p">(</span><span class="s">&#39;start&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="IxnApp.l47TrafficStop"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.l47TrafficStop">[docs]</a>    <span class="k">def</span> <span class="nf">l47TrafficStop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l47TrafficOperation</span><span class="p">(</span><span class="s">&#39;stop&#39;</span><span class="p">)</span>
+
+    <span class="c">#</span>
+    <span class="c"># IxNetwork results commands.</span>
+    <span class="c">#</span>
+</div>
+<div class="viewcode-block" id="IxnApp.getStatistics"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.IxnApp.getStatistics">[docs]</a>    <span class="k">def</span> <span class="nf">getStatistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">view</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">view</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">[</span><span class="n">view</span><span class="p">]</span> <span class="o">=</span> <span class="n">IxnStatisticsView</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="p">,</span> <span class="n">view</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">objects</span><span class="p">[</span><span class="n">view</span><span class="p">]</span><span class="o">.</span><span class="n">getStatistics</span><span class="p">()</span>
+
+</div></div>
+<div class="viewcode-block" id="ixnetwork"><a class="viewcode-back" href="../../ixnetwork.html#ixnetwork.ixn_app.ixnetwork">[docs]</a><span class="k">def</span> <span class="nf">ixnetwork</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Stand alone IXN application.</span>
+
+<span class="sd">    Serves as code snippet and environment testing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># TODO: replace with ini file.</span>
+    <span class="n">install_dir</span> <span class="o">=</span> <span class="s">&#39;C:/Program Files (x86)/Ixia/IxNetwork/7.40-EA&#39;</span>
+    <span class="n">log_level</span> <span class="o">=</span> <span class="s">&#39;INFO&#39;</span>
+    <span class="n">log_file_name</span> <span class="o">=</span> <span class="s">&#39;test/logs/ixnetwork.txt&#39;</span>
+    <span class="n">tgn_lib</span> <span class="o">=</span> <span class="s">&#39;C:/Tcl8532/lib/tgn&#39;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;log&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">log_level</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">))</span>
+
+    <span class="n">ixn</span> <span class="o">=</span> <span class="n">IxnApp</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">install_dir</span><span class="p">,</span> <span class="n">tgn_lib</span><span class="p">)</span>
+    <span class="n">ixn</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+</div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">ixnetwork</span><span class="p">((</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])))</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">ixnetwork 0.9 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Author.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>

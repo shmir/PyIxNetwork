@@ -1,0 +1,1256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ixnetwork package &mdash; ixnetwork 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ixnetwork 0.9 documentation" href="index.html" />
+    <link rel="next" title="ixnetwork.test package" href="ixnetwork.test.html" />
+    <link rel="prev" title="Welcome to ixnetwork’s documentation!" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ixnetwork.test.html" title="ixnetwork.test package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to ixnetwork’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ixnetwork 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="ixnetwork-package">
+<h1>ixnetwork package<a class="headerlink" href="#ixnetwork-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ixnetwork.test.html">ixnetwork.test package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ixnetwork.test.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ixnetwork.test.html#module-ixnetwork.test.test_offline">ixnetwork.test.test_offline module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ixnetwork.test.html#module-ixnetwork.test.test_online">ixnetwork.test.test_online module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ixnetwork.test.html#module-ixnetwork.test">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-ixnetwork.ixn_app">
+<span id="ixnetwork-ixn-app-module"></span><h2>ixnetwork.ixn_app module<a class="headerlink" href="#module-ixnetwork.ixn_app" title="Permalink to this headline">¶</a></h2>
+<p>This module implements classes and utility functions to manage IXN application.</p>
+<p>&#64;author <a class="reference external" href="mailto:yoram&#37;&#52;&#48;ignissoft&#46;com">yoram<span>&#64;</span>ignissoft<span>&#46;</span>com</a></p>
+<dl class="class">
+<dt id="ixnetwork.ixn_app.IxnApp">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_app.</code><code class="descname">IxnApp</code><span class="sig-paren">(</span><em>logger</em>, <em>ixn_install_dir</em>, <em>tgnlib_dir</em>, <em>tcl_interp=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">trafficgenerator.trafficgenerator.TrafficGenerator</span></code></p>
+<p>IxNetwork driver. Equivalent to IxNetwork Application.</p>
+<dl class="attribute">
+<dt id="ixnetwork.ixn_app.IxnApp.TYPE_2_OBJECT">
+<code class="descname">TYPE_2_OBJECT</code><em class="property"> = {'bridge': &lt;class 'ixnetwork.ixn_protocol.IxnStpBridge'&gt;, 'deviceGroup': &lt;class 'ixnetwork.ixn_topology.IxnDeviceGroup'&gt;, 'source': {'interface': &lt;class 'ixnetwork.ixn_protocol.IxnPimsmSource'&gt;}, 'router': {'isis': &lt;class 'ixnetwork.ixn_protocol.IxnIsisRouter'&gt;, 'pimsm': &lt;class 'ixnetwork.ixn_protocol.IxnPimsmRouter'&gt;, 'ospf': &lt;class 'ixnetwork.ixn_protocol.IxnOspfRouter'&gt;, 'ospfV3': &lt;class 'ixnetwork.ixn_protocol.IxnOspfV3Router'&gt;}, 'neighborRange': &lt;class 'ixnetwork.ixn_protocol.IxnBgpRouter'&gt;, 'lacp': &lt;class 'ixnetwork.ixn_protocol.IxnLacp'&gt;, 'interface': {'vport': &lt;class 'ixnetwork.ixn_interface.IxnInterface'&gt;}, 'host': &lt;class 'ixnetwork.ixn_protocol.IxnIgmpHost'&gt;, 'routeRange': {'bgp': &lt;class 'ixnetwork.ixn_protocol.IxnBgpRouteRange'&gt;, 'ospf': &lt;class 'ixnetwork.ixn_protocol.IxnOspfRouteRange'&gt;}, 'ipv4': {'interface': &lt;class 'ixnetwork.ixn_interface.IxnInterfaceL3'&gt;, 'etherenet': &lt;class 'ixnetwork.ixn_topology.IxnNgpfIpv4'&gt;}, 'querier': &lt;class 'ixnetwork.ixn_protocol.IxnIgmpQuerier'&gt;, 'ipv6': &lt;class 'ixnetwork.ixn_interface.IxnInterfaceL3'&gt;, 'device': &lt;class 'ixnetwork.ixn_protocol.IxnOpenFlowDevice'&gt;, 'ethernet': &lt;class 'ixnetwork.ixn_topology.IxnNgpfEthernet'&gt;, 'vport': &lt;class 'ixnetwork.ixn_port.IxnPort'&gt;, 'range': &lt;class 'ixnetwork.ixn_protocol_stack.IxnRange'&gt;, 'trafficItem': &lt;class 'ixnetwork.ixn_traffic.IxnTrafficItem'&gt;, 'topology': &lt;class 'ixnetwork.ixn_topology.IxnTopology'&gt;}</em><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.TYPE_2_OBJECT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.commit">
+<code class="descname">commit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.commit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.commit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>tcl_server='localhost'</em>, <em>tcl_port=8009</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.connect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.getStatistics">
+<code class="descname">getStatistics</code><span class="sig-paren">(</span><em>view</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.getStatistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.getStatistics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.l23TrafficOperation">
+<code class="descname">l23TrafficOperation</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.l23TrafficOperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.l23TrafficOperation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.l23_traffic_start">
+<code class="descname">l23_traffic_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.l23_traffic_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.l23_traffic_start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.l23_traffic_stop">
+<code class="descname">l23_traffic_stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.l23_traffic_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.l23_traffic_stop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.l47TrafficApply">
+<code class="descname">l47TrafficApply</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.l47TrafficApply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.l47TrafficApply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.l47TrafficOperation">
+<code class="descname">l47TrafficOperation</code><span class="sig-paren">(</span><em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.l47TrafficOperation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.l47TrafficOperation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.l47TrafficStart">
+<code class="descname">l47TrafficStart</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.l47TrafficStart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.l47TrafficStart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.l47TrafficStop">
+<code class="descname">l47TrafficStop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.l47TrafficStop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.l47TrafficStop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.load_config">
+<code class="descname">load_config</code><span class="sig-paren">(</span><em>configFileName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.load_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.load_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.new_config">
+<code class="descname">new_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.new_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.new_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.protocol_abort">
+<code class="descname">protocol_abort</code><span class="sig-paren">(</span><em>protocol</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.protocol_abort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.protocol_abort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abort all protocols and wait for all protocols to stop.</p>
+<dl class="docutils">
+<dt>Raises:</dt>
+<dd>TgnError: if some protocol failed to stop.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.protocol_action">
+<code class="descname">protocol_action</code><span class="sig-paren">(</span><em>protocol</em>, <em>action</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.protocol_action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.protocol_action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.protocol_start">
+<code class="descname">protocol_start</code><span class="sig-paren">(</span><em>protocol</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.protocol_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.protocol_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start a protocol and wait for all protocols to start.</p>
+<dl class="docutils">
+<dt>Raises:</dt>
+<dd>TgnError: if some protocol failed to start.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.protocol_stop">
+<code class="descname">protocol_stop</code><span class="sig-paren">(</span><em>protocol</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.protocol_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.protocol_stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop all protocols and wait for all protocols to stop.</p>
+<dl class="docutils">
+<dt>Raises:</dt>
+<dd>TgnError: if some protocol failed to stop.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.protocols_start">
+<code class="descname">protocols_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.protocols_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.protocols_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start all protocols.</p>
+<p>It is the calling function responsibility to wait for all protocols to start.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.protocols_stop">
+<code class="descname">protocols_stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.protocols_stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.protocols_stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop all protocols.</p>
+<p>It is the calling function responsibility to wait for all protocols to stop.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ixnetwork.ixn_app.IxnApp.root">
+<code class="descname">root</code><em class="property"> = None</em><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.root" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.save_config">
+<code class="descname">save_config</code><span class="sig-paren">(</span><em>configFileName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.save_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.save_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.send_arp_ns">
+<code class="descname">send_arp_ns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.send_arp_ns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.send_arp_ns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.send_rs">
+<code class="descname">send_rs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.send_rs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.send_rs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_app.IxnApp.traffic_apply">
+<code class="descname">traffic_apply</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#IxnApp.traffic_apply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.IxnApp.traffic_apply" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ixnetwork.ixn_app.ixnetwork">
+<code class="descclassname">ixnetwork.ixn_app.</code><code class="descname">ixnetwork</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_app.html#ixnetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_app.ixnetwork" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stand alone IXN application.</p>
+<p>Serves as code snippet and environment testing.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ixnetwork.ixn_interface">
+<span id="ixnetwork-ixn-interface-module"></span><h2>ixnetwork.ixn_interface module<a class="headerlink" href="#module-ixnetwork.ixn_interface" title="Permalink to this headline">¶</a></h2>
+<p>This module implements classes and utility functions to manage IXN protocol interface objects.</p>
+<p>&#64;author <a class="reference external" href="mailto:yoram&#37;&#52;&#48;ignissoft&#46;com">yoram<span>&#64;</span>ignissoft<span>&#46;</span>com</a></p>
+<dl class="class">
+<dt id="ixnetwork.ixn_interface.IxnInterface">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_interface.</code><code class="descname">IxnInterface</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_interface.html#IxnInterface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_interface.IxnInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_object.IxnObject" title="ixnetwork.ixn_object.IxnObject"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_object.IxnObject</span></code></a></p>
+<dl class="method">
+<dt id="ixnetwork.ixn_interface.IxnInterface.get_name">
+<code class="descname">get_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_interface.html#IxnInterface.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_interface.IxnInterface.get_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_interface.IxnInterface.ping">
+<code class="descname">ping</code><span class="sig-paren">(</span><em>ip</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_interface.html#IxnInterface.ping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_interface.IxnInterface.ping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_interface.IxnInterface.send_arp_ns">
+<code class="descname">send_arp_ns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_interface.html#IxnInterface.send_arp_ns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_interface.IxnInterface.send_arp_ns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_interface.IxnInterface.send_rs">
+<code class="descname">send_rs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_interface.html#IxnInterface.send_rs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_interface.IxnInterface.send_rs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_interface.IxnInterfaceL3">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_interface.</code><code class="descname">IxnInterfaceL3</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_interface.html#IxnInterfaceL3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_interface.IxnInterfaceL3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_object.IxnObject" title="ixnetwork.ixn_object.IxnObject"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_object.IxnObject</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">trafficgenerator.tgn_object.TgnL3</span></code></p>
+<dl class="method">
+<dt id="ixnetwork.ixn_interface.IxnInterfaceL3.ip">
+<code class="descname">ip</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_interface.html#IxnInterfaceL3.ip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_interface.IxnInterfaceL3.ip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_interface.IxnInterfaceL3.num_ips">
+<code class="descname">num_ips</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_interface.html#IxnInterfaceL3.num_ips"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_interface.IxnInterfaceL3.num_ips" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ixnetwork.ixn_interface.filter_ints_based_on_vlan">
+<code class="descclassname">ixnetwork.ixn_interface.</code><code class="descname">filter_ints_based_on_vlan</code><span class="sig-paren">(</span><em>interfaces</em>, <em>vlan</em>, <em>count=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_interface.html#filter_ints_based_on_vlan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_interface.filter_ints_based_on_vlan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter list of interfaces based on VLAN presence or absence criteria.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>interfaces</strong> &#8211; list of interfaces to filter.</li>
+<li><strong>vlan</strong> &#8211; boolean indicating whether to filter interfaces with or without VLAN.</li>
+<li><strong>vlan</strong> &#8211; number of expected VLANs (note that when vlanEnable == False, vlanCount == 1)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">interfaces with VLAN(s) if vlan == True and vlanCount == count else interfaces without
+VLAN(s).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Todo:</th><td class="field-body"><p class="first last">add vlanEnable and vlanCount to interface/range/deviceGroup classes.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ixnetwork.ixn_object">
+<span id="ixnetwork-ixn-object-module"></span><h2>ixnetwork.ixn_object module<a class="headerlink" href="#module-ixnetwork.ixn_object" title="Permalink to this headline">¶</a></h2>
+<p>Base classes and utilities to manage IxNetwork (IXN).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">author:</th><td class="field-body"><a class="reference external" href="mailto:yoram&#37;&#52;&#48;ignissoft&#46;com">yoram<span>&#64;</span>ignissoft<span>&#46;</span>com</a></td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="ixnetwork.ixn_object.IxnObject">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_object.</code><code class="descname">IxnObject</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_object.html#IxnObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_object.IxnObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">trafficgenerator.tgn_object.TgnObject</span></code></p>
+<p>Base class for all IXN classes.</p>
+<dl class="attribute">
+<dt id="ixnetwork.ixn_object.IxnObject.api">
+<code class="descname">api</code><em class="property"> = None</em><a class="headerlink" href="#ixnetwork.ixn_object.IxnObject.api" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_object.IxnObject.execute">
+<code class="descname">execute</code><span class="sig-paren">(</span><em>command</em>, <em>*arguments</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_object.html#IxnObject.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_object.IxnObject.execute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_object.IxnObject.get_attribute">
+<code class="descname">get_attribute</code><span class="sig-paren">(</span><em>attribute</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_object.html#IxnObject.get_attribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_object.IxnObject.get_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">attribute value.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Raises TgnError:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">if invalid attribute.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_object.IxnObject.get_attributes">
+<code class="descname">get_attributes</code><span class="sig-paren">(</span><em>*keys</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_object.html#IxnObject.get_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_object.IxnObject.get_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_object.IxnObject.get_child_static">
+<code class="descname">get_child_static</code><span class="sig-paren">(</span><em>objType</em>, <em>seq_number=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_object.html#IxnObject.get_child_static"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_object.IxnObject.get_child_static" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns IxnObject representing the requested child without reading it from the IXN.</p>
+<p>Statically build the child object reference based on the requested object type and
+sequence number and build the IxnObject with this calculated object reference.
+Ideally we would prefer to never use this function and always read the child
+dynamically but this has huge impact on performance so we use the static approach
+wherever possible.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_object.IxnObject.get_children">
+<code class="descname">get_children</code><span class="sig-paren">(</span><em>*types</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_object.html#IxnObject.get_children"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_object.IxnObject.get_children" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_object.IxnObject.get_name">
+<code class="descname">get_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_object.html#IxnObject.get_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_object.IxnObject.get_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_object.IxnObject.get_obj_class">
+<code class="descname">get_obj_class</code><span class="sig-paren">(</span><em>obj_type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_object.html#IxnObject.get_obj_class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_object.IxnObject.get_obj_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the object class based on parent and object types.</p>
+<p>In most cases the object class can be derived from object type alone but sometimes the
+same object type name is used for different object types so the parent (or even
+grandparent) type is required in order to determine the exact object type.
+For example, interface object type can be child of vport or router (ospf etc.). In the
+first case the required class is IxnInterface while in the later case it is IxnObject.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>obj_type</strong> &#8211; IXN object type.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">object class if specific class else IxnObject.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_object.IxnObject.help">
+<code class="descname">help</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_object.html#IxnObject.help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_object.IxnObject.help" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ixnetwork.ixn_object.IxnObject.logger">
+<code class="descname">logger</code><em class="property"> = None</em><a class="headerlink" href="#ixnetwork.ixn_object.IxnObject.logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ixnetwork.ixn_object.IxnObject.root">
+<code class="descname">root</code><em class="property"> = None</em><a class="headerlink" href="#ixnetwork.ixn_object.IxnObject.root" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_object.IxnObject.set_attributes">
+<code class="descname">set_attributes</code><span class="sig-paren">(</span><em>commit=False</em>, <em>**attributes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_object.html#IxnObject.set_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_object.IxnObject.set_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ixnetwork.ixn_object.IxnObject.str_2_class">
+<code class="descname">str_2_class</code><em class="property"> = {}</em><a class="headerlink" href="#ixnetwork.ixn_object.IxnObject.str_2_class" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ixnetwork.ixn_object.extract_ixn_obj_type_from_obj_ref">
+<code class="descclassname">ixnetwork.ixn_object.</code><code class="descname">extract_ixn_obj_type_from_obj_ref</code><span class="sig-paren">(</span><em>obj_ref</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_object.html#extract_ixn_obj_type_from_obj_ref"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_object.extract_ixn_obj_type_from_obj_ref" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-ixnetwork.ixn_port">
+<span id="ixnetwork-ixn-port-module"></span><h2>ixnetwork.ixn_port module<a class="headerlink" href="#module-ixnetwork.ixn_port" title="Permalink to this headline">¶</a></h2>
+<p>Classes and utilities to manage IXN port (vport) objects.</p>
+<p>&#64;author <a class="reference external" href="mailto:yoram&#37;&#52;&#48;ignissoft&#46;com">yoram<span>&#64;</span>ignissoft<span>&#46;</span>com</a></p>
+<dl class="class">
+<dt id="ixnetwork.ixn_port.IxnPort">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_port.</code><code class="descname">IxnPort</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_port.html#IxnPort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_port.IxnPort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_object.IxnObject" title="ixnetwork.ixn_object.IxnObject"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_object.IxnObject</span></code></a></p>
+<dl class="attribute">
+<dt id="ixnetwork.ixn_port.IxnPort.location">
+<code class="descname">location</code><em class="property"> = None</em><a class="headerlink" href="#ixnetwork.ixn_port.IxnPort.location" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_port.IxnPort.release">
+<code class="descname">release</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_port.html#IxnPort.release"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_port.IxnPort.release" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_port.IxnPort.reserve">
+<code class="descname">reserve</code><span class="sig-paren">(</span><em>location</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_port.html#IxnPort.reserve"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_port.IxnPort.reserve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_port.IxnPort.send_arp_ns">
+<code class="descname">send_arp_ns</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_port.html#IxnPort.send_arp_ns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_port.IxnPort.send_arp_ns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_port.IxnPort.send_rs">
+<code class="descname">send_rs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_port.html#IxnPort.send_rs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_port.IxnPort.send_rs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ixnetwork.ixn_port.get_port">
+<code class="descclassname">ixnetwork.ixn_port.</code><code class="descname">get_port</code><span class="sig-paren">(</span><em>obj_ref</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_port.html#get_port"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_port.get_port" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>obj_ref</strong> &#8211; port/deviceGroup child object reference.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the ancestor port object of the obj_ref.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ixnetwork.ixn_protocol">
+<span id="ixnetwork-ixn-protocol-module"></span><h2>ixnetwork.ixn_protocol module<a class="headerlink" href="#module-ixnetwork.ixn_protocol" title="Permalink to this headline">¶</a></h2>
+<p>Classes and utilities to manage IXN classical protocols objects.</p>
+<p>&#64;author <a class="reference external" href="mailto:yoram&#37;&#52;&#48;ignissoft&#46;com">yoram<span>&#64;</span>ignissoft<span>&#46;</span>com</a></p>
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnBgpRouteRange">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnBgpRouteRange</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnBgpRouteRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnBgpRouteRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol.IxnRouteRange" title="ixnetwork.ixn_protocol.IxnRouteRange"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol.IxnRouteRange</span></code></a></p>
+<p>Represents IXN BGP route range.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnBgpRouter">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnBgpRouter</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnBgpRouter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnBgpRouter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol.IxnProtocolServer" title="ixnetwork.ixn_protocol.IxnProtocolServer"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol.IxnProtocolServer</span></code></a></p>
+<p>Represents IXN BGP router.</p>
+<dl class="method">
+<dt id="ixnetwork.ixn_protocol.IxnBgpRouter.get_endpoints">
+<code class="descname">get_endpoints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnBgpRouter.get_endpoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnBgpRouter.get_endpoints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnIgmpHost">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnIgmpHost</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnIgmpHost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnIgmpHost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol.IxnProtocolServer" title="ixnetwork.ixn_protocol.IxnProtocolServer"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol.IxnProtocolServer</span></code></a></p>
+<p>Represents IXN IGMP host.</p>
+<dl class="method">
+<dt id="ixnetwork.ixn_protocol.IxnIgmpHost.get_endpoints">
+<code class="descname">get_endpoints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnIgmpHost.get_endpoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnIgmpHost.get_endpoints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnIgmpQuerier">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnIgmpQuerier</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnIgmpQuerier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnIgmpQuerier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol.IxnProtocolServer" title="ixnetwork.ixn_protocol.IxnProtocolServer"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol.IxnProtocolServer</span></code></a></p>
+<p>Represents IXN IGMP querier.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnIsisRouter">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnIsisRouter</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnIsisRouter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnIsisRouter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol.IxnProtocolRouter" title="ixnetwork.ixn_protocol.IxnProtocolRouter"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol.IxnProtocolRouter</span></code></a></p>
+<p>Represents IXN ISIS router.</p>
+<dl class="attribute">
+<dt id="ixnetwork.ixn_protocol.IxnIsisRouter.interface_attribute">
+<code class="descname">interface_attribute</code><em class="property"> = 'interfaceId'</em><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnIsisRouter.interface_attribute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ixnetwork.ixn_protocol.IxnIsisRouter.objType">
+<code class="descname">objType</code><em class="property"> = 'router'</em><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnIsisRouter.objType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnLacp">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnLacp</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnLacp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnLacp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_object.IxnObject" title="ixnetwork.ixn_object.IxnObject"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_object.IxnObject</span></code></a></p>
+<p>Represents IXN LACP object.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnOpenFlowDevice">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnOpenFlowDevice</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnOpenFlowDevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnOpenFlowDevice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol.IxnProtocolRouter" title="ixnetwork.ixn_protocol.IxnProtocolRouter"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol.IxnProtocolRouter</span></code></a></p>
+<p>Represents IXN OpenFlow device.</p>
+<dl class="attribute">
+<dt id="ixnetwork.ixn_protocol.IxnOpenFlowDevice.interface_attribute">
+<code class="descname">interface_attribute</code><em class="property"> = 'protocolInterfaces'</em><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnOpenFlowDevice.interface_attribute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ixnetwork.ixn_protocol.IxnOpenFlowDevice.objType">
+<code class="descname">objType</code><em class="property"> = 'device'</em><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnOpenFlowDevice.objType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnOspfRouteRange">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnOspfRouteRange</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnOspfRouteRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnOspfRouteRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol.IxnRouteRange" title="ixnetwork.ixn_protocol.IxnRouteRange"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol.IxnRouteRange</span></code></a></p>
+<p>Represents IXN OSPF route range.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnOspfRouter">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnOspfRouter</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnOspfRouter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnOspfRouter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol.IxnProtocolRouter" title="ixnetwork.ixn_protocol.IxnProtocolRouter"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol.IxnProtocolRouter</span></code></a></p>
+<p>Represents IXN OSPF router.</p>
+<dl class="attribute">
+<dt id="ixnetwork.ixn_protocol.IxnOspfRouter.objType">
+<code class="descname">objType</code><em class="property"> = 'router'</em><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnOspfRouter.objType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnOspfV3Router">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnOspfV3Router</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnOspfV3Router"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnOspfV3Router" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol.IxnProtocolRouter" title="ixnetwork.ixn_protocol.IxnProtocolRouter"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol.IxnProtocolRouter</span></code></a></p>
+<p>Represents IXN OSPFv3 router.</p>
+<dl class="attribute">
+<dt id="ixnetwork.ixn_protocol.IxnOspfV3Router.objType">
+<code class="descname">objType</code><em class="property"> = 'router'</em><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnOspfV3Router.objType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnPimsmRouter">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnPimsmRouter</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnPimsmRouter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnPimsmRouter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol.IxnProtocolRouter" title="ixnetwork.ixn_protocol.IxnProtocolRouter"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol.IxnProtocolRouter</span></code></a></p>
+<p>Represents IXN PIM-SM router.</p>
+<dl class="method">
+<dt id="ixnetwork.ixn_protocol.IxnPimsmRouter.get_endpoints">
+<code class="descname">get_endpoints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnPimsmRouter.get_endpoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnPimsmRouter.get_endpoints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ixnetwork.ixn_protocol.IxnPimsmRouter.objType">
+<code class="descname">objType</code><em class="property"> = 'router'</em><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnPimsmRouter.objType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnPimsmSource">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnPimsmSource</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnPimsmSource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnPimsmSource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol.IxnRouteRange" title="ixnetwork.ixn_protocol.IxnRouteRange"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol.IxnRouteRange</span></code></a></p>
+<p>Represents IXN BGP route range.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnProtocol">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnProtocol</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnProtocol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_object.IxnObject" title="ixnetwork.ixn_object.IxnObject"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_object.IxnObject</span></code></a></p>
+<p>Base class for IXN classical protocol objects (e.g. OSPF router, IGMP Querier, MLD Host
+etc.).</p>
+<dl class="classmethod">
+<dt id="ixnetwork.ixn_protocol.IxnProtocol.get_protocols_with_int">
+<em class="property">classmethod </em><code class="descname">get_protocols_with_int</code><span class="sig-paren">(</span><em>ixn_int</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnProtocol.get_protocols_with_int"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnProtocol.get_protocols_with_int" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="ixnetwork.ixn_protocol.IxnProtocol.get_protocols_with_port">
+<em class="property">classmethod </em><code class="descname">get_protocols_with_port</code><span class="sig-paren">(</span><em>ixn_port</em>, <em>l3</em>, <em>vlan=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnProtocol.get_protocols_with_port"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnProtocol.get_protocols_with_port" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ixnetwork.ixn_protocol.IxnProtocol.ixn_ints">
+<code class="descname">ixn_ints</code><em class="property"> = {}</em><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnProtocol.ixn_ints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnProtocolRouter">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnProtocolRouter</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnProtocolRouter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnProtocolRouter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol.IxnProtocol" title="ixnetwork.ixn_protocol.IxnProtocol"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol.IxnProtocol</span></code></a></p>
+<p>Base class for IXN router (e.g. OSPF router etc.).</p>
+<dl class="method">
+<dt id="ixnetwork.ixn_protocol.IxnProtocolRouter.get_endpoints">
+<code class="descname">get_endpoints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnProtocolRouter.get_endpoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnProtocolRouter.get_endpoints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ixnetwork.ixn_protocol.IxnProtocolRouter.interface_attribute">
+<code class="descname">interface_attribute</code><em class="property"> = 'interfaces'</em><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnProtocolRouter.interface_attribute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnProtocolServer">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnProtocolServer</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnProtocolServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnProtocolServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol.IxnProtocol" title="ixnetwork.ixn_protocol.IxnProtocol"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol.IxnProtocol</span></code></a></p>
+<p>Base class for IXN protocol server (e.g. IGMP Querier, MLD Host etc.).</p>
+<dl class="method">
+<dt id="ixnetwork.ixn_protocol.IxnProtocolServer.get_endpoints">
+<code class="descname">get_endpoints</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnProtocolServer.get_endpoints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnProtocolServer.get_endpoints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnRouteRange">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnRouteRange</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnRouteRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnRouteRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_object.IxnObject" title="ixnetwork.ixn_object.IxnObject"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_object.IxnObject</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">trafficgenerator.tgn_object.TgnL3</span></code></p>
+<p>Base class for IXN route ranges.</p>
+<dl class="method">
+<dt id="ixnetwork.ixn_protocol.IxnRouteRange.ip">
+<code class="descname">ip</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnRouteRange.ip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnRouteRange.ip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_protocol.IxnRouteRange.num_ips">
+<code class="descname">num_ips</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnRouteRange.num_ips"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnRouteRange.num_ips" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol.IxnStpBridge">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol.</code><code class="descname">IxnStpBridge</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol.html#IxnStpBridge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnStpBridge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol.IxnProtocolRouter" title="ixnetwork.ixn_protocol.IxnProtocolRouter"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol.IxnProtocolRouter</span></code></a></p>
+<p>Represents IXN STP bridge.</p>
+<dl class="attribute">
+<dt id="ixnetwork.ixn_protocol.IxnStpBridge.interface_attribute">
+<code class="descname">interface_attribute</code><em class="property"> = 'interfaceId'</em><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnStpBridge.interface_attribute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ixnetwork.ixn_protocol.IxnStpBridge.objType">
+<code class="descname">objType</code><em class="property"> = 'bridge'</em><a class="headerlink" href="#ixnetwork.ixn_protocol.IxnStpBridge.objType" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ixnetwork.ixn_protocol_stack">
+<span id="ixnetwork-ixn-protocol-stack-module"></span><h2>ixnetwork.ixn_protocol_stack module<a class="headerlink" href="#module-ixnetwork.ixn_protocol_stack" title="Permalink to this headline">¶</a></h2>
+<p>Classes and utilities to manage IXN protocol stack objects.</p>
+<p>&#64;author <a class="reference external" href="mailto:yoram&#37;&#52;&#48;ignissoft&#46;com">yoram<span>&#64;</span>ignissoft<span>&#46;</span>com</a></p>
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol_stack.IxnDcbxEndpoint">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol_stack.</code><code class="descname">IxnDcbxEndpoint</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol_stack.html#IxnDcbxEndpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol_stack.IxnDcbxEndpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol_stack.IxnProtocolEndpoint" title="ixnetwork.ixn_protocol_stack.IxnProtocolEndpoint"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol_stack.IxnProtocolEndpoint</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol_stack.IxnEthernetEndpoint">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol_stack.</code><code class="descname">IxnEthernetEndpoint</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol_stack.html#IxnEthernetEndpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol_stack.IxnEthernetEndpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol_stack.IxnProtocolEndpoint" title="ixnetwork.ixn_protocol_stack.IxnProtocolEndpoint"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol_stack.IxnProtocolEndpoint</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol_stack.IxnFcoeClientEndpoint">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol_stack.</code><code class="descname">IxnFcoeClientEndpoint</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol_stack.html#IxnFcoeClientEndpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol_stack.IxnFcoeClientEndpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol_stack.IxnProtocolEndpoint" title="ixnetwork.ixn_protocol_stack.IxnProtocolEndpoint"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol_stack.IxnProtocolEndpoint</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol_stack.IxnFcoeForwarderEndpoint">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol_stack.</code><code class="descname">IxnFcoeForwarderEndpoint</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol_stack.html#IxnFcoeForwarderEndpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol_stack.IxnFcoeForwarderEndpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol_stack.IxnProtocolEndpoint" title="ixnetwork.ixn_protocol_stack.IxnProtocolEndpoint"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol_stack.IxnProtocolEndpoint</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol_stack.IxnProtocolEndpoint">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol_stack.</code><code class="descname">IxnProtocolEndpoint</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol_stack.html#IxnProtocolEndpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol_stack.IxnProtocolEndpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol_stack.IxnProtocolStack" title="ixnetwork.ixn_protocol_stack.IxnProtocolStack"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol_stack.IxnProtocolStack</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol_stack.IxnProtocolStack">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol_stack.</code><code class="descname">IxnProtocolStack</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol_stack.html#IxnProtocolStack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol_stack.IxnProtocolStack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_object.IxnObject" title="ixnetwork.ixn_object.IxnObject"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_object.IxnObject</span></code></a></p>
+<dl class="method">
+<dt id="ixnetwork.ixn_protocol_stack.IxnProtocolStack.action">
+<code class="descname">action</code><span class="sig-paren">(</span><em>oper</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol_stack.html#IxnProtocolStack.action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol_stack.IxnProtocolStack.action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_protocol_stack.IxnProtocolStack.start">
+<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol_stack.html#IxnProtocolStack.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol_stack.IxnProtocolStack.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_protocol_stack.IxnProtocolStack.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol_stack.html#IxnProtocolStack.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol_stack.IxnProtocolStack.stop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_protocol_stack.IxnRange">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_protocol_stack.</code><code class="descname">IxnRange</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_protocol_stack.html#IxnRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_protocol_stack.IxnRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_protocol_stack.IxnProtocolStack" title="ixnetwork.ixn_protocol_stack.IxnProtocolStack"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_protocol_stack.IxnProtocolStack</span></code></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-ixnetwork.ixn_root">
+<span id="ixnetwork-ixn-root-module"></span><h2>ixnetwork.ixn_root module<a class="headerlink" href="#module-ixnetwork.ixn_root" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author <a class="reference external" href="mailto:yoram&#37;&#52;&#48;ignissoft&#46;com">yoram<span>&#64;</span>ignissoft<span>&#46;</span>com</a></p>
+<dl class="class">
+<dt id="ixnetwork.ixn_root.IxnRoot">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_root.</code><code class="descname">IxnRoot</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_root.html#IxnRoot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_root.IxnRoot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_object.IxnObject" title="ixnetwork.ixn_object.IxnObject"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_object.IxnObject</span></code></a></p>
+<dl class="method">
+<dt id="ixnetwork.ixn_root.IxnRoot.regenerate">
+<code class="descname">regenerate</code><span class="sig-paren">(</span><em>*traffic_items</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_root.html#IxnRoot.regenerate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_root.IxnRoot.regenerate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ixnetwork.ixn_statistics_view">
+<span id="ixnetwork-ixn-statistics-view-module"></span><h2>ixnetwork.ixn_statistics_view module<a class="headerlink" href="#module-ixnetwork.ixn_statistics_view" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author <a class="reference external" href="mailto:yoram&#37;&#52;&#48;ignissoft&#46;com">yoram<span>&#64;</span>ignissoft<span>&#46;</span>com</a></p>
+<dl class="class">
+<dt id="ixnetwork.ixn_statistics_view.IxnFlowStatistics">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_statistics_view.</code><code class="descname">IxnFlowStatistics</code><a class="reference internal" href="_modules/ixnetwork/ixn_statistics_view.html#IxnFlowStatistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_statistics_view.IxnFlowStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_statistics_view.IxnStatisticsView" title="ixnetwork.ixn_statistics_view.IxnStatisticsView"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_statistics_view.IxnStatisticsView</span></code></a></p>
+<dl class="attribute">
+<dt id="ixnetwork.ixn_statistics_view.IxnFlowStatistics.first_stat">
+<code class="descname">first_stat</code><em class="property"> = 'Tx Frames'</em><a class="headerlink" href="#ixnetwork.ixn_statistics_view.IxnFlowStatistics.first_stat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_statistics_view.IxnPortStatistics">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_statistics_view.</code><code class="descname">IxnPortStatistics</code><a class="reference internal" href="_modules/ixnetwork/ixn_statistics_view.html#IxnPortStatistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_statistics_view.IxnPortStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_statistics_view.IxnStatisticsView" title="ixnetwork.ixn_statistics_view.IxnStatisticsView"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_statistics_view.IxnStatisticsView</span></code></a></p>
+<dl class="attribute">
+<dt id="ixnetwork.ixn_statistics_view.IxnPortStatistics.first_stat">
+<code class="descname">first_stat</code><em class="property"> = 'Port Name'</em><a class="headerlink" href="#ixnetwork.ixn_statistics_view.IxnPortStatistics.first_stat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_statistics_view.IxnStatisticsView">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_statistics_view.</code><code class="descname">IxnStatisticsView</code><span class="sig-paren">(</span><em>view</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_statistics_view.html#IxnStatisticsView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_statistics_view.IxnStatisticsView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="ixnetwork.ixn_statistics_view.IxnStatisticsView.getStatistics">
+<code class="descname">getStatistics</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_statistics_view.html#IxnStatisticsView.getStatistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_statistics_view.IxnStatisticsView.getStatistics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_statistics_view.IxnStatisticsView.get_row">
+<code class="descname">get_row</code><span class="sig-paren">(</span><em>row</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_statistics_view.html#IxnStatisticsView.get_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_statistics_view.IxnStatisticsView.get_row" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>row</strong> &#8211; requested row (== statistic name)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">all statistics values for the requested row.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_statistics_view.IxnStatisticsView.get_stat">
+<code class="descname">get_stat</code><span class="sig-paren">(</span><em>row</em>, <em>counter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_statistics_view.html#IxnStatisticsView.get_stat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_statistics_view.IxnStatisticsView.get_stat" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>row</strong> &#8211; requested row (== statistic name)</li>
+<li><strong>counter</strong> &#8211; requested statistics (note that some statistics are not counters).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the value of the requested counter for the requested row.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_statistics_view.IxnStatisticsView.get_stats">
+<code class="descname">get_stats</code><span class="sig-paren">(</span><em>counter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_statistics_view.html#IxnStatisticsView.get_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_statistics_view.IxnStatisticsView.get_stats" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>counter</strong> &#8211; requested statistics (note that some statistics are not counters).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">all values of the requested counter for all rows.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_statistics_view.IxnStatisticsView.read_stats">
+<code class="descname">read_stats</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_statistics_view.html#IxnStatisticsView.read_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_statistics_view.IxnStatisticsView.read_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the statistics view from IXN and saves it in statistics dictionary.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ixnetwork.ixn_statistics_view.IxnStatisticsView.row_name">
+<code class="descname">row_name</code><em class="property"> = None</em><a class="headerlink" href="#ixnetwork.ixn_statistics_view.IxnStatisticsView.row_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_statistics_view.IxnTrafficItemStatistics">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_statistics_view.</code><code class="descname">IxnTrafficItemStatistics</code><a class="reference internal" href="_modules/ixnetwork/ixn_statistics_view.html#IxnTrafficItemStatistics"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_statistics_view.IxnTrafficItemStatistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_statistics_view.IxnStatisticsView" title="ixnetwork.ixn_statistics_view.IxnStatisticsView"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_statistics_view.IxnStatisticsView</span></code></a></p>
+<dl class="attribute">
+<dt id="ixnetwork.ixn_statistics_view.IxnTrafficItemStatistics.first_stat">
+<code class="descname">first_stat</code><em class="property"> = 'Tx Frames'</em><a class="headerlink" href="#ixnetwork.ixn_statistics_view.IxnTrafficItemStatistics.first_stat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ixnetwork.ixn_tcl">
+<span id="ixnetwork-ixn-tcl-module"></span><h2>ixnetwork.ixn_tcl module<a class="headerlink" href="#module-ixnetwork.ixn_tcl" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author <a class="reference external" href="mailto:yoram&#37;&#52;&#48;ignissoft&#46;com">yoram<span>&#64;</span>ignissoft<span>&#46;</span>com</a></p>
+<dl class="class">
+<dt id="ixnetwork.ixn_tcl.IxnTcl">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_tcl.</code><code class="descname">IxnTcl</code><span class="sig-paren">(</span><em>logger</em>, <em>ixn_install_dir</em>, <em>tgnlib_dir</em>, <em>tcl_interp=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">trafficgenerator.tgn_tcl.TgnTclWrapper</span></code></p>
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.add">
+<code class="descname">add</code><span class="sig-paren">(</span><em>parent</em>, <em>obj_type</em>, <em>**attributes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>IXN API add command</p>
+<p>&#64;param parent: object parent - object will be created under this parent.
+&#64;param object_type: object type.
+&#64;param attributes: additional attributes.
+&#64;return: STC object reference.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.commit">
+<code class="descname">commit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.commit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.commit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>ip</em>, <em>port</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.connect" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.execute">
+<code class="descname">execute</code><span class="sig-paren">(</span><em>command</em>, <em>*arguments</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.execute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.getAttribute">
+<code class="descname">getAttribute</code><span class="sig-paren">(</span><em>objRef</em>, <em>attribute</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.getAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.getAttribute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.getList">
+<code class="descname">getList</code><span class="sig-paren">(</span><em>objRef</em>, <em>childList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.getList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.getList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.getRoot">
+<code class="descname">getRoot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.getRoot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.getRoot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.get_all_attributes">
+<code class="descname">get_all_attributes</code><span class="sig-paren">(</span><em>objRef</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.get_all_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.get_all_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.get_all_child_types">
+<code class="descname">get_all_child_types</code><span class="sig-paren">(</span><em>objRef</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.get_all_child_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.get_all_child_types" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.help">
+<code class="descname">help</code><span class="sig-paren">(</span><em>objRef</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.help"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.help" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.ixnCommand">
+<code class="descname">ixnCommand</code><span class="sig-paren">(</span><em>command</em>, <em>*arguments</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.ixnCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.ixnCommand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.ixnHighLevelCommand">
+<code class="descname">ixnHighLevelCommand</code><span class="sig-paren">(</span><em>command</em>, <em>*arguments</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.ixnHighLevelCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.ixnHighLevelCommand" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.loadConfig">
+<code class="descname">loadConfig</code><span class="sig-paren">(</span><em>configFileName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.loadConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.loadConfig" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.newConfig">
+<code class="descname">newConfig</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.newConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.newConfig" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.pkgIndexTail">
+<code class="descname">pkgIndexTail</code><em class="property"> = 'TclScripts/lib/IxTclNetwork/pkgIndex.tcl'</em><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.pkgIndexTail" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><em>objRef</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.remove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>IXN API remove command</p>
+<p>&#64;param objRef: object reference to remove.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.saveConfig">
+<code class="descname">saveConfig</code><span class="sig-paren">(</span><em>configFileName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.saveConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.saveConfig" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.setAttributes">
+<code class="descname">setAttributes</code><span class="sig-paren">(</span><em>objRef</em>, <em>**attributes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_tcl.html#IxnTcl.setAttributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.setAttributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ixnetwork.ixn_tcl.IxnTcl.ver">
+<code class="descname">ver</code><em class="property"> = None</em><a class="headerlink" href="#ixnetwork.ixn_tcl.IxnTcl.ver" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ixnetwork.ixn_topology">
+<span id="ixnetwork-ixn-topology-module"></span><h2>ixnetwork.ixn_topology module<a class="headerlink" href="#module-ixnetwork.ixn_topology" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author <a class="reference external" href="mailto:yoram&#37;&#52;&#48;ignissoft&#46;com">yoram<span>&#64;</span>ignissoft<span>&#46;</span>com</a></p>
+<dl class="class">
+<dt id="ixnetwork.ixn_topology.IxnDeviceGroup">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_topology.</code><code class="descname">IxnDeviceGroup</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_topology.html#IxnDeviceGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_topology.IxnDeviceGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_topology.IxnTopologyBaseClass" title="ixnetwork.ixn_topology.IxnTopologyBaseClass"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_topology.IxnTopologyBaseClass</span></code></a></p>
+<p>Represents IXN device group.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_topology.IxnMultivalueBase">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_topology.</code><code class="descname">IxnMultivalueBase</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_topology.html#IxnMultivalueBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_topology.IxnMultivalueBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_topology.IxnTopologyBaseClass" title="ixnetwork.ixn_topology.IxnTopologyBaseClass"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_topology.IxnTopologyBaseClass</span></code></a></p>
+<p>Represents IXN device group.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_topology.IxnNextGenProtocol">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_topology.</code><code class="descname">IxnNextGenProtocol</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_topology.html#IxnNextGenProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_topology.IxnNextGenProtocol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_topology.IxnTopologyBaseClass" title="ixnetwork.ixn_topology.IxnTopologyBaseClass"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_topology.IxnTopologyBaseClass</span></code></a></p>
+<p>Represents IXN device group.</p>
+<dl class="method">
+<dt id="ixnetwork.ixn_topology.IxnNextGenProtocol.getProtocolItems">
+<code class="descname">getProtocolItems</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_topology.html#IxnNextGenProtocol.getProtocolItems"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_topology.IxnNextGenProtocol.getProtocolItems" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_topology.IxnNextGenProtocolItem">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_topology.</code><code class="descname">IxnNextGenProtocolItem</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_topology.html#IxnNextGenProtocolItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_topology.IxnNextGenProtocolItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_topology.IxnTopologyBaseClass" title="ixnetwork.ixn_topology.IxnTopologyBaseClass"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_topology.IxnTopologyBaseClass</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_topology.IxnNgpfEthernet">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_topology.</code><code class="descname">IxnNgpfEthernet</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_topology.html#IxnNgpfEthernet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_topology.IxnNgpfEthernet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_topology.IxnNextGenProtocol" title="ixnetwork.ixn_topology.IxnNextGenProtocol"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_topology.IxnNextGenProtocol</span></code></a></p>
+<dl class="attribute">
+<dt id="ixnetwork.ixn_topology.IxnNgpfEthernet.protocol">
+<code class="descname">protocol</code><em class="property"> = 'ethernet'</em><a class="headerlink" href="#ixnetwork.ixn_topology.IxnNgpfEthernet.protocol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_topology.IxnNgpfIpv4">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_topology.</code><code class="descname">IxnNgpfIpv4</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_topology.html#IxnNgpfIpv4"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_topology.IxnNgpfIpv4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_topology.IxnNextGenProtocol" title="ixnetwork.ixn_topology.IxnNextGenProtocol"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_topology.IxnNextGenProtocol</span></code></a></p>
+<dl class="attribute">
+<dt id="ixnetwork.ixn_topology.IxnNgpfIpv4.protocol">
+<code class="descname">protocol</code><em class="property"> = 'ipv4'</em><a class="headerlink" href="#ixnetwork.ixn_topology.IxnNgpfIpv4.protocol" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_topology.IxnTopology">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_topology.</code><code class="descname">IxnTopology</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_topology.html#IxnTopology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_topology.IxnTopology" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_topology.IxnTopologyBaseClass" title="ixnetwork.ixn_topology.IxnTopologyBaseClass"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_topology.IxnTopologyBaseClass</span></code></a></p>
+<p>Represents IXN topology.</p>
+<p>Currently supports topology under single port only.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_topology.IxnTopologyBaseClass">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_topology.</code><code class="descname">IxnTopologyBaseClass</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_topology.html#IxnTopologyBaseClass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_topology.IxnTopologyBaseClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_object.IxnObject" title="ixnetwork.ixn_object.IxnObject"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_object.IxnObject</span></code></a></p>
+<dl class="method">
+<dt id="ixnetwork.ixn_topology.IxnTopologyBaseClass.action">
+<code class="descname">action</code><span class="sig-paren">(</span><em>action</em>, <em>timeout=64</em>, <em>*arguments</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_topology.html#IxnTopologyBaseClass.action"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_topology.IxnTopologyBaseClass.action" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ixnetwork.ixn_topology.IxnTopologyBaseClass.action_2_status">
+<code class="descname">action_2_status</code><em class="property"> = {'start': 'started', 'stop': 'notStarted'}</em><a class="headerlink" href="#ixnetwork.ixn_topology.IxnTopologyBaseClass.action_2_status" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_topology.IxnTopologyBaseClass.start">
+<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_topology.html#IxnTopologyBaseClass.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_topology.IxnTopologyBaseClass.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the protocol.</p>
+<p>The function will return after the protocol is started.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_topology.IxnTopologyBaseClass.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_topology.html#IxnTopologyBaseClass.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_topology.IxnTopologyBaseClass.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop the protocol.</p>
+<p>The function will return after the protocol is stopped.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ixnetwork.ixn_traffic">
+<span id="ixnetwork-ixn-traffic-module"></span><h2>ixnetwork.ixn_traffic module<a class="headerlink" href="#module-ixnetwork.ixn_traffic" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author <a class="reference external" href="mailto:yoram&#37;&#52;&#48;ignissoft&#46;com">yoram<span>&#64;</span>ignissoft<span>&#46;</span>com</a></p>
+<dl class="class">
+<dt id="ixnetwork.ixn_traffic.IxnFlowGroup">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_traffic.</code><code class="descname">IxnFlowGroup</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_traffic.html#IxnFlowGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_traffic.IxnFlowGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_object.IxnObject" title="ixnetwork.ixn_object.IxnObject"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_object.IxnObject</span></code></a></p>
+<p>Base class for all IXN flow groups.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_traffic.IxnL23FlowGroup">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_traffic.</code><code class="descname">IxnL23FlowGroup</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_traffic.html#IxnL23FlowGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_traffic.IxnL23FlowGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_traffic.IxnFlowGroup" title="ixnetwork.ixn_traffic.IxnFlowGroup"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_traffic.IxnFlowGroup</span></code></a></p>
+<p>L23 flow group</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_traffic.IxnL23QuickFlowGroup">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_traffic.</code><code class="descname">IxnL23QuickFlowGroup</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_traffic.html#IxnL23QuickFlowGroup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_traffic.IxnL23QuickFlowGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_traffic.IxnFlowGroup" title="ixnetwork.ixn_traffic.IxnFlowGroup"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_traffic.IxnFlowGroup</span></code></a></p>
+<p>L23 quick flow group</p>
+<dl class="method">
+<dt id="ixnetwork.ixn_traffic.IxnL23QuickFlowGroup.generate">
+<code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_traffic.html#IxnL23QuickFlowGroup.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_traffic.IxnL23QuickFlowGroup.generate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_traffic.IxnL23TrafficItem">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_traffic.</code><code class="descname">IxnL23TrafficItem</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_traffic.html#IxnL23TrafficItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_traffic.IxnL23TrafficItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_traffic.IxnTrafficItem" title="ixnetwork.ixn_traffic.IxnTrafficItem"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_traffic.IxnTrafficItem</span></code></a></p>
+<p>L23 traffic item.</p>
+<dl class="method">
+<dt id="ixnetwork.ixn_traffic.IxnL23TrafficItem.start">
+<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_traffic.html#IxnL23TrafficItem.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_traffic.IxnL23TrafficItem.start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ixnetwork.ixn_traffic.IxnL23TrafficItem.stop">
+<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_traffic.html#IxnL23TrafficItem.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_traffic.IxnL23TrafficItem.stop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_traffic.IxnL47AppLibraryTraffic">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_traffic.</code><code class="descname">IxnL47AppLibraryTraffic</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_traffic.html#IxnL47AppLibraryTraffic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_traffic.IxnL47AppLibraryTraffic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_traffic.IxnL47TrafficItem" title="ixnetwork.ixn_traffic.IxnL47TrafficItem"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_traffic.IxnL47TrafficItem</span></code></a></p>
+<p>L47 App library traffic item</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_traffic.IxnL47TrafficItem">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_traffic.</code><code class="descname">IxnL47TrafficItem</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_traffic.html#IxnL47TrafficItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_traffic.IxnL47TrafficItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_traffic.IxnTrafficItem" title="ixnetwork.ixn_traffic.IxnTrafficItem"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_traffic.IxnTrafficItem</span></code></a></p>
+<p>L47 traffic item</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ixnetwork.ixn_traffic.IxnTrafficItem">
+<em class="property">class </em><code class="descclassname">ixnetwork.ixn_traffic.</code><code class="descname">IxnTrafficItem</code><span class="sig-paren">(</span><em>**data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_traffic.html#IxnTrafficItem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_traffic.IxnTrafficItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ixnetwork.ixn_object.IxnObject" title="ixnetwork.ixn_object.IxnObject"><code class="xref py py-class docutils literal"><span class="pre">ixnetwork.ixn_object.IxnObject</span></code></a></p>
+<p>Base class for all traffic items</p>
+<dl class="method">
+<dt id="ixnetwork.ixn_traffic.IxnTrafficItem.generate">
+<code class="descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/ixnetwork/ixn_traffic.html#IxnTrafficItem.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ixnetwork.ixn_traffic.IxnTrafficItem.generate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ixnetwork">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ixnetwork" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author <a class="reference external" href="mailto:yoram&#37;&#52;&#48;ignissoft&#46;com">yoram<span>&#64;</span>ignissoft<span>&#46;</span>com</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ixnetwork package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-ixnetwork.ixn_app">ixnetwork.ixn_app module</a></li>
+<li><a class="reference internal" href="#module-ixnetwork.ixn_interface">ixnetwork.ixn_interface module</a></li>
+<li><a class="reference internal" href="#module-ixnetwork.ixn_object">ixnetwork.ixn_object module</a></li>
+<li><a class="reference internal" href="#module-ixnetwork.ixn_port">ixnetwork.ixn_port module</a></li>
+<li><a class="reference internal" href="#module-ixnetwork.ixn_protocol">ixnetwork.ixn_protocol module</a></li>
+<li><a class="reference internal" href="#module-ixnetwork.ixn_protocol_stack">ixnetwork.ixn_protocol_stack module</a></li>
+<li><a class="reference internal" href="#module-ixnetwork.ixn_root">ixnetwork.ixn_root module</a></li>
+<li><a class="reference internal" href="#module-ixnetwork.ixn_statistics_view">ixnetwork.ixn_statistics_view module</a></li>
+<li><a class="reference internal" href="#module-ixnetwork.ixn_tcl">ixnetwork.ixn_tcl module</a></li>
+<li><a class="reference internal" href="#module-ixnetwork.ixn_topology">ixnetwork.ixn_topology module</a></li>
+<li><a class="reference internal" href="#module-ixnetwork.ixn_traffic">ixnetwork.ixn_traffic module</a></li>
+<li><a class="reference internal" href="#module-ixnetwork">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to ixnetwork&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ixnetwork.test.html"
+                        title="next chapter">ixnetwork.test package</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/ixnetwork.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ixnetwork.test.html" title="ixnetwork.test package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to ixnetwork’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ixnetwork 0.9 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Author.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+    </div>
+  </body>
+</html>
