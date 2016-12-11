@@ -1,0 +1,11 @@
+/__init__.pyc
+/ixn_app.pyc
+/ixn_interface.pyc
+/ixn_object.pyc
+/ixn_port.pyc
+/ixn_protocol.pyc
+/ixn_protocol_stack.pyc
+/ixn_root.pyc
+/ixn_statistics_view.pyc
+/ixn_topology.pyc
+/ixn_traffic.pyc

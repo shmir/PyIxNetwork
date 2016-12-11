@@ -4,7 +4,10 @@
 
 from collections import OrderedDict
 
-from ixn_object import IxnObject
+from trafficgenerator.tgn_utils import TgnError
+from trafficgenerator.tgn_tcl import is_false, tcl_list_2_py_list
+
+from ixnetwork.ixn_object import IxnObject
 
 
 class IxnStatisticsView(object):
@@ -12,25 +15,33 @@ class IxnStatisticsView(object):
     row_name = None
 
     def __init__(self, view):
-        super(IxnStatisticsView, self).__init__()
-        self.api = IxnObject.api
-        self.view = view
+        root = IxnObject.root
+        self.ixn_view = root.get_child_static('statistics').get_child_static('view:"{}"'.format(view))
         self.statistics = OrderedDict()
 
-    def getStatistics(self):
-        return self.api.eval(
-            '::IxNetwork::GetStatistics {' + self.getName() + '}')
+    def _getStatistics(self):
+        page = self.ixn_view.get_child_static('page')
+        if is_false(page.get_attribute('isReady')):
+            raise TgnError('"{}" not ready'.format(self.obj_type()))
+        caption = tcl_list_2_py_list(page.get_attribute('columnCaptions'))
+        rows = []
+        page.set_attributes(pageSize=50)
+        for page_num in range(1, int(page.get_attribute('totalPages')) + 1):
+            page.set_attributes(commit=True, currentPage=page_num)
+            rows += tcl_list_2_py_list(page.get_attribute('rowValues'))
+        return caption, rows
 
     def read_stats(self):
         """ Reads the statistics view from IXN and saves it in statistics dictionary. """
 
-        stat_out = self.api.eval('::IxNetwork::GetStatistics {' + self.view + '}')
-        captions_line = stat_out.strip().split('\n')[0].strip()
-        first_stat_index = captions_line.split('\t').index(self.first_stat)
-        self.row_names = tuple(captions_line.split('\t')[:first_stat_index])
-        for line in stat_out.strip().split('\n'):
-            name = tuple(line.strip().split('\t')[:first_stat_index])
-            self.statistics[name] = line.strip().split('\t')[1:]
+        captions, rows = self._getStatistics()
+        first_stat_index = captions.index(self.first_stat)
+        captions.pop(first_stat_index)
+        self.row_names = captions
+        for row in rows:
+            row_list = tcl_list_2_py_list(row[1:-1])
+            name = row_list.pop(first_stat_index)
+            self.statistics[name] = row_list
 
     def get_row(self, row):
         """
@@ -45,7 +56,7 @@ class IxnStatisticsView(object):
         :returns: all values of the requested counter for all rows.
         """
 
-        return [self.get_stat(r, counter) for r in self.statistics.keys()[1:]]
+        return [self.get_stat(r, counter) for r in self.statistics.keys()]
 
     def get_stat(self, row, counter):
         """
@@ -54,8 +65,8 @@ class IxnStatisticsView(object):
         :returns: the value of the requested counter for the requested row.
         """
 
-        obj_index = self.statistics[self.row_names].index(counter)
-        return self.statistics[tuple(row)][obj_index]
+        obj_index = self.row_names.index(counter)
+        return self.get_row(row)[obj_index]
 
 
 class IxnPortStatistics(IxnStatisticsView):

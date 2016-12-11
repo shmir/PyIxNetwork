@@ -1,0 +1,37 @@
+"""
+Base class for all STC package tests.
+
+@author yoram@ignissoft.com
+"""
+
+from os import path
+
+from trafficgenerator.test.tgn_test import TgnTest
+
+from ixnetwork.api.ixn_tcl import IxnTclWrapper
+from ixnetwork.api.ixn_python import IxnPythonWrapper
+from ixnetwork.ixn_app import IxnApp
+
+ixn_config_files = ('configs/test_config.ixncfg',
+                    'configs/ngpf_config.ixncfg')
+
+
+class IxnTestBase(TgnTest):
+
+    TgnTest.config_file = path.join(path.dirname(__file__), 'IxNetwork.ini')
+
+    def setUp(self):
+        super(IxnTestBase, self).setUp()
+        if self.config.get('IXN', 'api').lower() == 'tcl':
+            api_wrapper = IxnTclWrapper(self.logger, self.config.get('IXN', 'install_dir'),
+                                        self.config.get('Tcl', 'tgn_lib'))
+        else:
+            api_wrapper = IxnPythonWrapper(self.logger, self.config.get('IXN', 'install_dir'))
+        self.ixn = IxnApp(self.logger, api_wrapper=api_wrapper)
+        self.ixn.connect()
+
+    def tearDown(self):
+        super(IxnTestBase, self).tearDown()
+
+    def testHelloWorld(self):
+        pass

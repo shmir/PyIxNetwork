@@ -4,17 +4,17 @@
 
 from os import path
 
-from trafficgenerator.tgn_tcl import TgnTclWrapper, get_args_pairs, tcl_file_name, tcl_str
+from trafficgenerator.tgn_tcl import TgnTclWrapper, get_args_pairs, tcl_file_name, tcl_str, tcl_list_2_py_list
 
 
-class IxnTcl(TgnTclWrapper):
+class IxnTclWrapper(TgnTclWrapper):
 
     pkgIndexTail = 'TclScripts/lib/IxTclNetwork/pkgIndex.tcl'
 
     ver = None
 
     def __init__(self, logger, ixn_install_dir, tgnlib_dir, tcl_interp=None):
-        super(IxnTcl, self).__init__(logger, tcl_interp)
+        super(IxnTclWrapper, self).__init__(logger, tcl_interp)
         self.source(path.join(ixn_install_dir, self.pkgIndexTail))
         self.ver = self.eval('package require IxTclNetwork')
         self.source(path.join(tgnlib_dir, 'ixn_main.tcl'))
@@ -39,7 +39,8 @@ class IxnTcl(TgnTclWrapper):
         return self.ixnCommand('exec ' + command, *arguments)
 
     def getList(self, objRef, childList):
-        return self.ixnCommand('getList', objRef, childList)
+        children_list = self.ixnCommand('getList', objRef, childList)
+        return tcl_list_2_py_list(children_list)
 
     def getAttribute(self, objRef, attribute):
         return self.ixnCommand('getAttribute', tcl_str(objRef), '-' + attribute)
@@ -60,7 +61,7 @@ class IxnTcl(TgnTclWrapper):
         self.execute('newConfig')
 
     def setAttributes(self, objRef, **attributes):
-        self.ixnCommand('setMultiAttribute', objRef, get_args_pairs(attributes))
+        self.ixnCommand('setMultiAttribute', tcl_str(objRef), get_args_pairs(attributes))
 
     def add(self, parent, obj_type, **attributes):
         """ IXN API add command
@@ -79,12 +80,5 @@ class IxnTcl(TgnTclWrapper):
         """
         self.ixnCommand('remove', objRef)
 
-    #
-    # IxNetwork Tcl logical and/or re-structured commands.
-    #
-
-    def get_all_attributes(self, objRef):
-        return self.eval('::IxNetwork::GetAttributesClean {' + objRef + '}')
-
-    def get_all_child_types(self, objRef):
-        return self.eval('::IxNetwork::GetChildList {' + objRef + '}')
+    def remapIds(self, objRef):
+        return self.eval('lindex [ixNet remapIds ' + objRef + '] 0')

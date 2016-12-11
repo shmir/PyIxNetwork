@@ -11,9 +11,12 @@ Two IXN ports connected back to back.
 @author yoram@ignissoft.com
 """
 
+from os import path
+
 import time
 
 from ixnetwork.test.test_offline import IxnTestOffline, ixn_config_files
+from ixnetwork.ixn_statistics_view import IxnPortStatistics
 
 
 class IxnTestOnline(IxnTestOffline):
@@ -21,20 +24,23 @@ class IxnTestOnline(IxnTestOffline):
     ports = []
 
     def testReservePorts(self):
-        self._load_config(self.ixn_config_file)
-        self.ports = self.ixn.root.get_children('vport')
-        self.ixn.root.get_object_by_name('Port 1').reserve(self.config.get('IxNetwork', 'port1'))
-        self.ixn.root.get_object_by_name('Port 2').reserve(self.config.get('IxNetwork', 'port2'))
-        pass
+        self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[0]))
+        stats = IxnPortStatistics()
+        stats.read_stats()
+        print '++++'
+        print stats.get_row('Port 1')
+        print stats.get_stat('Port 1', 'Link State')
+        print stats.get_stats('Link State')
+        print '++++'
 
     def testReleasePorts(self):
-        self.testReservePorts()
+        self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[0]))
         for port in self.ports:
             port.release()
         pass
 
     def testInterfaces(self):
-        self.testReservePorts()
+        self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[0]))
         for port in self.ports:
             port.send_arp_ns()
             for interface in port.get_children('interface'):
@@ -43,7 +49,7 @@ class IxnTestOnline(IxnTestOffline):
         pass
 
     def testProtocolsActions(self):
-        self.testReservePorts()
+        self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[0]))
         self.ixn.send_arp_ns()
         self.ixn.protocols_start()
         time.sleep(8)
@@ -55,17 +61,19 @@ class IxnTestOnline(IxnTestOffline):
         pass
 
     def testGUITraffic(self):
-        self.testReservePorts()
+        self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[0]))
         self.ixn.protocols_start()
         self.ixn.root.regenerate()
         self.ixn.traffic_apply()
         self.ixn.l23_traffic_start()
         time.sleep(8)
         self.ixn.l23_traffic_stop()
-        pass
+        stats = IxnPortStatistics()
+        stats.getStatistics()
+        stats.read_stats()
 
     def testNgpf(self):
-        self.ixn_config_file = ixn_config_files[1]
+        self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[1]))
         self.testReservePorts()
         topologies = self.ixn.root.get_children('topology')
         self.ixn.protocols_start()
@@ -86,3 +94,9 @@ class IxnTestOnline(IxnTestOffline):
         ethernet.start()
         ethernet.stop()
         pass
+
+    def _reserve_ports(self, config_file):
+        self._load_config(config_file)
+        self.ports = self.ixn.root.get_children('vport')
+        self.ixn.root.get_object_by_name('Port 1').reserve(self.config.get('IXN', 'port1'))
+        self.ixn.root.get_object_by_name('Port 2').reserve(self.config.get('IXN', 'port2'))

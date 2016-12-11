@@ -13,44 +13,22 @@ import inspect
 from collections import OrderedDict
 
 from trafficgenerator.tgn_tcl import build_obj_ref_list
-from trafficgenerator.test.tgn_test import TgnTest
 
-from ixnetwork.ixn_app import IxnApp
+from ixnetwork.test.test_base import IxnTestBase, ixn_config_files
 from ixnetwork.ixn_object import IxnObject
 from ixnetwork.ixn_port import IxnPort
 from ixnetwork.ixn_interface import IxnInterface
 from ixnetwork.ixn_traffic import IxnL23TrafficItem
 from ixnetwork.ixn_topology import IxnTopology, IxnDeviceGroup, IxnNgpfEthernet, IxnNgpfIpv4
 
-ixn_config_files = ('configs/test_config.ixncfg',
-                    'configs/ngpf_config.ixncfg')
 
-
-class IxnTestOffline(TgnTest):
-
-    TgnTest.config_file = path.join(path.dirname(__file__), 'IxNetwork.ini')
-    ixn_config_file = path.join(path.dirname(__file__), ixn_config_files[0])
-
-    ixn = None
-
-    def setUp(self):
-        super(IxnTestOffline, self).setUp()
-        self.ixn = IxnApp(self.logger, self.config.get('IxNetwork', 'install_dir'),
-                          self.config.get('Tcl', 'tgn_lib'))
-        self.ixn.connect(self.config.get('IxNetwork', 'tcl_server'),
-                         self.config.get('IxNetwork', 'tcl_port'))
-
-    def tearDown(self):
-        pass
-
-    def test_testHelloWorld(self):
-        pass
+class IxnTestOffline(IxnTestBase):
 
     def testAnalyzeConfig(self):
         """ Test configuration load. """
         self.logger.info(IxnTestOffline.testAnalyzeConfig.__doc__)
 
-        self._load_config(self.ixn_config_file)
+        self._load_config(path.join(path.dirname(__file__), ixn_config_files[0]))
         root = self.ixn.root
 
         root.get_children('vport')

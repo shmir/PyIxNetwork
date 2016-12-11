@@ -13,7 +13,6 @@ from trafficgenerator.tgn_tcl import build_obj_ref_list, is_true
 from trafficgenerator.trafficgenerator import TrafficGenerator
 from trafficgenerator.tgn_utils import TgnError
 
-from ixn_tcl import IxnTcl
 from ixn_object import IxnObject
 from ixn_port import IxnPort
 from ixn_traffic import IxnTrafficItem, IxnL23TrafficItem
@@ -27,43 +26,51 @@ from ixn_root import IxnRoot
 from ixn_protocol_stack import IxnRange
 
 
+TYPE_2_OBJECT = {'bridge': IxnStpBridge,
+                 'device': IxnOpenFlowDevice,
+                 'deviceGroup': IxnDeviceGroup,
+                 'ethernet': IxnNgpfEthernet,
+                 'host': IxnIgmpHost,
+                 'interface': {'vport': IxnInterface},
+                 'ipv4': {'interface': IxnInterfaceL3,
+                          'etherenet': IxnNgpfIpv4},
+                 'ipv6': IxnInterfaceL3,
+                 'lacp': IxnLacp,
+                 'neighborRange': IxnBgpRouter,
+                 'querier': IxnIgmpQuerier,
+                 'range': IxnRange,
+                 'router': {'ospf': IxnOspfRouter,
+                            'ospfV3': IxnOspfV3Router,
+                            'pimsm': IxnPimsmRouter,
+                            'isis': IxnIsisRouter},
+                 'routeRange': {'bgp': IxnBgpRouteRange,
+                                'ospf': IxnOspfRouteRange},
+                 'source': {'interface': IxnPimsmSource},
+                 'topology': IxnTopology,
+                 'trafficItem': IxnTrafficItem,
+                 'vport': IxnPort,
+                 }
+
+
 class IxnApp(TrafficGenerator):
     """ IxNetwork driver. Equivalent to IxNetwork Application. """
 
     root = None
 
-    TYPE_2_OBJECT = {'bridge': IxnStpBridge,
-                     'device': IxnOpenFlowDevice,
-                     'deviceGroup': IxnDeviceGroup,
-                     'ethernet': IxnNgpfEthernet,
-                     'host': IxnIgmpHost,
-                     'interface': {'vport': IxnInterface},
-                     'ipv4': {'interface': IxnInterfaceL3,
-                              'etherenet': IxnNgpfIpv4},
-                     'ipv6': IxnInterfaceL3,
-                     'lacp': IxnLacp,
-                     'neighborRange': IxnBgpRouter,
-                     'querier': IxnIgmpQuerier,
-                     'range': IxnRange,
-                     'router': {'ospf': IxnOspfRouter,
-                                'ospfV3': IxnOspfV3Router,
-                                'pimsm': IxnPimsmRouter,
-                                'isis': IxnIsisRouter},
-                     'routeRange': {'bgp': IxnBgpRouteRange,
-                                    'ospf': IxnOspfRouteRange},
-                     'source': {'interface': IxnPimsmSource},
-                     'topology': IxnTopology,
-                     'trafficItem': IxnTrafficItem,
-                     'vport': IxnPort,
-                     }
+    def __init__(self, logger, api_wrapper=None):
+        """ Set all kinds of application level objects - logger, api, etc.
 
-    def __init__(self, logger, ixn_install_dir, tgnlib_dir, tcl_interp=None):
+        :param logger: python logger (e.g. logging.getLogger('log'))
+        :param api_wrapper: api wrapper object inheriting and implementing StcApi base class.
+        """
+
         super(self.__class__, self).__init__()
         self.logger = logger
-        self.api = IxnTcl(logger, ixn_install_dir, tgnlib_dir, tcl_interp)
+        self.api = api_wrapper
+
         IxnObject.logger = self.logger
         IxnObject.api = self.api
-        IxnObject.str_2_class = self.TYPE_2_OBJECT
+        IxnObject.str_2_class = TYPE_2_OBJECT
 
     def connect(self, tcl_server='localhost', tcl_port=8009):
         self.api.connect(tcl_server, tcl_port)

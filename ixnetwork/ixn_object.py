@@ -49,9 +49,6 @@ class IxnObject(TgnObject):
                 return IxnObject.str_2_class[obj_type]
         return IxnObject
 
-    def help(self):
-        return self.api.help(self.obj_ref())
-
     def _create(self):
         """ Create new object on IxNetwork.
 
@@ -63,15 +60,12 @@ class IxnObject(TgnObject):
         else:
             obj_ref = self.api.add(self.obj_parent(), self.obj_type())
         self.api.commit()
-        obj_ref = self.api.eval('lindex [ixNet remapIds ' + obj_ref + '] 0')
-        return obj_ref
+        return self.api.remapIds(obj_ref)
 
     def get_attributes(self, *keys):
         attributes = {}
-        if keys is ():
-            output = self.api.get_all_attributes(self.obj_ref())
-            return (dict(item.split('\t') for item in output.strip('\n').split('\n')) if output
-                    else {})
+        if not keys:
+            return self.get_all_attributes(self.obj_ref())
         for key in keys:
             attributes[key] = self.get_attribute(key)
         return attributes
@@ -90,11 +84,9 @@ class IxnObject(TgnObject):
     def get_children(self, *types):
         children_objs = OrderedDict()
         if not types:
-            output = self.api.get_all_child_types(self.obj_ref())
-            types = output.split()
+            types = self.get_all_child_types(self.obj_ref())
         for child_type in types:
-            children_list_tcl = self.api.getList(self.obj_ref(), child_type)
-            children_list = tcl_list_2_py_list(children_list_tcl)
+            children_list = self.api.getList(self.obj_ref(), child_type)
             children_objs.update(self._build_children_objs(child_type, children_list))
         return children_objs.values()
 
@@ -124,3 +116,27 @@ class IxnObject(TgnObject):
 
     def execute(self, command, *arguments):
         return self.api.execute(command, self.obj_ref(), *arguments)
+
+    def help(self, objRef):
+        output = self.api.help(self.obj_ref())
+        children = None
+        if 'Child Lists:' in output:
+            children = output.split('Child Lists:')[1].split('Attributes:')[0].split('Execs:')[0]
+        attributes = None
+        if 'Attributes:' in output:
+            attributes = output.split('Attributes:')[1].split('Execs:')[0]
+        execs = None
+        if 'Execs:':
+            execs = output.split('Execs:')[1]
+        return children.strip().split('\n'), attributes.strip().split('\n'), execs.strip().split('\n')
+
+    def get_all_attributes(self, objRef):
+        _, attributes, _ = self.help(objRef)
+        attr_vals = {}
+        for attribute in [attribute.strip().split()[0][1:] for attribute in attributes]:
+            attr_vals[attribute] = self.get_attribute(attribute)
+        return attr_vals
+
+    def get_all_child_types(self, objRef):
+        children, _, _ = self.help(objRef)
+        return [attribute.strip().split()[0] for attribute in children]

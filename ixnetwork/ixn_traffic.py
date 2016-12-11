@@ -17,9 +17,22 @@ class IxnTrafficItem(IxnObject):
         super(IxnTrafficItem, self).__init__(**data)
         if 'objRef' not in data:
             # Set traffic item type.
-            self.set_attributes(trafficItemType=type_2_obj[type(self)])
+            self.set_attributes(commit=True, trafficItemType=type_2_obj[type(self)])
         # Change new class to one of its sub-classes based on traffic item type.
         self.__class__ = type_2_obj[self.get_attribute('trafficItemType')]
+
+    def _create(self):
+        """ Create new object on IxNetwork.
+
+        :return: IXN object reference.
+        """
+
+        if 'name' in self._data:
+            obj_ref = self.api.add(self.obj_parent(), self.obj_type(), name=self.obj_name())
+        else:
+            obj_ref = self.api.add(self.obj_parent(), self.obj_type())
+        self.api.commit()
+        return self.api.remapIds(obj_ref)
 
     def generate(self):
         self.api.execute('generate', self.getObjRef())
