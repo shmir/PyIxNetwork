@@ -18,7 +18,7 @@ from ixn_port import IxnPort
 from ixn_traffic import IxnTrafficItem, IxnL23TrafficItem
 from ixn_protocol import (IxnBgpRouter, IxnOspfRouter, IxnOspfV3Router, IxnBgpRouteRange, IxnOspfRouteRange,
                           IxnPimsmRouter, IxnIgmpHost, IxnIgmpQuerier, IxnPimsmSource, IxnStpBridge, IxnOpenFlowDevice,
-                          IxnLacp, IxnIsisRouter)
+                          IxnLacp, IxnIsisRouter, IxnIsisRouteRange, IxnLdpRouter, IxnLdpRouteRange)
 from ixn_interface import IxnInterface, IxnInterfaceL3
 from ixn_topology import IxnTopology, IxnDeviceGroup, IxnNgpfEthernet, IxnNgpfIpv4
 from ixn_statistics_view import IxnStatisticsView
@@ -42,9 +42,12 @@ TYPE_2_OBJECT = {'bridge': IxnStpBridge,
                  'router': {'ospf': IxnOspfRouter,
                             'ospfV3': IxnOspfV3Router,
                             'pimsm': IxnPimsmRouter,
-                            'isis': IxnIsisRouter},
+                            'isis': IxnIsisRouter,
+                            'ldp': IxnLdpRouter},
                  'routeRange': {'bgp': IxnBgpRouteRange,
-                                'ospf': IxnOspfRouteRange},
+                                'ospf': IxnOspfRouteRange,
+                                'isis': IxnIsisRouteRange,
+                                'ldp': IxnLdpRouteRange},
                  'source': {'interface': IxnPimsmSource},
                  'topology': IxnTopology,
                  'trafficItem': IxnTrafficItem,
@@ -76,6 +79,10 @@ class IxnApp(TrafficGenerator):
         self.api.connect(tcl_server, tcl_port)
         self.root = IxnRoot(objRef=self.api.getRoot(), objType='root')
         IxnObject.root = self.root
+
+    def disconnect(self):
+        """ Disconnect from chassis and server. """
+        pass
 
     #
     # IxNetwork operation commands.

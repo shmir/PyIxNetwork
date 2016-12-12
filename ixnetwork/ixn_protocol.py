@@ -98,6 +98,13 @@ class IxnIsisRouter(IxnProtocolRouter):
     interface_attribute = 'interfaceId'
 
 
+class IxnLdpRouter(IxnProtocolRouter):
+    """ Represents IXN ISIS router. """
+
+    objType = 'router'
+    interface_attribute = 'protocolInterface'
+
+
 class IxnRouteRange(IxnObject, TgnL3):
     """ Base class for IXN route ranges. """
 
@@ -133,6 +140,24 @@ class IxnPimsmSource(IxnRouteRange):
         super(IxnRouteRange, self).__init__(**data)
         self.networkNumber = self.get_attribute('sourceAddress')
         self.numberOfRoutes = int(self.get_attribute('sourceCount'))
+
+
+class IxnIsisRouteRange(IxnRouteRange):
+    """ Represents IXN ISIS route range. """
+
+    def __init__(self, **data):
+        super(IxnRouteRange, self).__init__(**data)
+        self.networkNumber = self.get_attribute('firstRoute')
+        self.numberOfRoutes = int(self.get_attribute('numberOfRoutes'))
+
+
+class IxnLdpRouteRange(IxnRouteRange):
+    """ Represents IXN LDP route range. """
+
+    def __init__(self, **data):
+        super(IxnRouteRange, self).__init__(**data)
+        self.networkNumber = self.get_attribute('firstNetwork')
+        self.numberOfRoutes = int(self.get_attribute('numberOfRoutes'))
 
 
 class IxnIgmpHost(IxnProtocolServer):

@@ -8,7 +8,6 @@ import re
 from collections import OrderedDict
 
 from trafficgenerator.tgn_utils import TgnError
-from trafficgenerator.tgn_tcl import tcl_list_2_py_list
 from trafficgenerator.tgn_object import TgnObject
 
 
