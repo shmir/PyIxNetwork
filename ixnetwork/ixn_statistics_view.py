@@ -5,7 +5,7 @@
 from collections import OrderedDict
 
 from trafficgenerator.tgn_utils import TgnError
-from trafficgenerator.tgn_tcl import is_false, tcl_list_2_py_list
+from trafficgenerator.tgn_tcl import is_false
 
 from ixnetwork.ixn_object import IxnObject
 
@@ -23,12 +23,12 @@ class IxnStatisticsView(object):
         page = self.ixn_view.get_child_static('page')
         if is_false(page.get_attribute('isReady')):
             raise TgnError('"{}" not ready'.format(self.obj_type()))
-        caption = tcl_list_2_py_list(page.get_attribute('columnCaptions'))
+        caption = page.get_list_attribute('columnCaptions')
         rows = []
         page.set_attributes(pageSize=50)
         for page_num in range(1, int(page.get_attribute('totalPages')) + 1):
             page.set_attributes(commit=True, currentPage=page_num)
-            rows += tcl_list_2_py_list(page.get_attribute('rowValues'))
+            rows += page.get_list_attribute('rowValues')
         return caption, rows
 
     def read_stats(self):
@@ -39,9 +39,8 @@ class IxnStatisticsView(object):
         captions.pop(first_stat_index)
         self.row_names = captions
         for row in rows:
-            row_list = tcl_list_2_py_list(row[1:-1])
-            name = row_list.pop(first_stat_index)
-            self.statistics[name] = row_list
+            name = row.pop(first_stat_index)
+            self.statistics[name] = row
 
     def get_row(self, row):
         """

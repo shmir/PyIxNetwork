@@ -80,6 +80,12 @@ class IxnObject(TgnObject):
             raise TgnError(self.obj_ref() + ' does not have attribute ' + attribute)
         return value
 
+    def get_list_attribute(self, attribute):
+        """
+        :return: attribute value as Python list.
+        """
+        return self.api.getListAttribute(self.obj_ref(), attribute)
+
     def get_children(self, *types):
         children_objs = OrderedDict()
         if not types:

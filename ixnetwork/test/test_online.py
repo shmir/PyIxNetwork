@@ -25,13 +25,7 @@ class IxnTestOnline(IxnTestOffline):
 
     def testReservePorts(self):
         self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[0]))
-        stats = IxnPortStatistics()
-        stats.read_stats()
-        print '++++'
-        print stats.get_row('Port 1')
-        print stats.get_stat('Port 1', 'Link State')
-        print stats.get_stats('Link State')
-        print '++++'
+        pass
 
     def testReleasePorts(self):
         self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[0]))

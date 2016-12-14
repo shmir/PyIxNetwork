@@ -5,9 +5,9 @@ Classes and utilities to manage IXN port (vport) objects.
 """
 
 import re
+import time
 
 from trafficgenerator.tgn_utils import is_local_host
-from trafficgenerator.tgn_tcl import tcl_str
 from trafficgenerator.tgn_utils import TgnError
 
 from ixn_object import IxnObject
@@ -31,19 +31,25 @@ class IxnPort(IxnObject):
         data['objType'] = 'vport'
         super(IxnPort, self).__init__(**data)
 
-    def reserve(self, location):
+    def reserve(self, location, wait_for_up=True, timeout=30):
         self.location = location
         if not is_local_host(location):
-            port_list = tcl_str(tcl_str(location.replace('/', ' ')))
-            vport_list = tcl_str(self.obj_ref())
-            self.api.ixnHighLevelCommand('AssignPorts', port_list, tcl_str(), vport_list)
-            state = self.get_attribute('state')
-            if state != 'up':
-                raise TgnError('Failed to reserve port, port is ' + state)
+            hostname, card, port = location.split('/')
+            chassis = self.root.hw.get_chassis(hostname)
+            self.set_attributes(commit=True, connectedTo=chassis.obj_ref() + '/card:' + card + '/port:' + port)
+            if wait_for_up:
+                self.wait_for_state('up', timeout)
+
+    def wait_for_state(self, state='up', timeout=30):
+        for _ in range(timeout):
+            if self.get_attribute('state') == state:
+                return
+            time.sleep(1)
+        raise TgnError('Failed to reserve port, port is ' + self.get_attribute('state'))
 
     def release(self):
         if not is_local_host(self.location):
-            self.api.ixnHighLevelCommand('UnassignPorts', tcl_str(self.obj_ref()))
+            self.execute('releasePort')
 
     def send_arp_ns(self):
         self.execute('sendArp')

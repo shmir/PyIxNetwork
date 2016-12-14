@@ -1,5 +1,5 @@
 """
-This module implements classes and utility functions to manage IXN protocol interface objects.
+Classes and utilities to manage IXN protocol interface objects.
 
 @author yoram@ignissoft.com
 """

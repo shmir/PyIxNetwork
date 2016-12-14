@@ -45,6 +45,10 @@ class IxnPythonWrapper(object):
     def getAttribute(self, objRef, attribute):
         return self.ixn.getAttribute(objRef, '-' + attribute)
 
+    def getListAttribute(self, objRef, attribute):
+        value = self.getAttribute(objRef, attribute)
+        return [v[0] for v in value] if type(value[0]) is list else value
+
     def help(self, objRef):
         return self.ixn.help(objRef)
 

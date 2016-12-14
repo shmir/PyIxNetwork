@@ -1,5 +1,5 @@
 """
-This module implements classes and utility functions to manage IXN application.
+Classes and utilities to manage IXN application.
 
 @author yoram@ignissoft.com
 """
@@ -24,9 +24,11 @@ from ixn_topology import IxnTopology, IxnDeviceGroup, IxnNgpfEthernet, IxnNgpfIp
 from ixn_statistics_view import IxnStatisticsView
 from ixn_root import IxnRoot
 from ixn_protocol_stack import IxnRange
+from ixn_hw import IxnHw, IxnChassis
 
 
 TYPE_2_OBJECT = {'bridge': IxnStpBridge,
+                 'chassis': IxnChassis,
                  'device': IxnOpenFlowDevice,
                  'deviceGroup': IxnDeviceGroup,
                  'ethernet': IxnNgpfEthernet,
@@ -79,6 +81,7 @@ class IxnApp(TrafficGenerator):
         self.api.connect(tcl_server, tcl_port)
         self.root = IxnRoot(objRef=self.api.getRoot(), objType='root')
         IxnObject.root = self.root
+        IxnObject.root.hw = IxnHw()
 
     def disconnect(self):
         """ Disconnect from chassis and server. """

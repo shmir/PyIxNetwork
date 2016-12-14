@@ -17,13 +17,9 @@ class IxnTclWrapper(TgnTclWrapper):
         super(IxnTclWrapper, self).__init__(logger, tcl_interp)
         self.source(path.join(ixn_install_dir, self.pkgIndexTail))
         self.ver = self.eval('package require IxTclNetwork')
-        self.source(path.join(tgnlib_dir, 'ixn_main.tcl'))
 
     def ixnCommand(self, command, *arguments):
         return self.eval('ixNet ' + command + ' ' + ' '.join(arguments))
-
-    def ixnHighLevelCommand(self, command, *arguments):
-        return self.eval('ixTclNet::' + command + ' ' + ' '.join(arguments))
 
     #
     # IxNetwork built in commands ordered alphabetically.
@@ -43,7 +39,13 @@ class IxnTclWrapper(TgnTclWrapper):
         return tcl_list_2_py_list(children_list)
 
     def getAttribute(self, objRef, attribute):
+        """ Get current value of the requested attribute. """
         return self.ixnCommand('getAttribute', tcl_str(objRef), '-' + attribute)
+
+    def getListAttribute(self, objRef, attribute):
+        value = tcl_list_2_py_list(self.getAttribute(objRef, attribute))
+        # Is there better way to determine that we have list of lists?
+        return value if value[0][0] != '{' else [tcl_list_2_py_list(v[1:-1]) for v in value]
 
     def help(self, objRef):
         return self.ixnCommand('help', objRef)
