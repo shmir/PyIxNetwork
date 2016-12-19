@@ -31,7 +31,7 @@ class IxnPort(IxnObject):
         data['objType'] = 'vport'
         super(IxnPort, self).__init__(**data)
 
-    def reserve(self, location, wait_for_up=True, timeout=30):
+    def reserve(self, location, wait_for_up=True, timeout=32):
         self.location = location
         if not is_local_host(location):
             hostname, card, port = location.split('/')
@@ -40,7 +40,7 @@ class IxnPort(IxnObject):
             if wait_for_up:
                 self.wait_for_state('up', timeout)
 
-    def wait_for_state(self, state='up', timeout=30):
+    def wait_for_state(self, state='up', timeout=40):
         for _ in range(timeout):
             if self.get_attribute('state') == state:
                 return

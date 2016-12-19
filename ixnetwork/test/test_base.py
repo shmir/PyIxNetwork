@@ -1,5 +1,5 @@
 """
-Base class for all STC package tests.
+Base class for all IXN package tests.
 
 @author yoram@ignissoft.com
 """

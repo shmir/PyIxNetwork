@@ -42,30 +42,30 @@ class IxnStatisticsView(object):
             name = row.pop(first_stat_index)
             self.statistics[name] = row
 
-    def get_row(self, row):
+    def get_stats(self, name):
         """
-        :param row: requested row (== statistic name)
-        :returns: all statistics values for the requested row.
+        :param name: requested object name
+        :returns: all statistics values for the requested object.
         """
-        return self.statistics[row]
 
-    def get_stats(self, counter):
+        return self.statistics[name]
+
+    def get_counter(self, counter):
         """
-        :param counter: requested statistics (note that some statistics are not counters).
-        :returns: all values of the requested counter for all rows.
+        :param counter: requested counter name.
+        :returns: all values of the requested counter for all objects.
         """
 
         return [self.get_stat(r, counter) for r in self.statistics.keys()]
 
-    def get_stat(self, row, counter):
+    def get_stat(self, name, counter):
         """
-        :param row: requested row (== statistic name)
-        :param counter: requested statistics (note that some statistics are not counters).
-        :returns: the value of the requested counter for the requested row.
+        :param name: requested object name.
+        :param counter: requested counter.
+        :returns: the value of the requested counter for the requested object.
         """
 
-        obj_index = self.row_names.index(counter)
-        return self.get_row(row)[obj_index]
+        return self.get_stats(name)[self.row_names.index(counter)]
 
 
 class IxnPortStatistics(IxnStatisticsView):

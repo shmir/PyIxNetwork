@@ -29,7 +29,7 @@ class IxnTclWrapper(TgnTclWrapper):
         return self.ixnCommand('commit')
 
     def connect(self, ip, port):
-        return self.ixnCommand('connect ' + ip + ' -port ' + str(port) + ' -version ' + self.ver)
+        return self.ixnCommand('connect ' + ip + ' -port ' + str(port) + ' -version ' + self.getVersion())
 
     def execute(self, command, *arguments):
         return self.ixnCommand('exec ' + command, *arguments)
@@ -52,6 +52,9 @@ class IxnTclWrapper(TgnTclWrapper):
 
     def getRoot(self):
         return self.ixnCommand('getRoot')
+
+    def getVersion(self):
+        return self.ixnCommand('getVersion')
 
     def loadConfig(self, configFileName):
         self.execute('loadConfig', self.ixnCommand('readFrom', tcl_file_name(configFileName)))

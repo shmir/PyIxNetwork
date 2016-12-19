@@ -63,15 +63,14 @@ class IxnTestOnline(IxnTestOffline):
         time.sleep(8)
         self.ixn.l23_traffic_stop()
         stats = IxnPortStatistics()
-        stats.getStatistics()
         stats.read_stats()
+        print stats.get_stats('Port 1')
 
     def testNgpf(self):
         self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[1]))
-        self.testReservePorts()
         topologies = self.ixn.root.get_children('topology')
         self.ixn.protocols_start()
-        time.sleep(4)
+        time.sleep(8)
         assert(topologies[0].get_attribute('status') == 'started')
         self.ixn.protocols_stop()
         time.sleep(2)

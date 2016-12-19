@@ -9,7 +9,7 @@ from os import path
 import time
 import logging
 
-from trafficgenerator.tgn_tcl import build_obj_ref_list, is_true
+from trafficgenerator.tgn_tcl import build_obj_ref_list, is_true, is_false
 from trafficgenerator.trafficgenerator import TrafficGenerator
 from trafficgenerator.tgn_utils import TgnError
 
@@ -136,11 +136,21 @@ class IxnApp(TrafficGenerator):
 
     def l23_traffic_start(self):
         self.root.get_child_static('traffic').execute('startStatelessTraffic')
-        time.sleep(2)
+        self._wait_traffic_state("true", timeout=8)
 
     def l23_traffic_stop(self):
         self.root.get_child_static('traffic').execute('stopStatelessTraffic')
-        time.sleep(2)
+        self._wait_traffic_state("false", timeout=2)
+
+    def _wait_traffic_state(self, state, timeout):
+        for _ in range(32):
+            if self.root.get_child_static('traffic').get_attribute('isTrafficRunning') == state:
+                # Wait for counters.
+                time.sleep(4)
+                return
+            time.sleep(1)
+        raise TgnError('Traffic failed, traffic is {} after {} seconds'.
+                       format(self.root.get_child_static('traffic').get_attribute('isTrafficRunning')), timeout)
 
     def protocol_action(self, protocol, action):
         action_state = {'start': 'started', 'stop': 'stopped', 'stop': 'stopped'}

@@ -94,6 +94,7 @@ ENV/
 *-2way.*
 test*.ixncfg
 ixnetwork/test/logs
+ixnetwork/test/configs/testBasicConfig.ixncfg
 
 syntax: regexp
 ^ixnetwork/test/logs/configs_per_protocol$

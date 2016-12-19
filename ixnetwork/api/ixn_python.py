@@ -21,8 +21,11 @@ class IxnPythonWrapper(object):
         self.ixn = imp.load_source('IxNet', ixn_python_module).IxNet()
         self.ixn._debug = True
 
+    def getVersion(self):
+        return self.ixn.getVersion()
+
     def connect(self, ip, port):
-        return self.ixn.connect(ip, '-port', port)
+        return self.ixn.connect(ip, '-port', port, '-version', self.getVersion())
 
     def getRoot(self):
         return self.ixn.getRoot()
@@ -38,6 +41,9 @@ class IxnPythonWrapper(object):
 
     def loadConfig(self, configFileName):
         self.execute('loadConfig', self.ixn.readFrom(configFileName.replace('\\', '/')))
+
+    def saveConfig(self, configFileName):
+        self.execute('saveConfig', self.ixn.writeTo(configFileName.replace('\\', '/')))
 
     def getList(self, objRef, childList):
         return self.ixn.getList(objRef, childList)
