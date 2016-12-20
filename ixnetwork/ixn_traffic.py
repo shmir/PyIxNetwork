@@ -34,12 +34,15 @@ class IxnTrafficItem(IxnObject):
         self.api.commit()
         return self.api.remapIds(obj_ref)
 
+    def get_flow_groups(self):
+        """
+        :return: dictionary {name: object} of all flow groups.
+        """
+
+        return {o.obj_name(): o for o in self.get_objects_or_children_by_type('highLevelStream')}
+
     def generate(self):
         self.api.execute('generate', self.getObjRef())
-
-
-class IxnL23TrafficItem(IxnTrafficItem):
-    """ L23 traffic item. """
 
     def start(self):
         self.api.execute('startStatelessTraffic', self.getObjRef())
@@ -48,13 +51,13 @@ class IxnL23TrafficItem(IxnTrafficItem):
         self.api.execute('stopStatelessTraffic', self.getObjRef())
 
 
-class IxnL47TrafficItem(IxnTrafficItem):
-    """ L47 traffic item """
+class IxnL23TrafficItem(IxnTrafficItem):
+    """ L23 traffic item. """
     pass
 
 
-class IxnL47AppLibraryTraffic(IxnL47TrafficItem):
-    """ L47 App library traffic item """
+class IxnQuickTrafficItem(IxnTrafficItem):
+    """ L23 traffic item. """
     pass
 
 
@@ -76,6 +79,6 @@ class IxnL23QuickFlowGroup(IxnFlowGroup):
 
 
 type_2_obj = {'l2L3': IxnL23TrafficItem,
-              'quick': IxnL23QuickFlowGroup,
+              'quick': IxnQuickTrafficItem,
               IxnL23TrafficItem: 'l2L3',
-              IxnL23QuickFlowGroup: 'quick'}
+              IxnQuickTrafficItem: 'quick'}

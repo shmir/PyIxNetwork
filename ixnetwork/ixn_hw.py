@@ -10,7 +10,7 @@ from ixn_object import IxnObject
 class IxnHw(IxnObject):
 
     def __init__(self, **data):
-        """ Create new available hardware object, note that is is already exist in the API. """
+        """ Create new available hardware object, note that it is already exist in the API. """
 
         data['parent'] = self.root
         data['objRef'] = self.root.obj_ref() + '/' + 'availableHardware'
@@ -28,6 +28,9 @@ class IxnChassis(IxnObject):
 
     def __init__(self, **data):
 
+        data['parent'] = self.root.hw
+        data['objType'] = 'chassis'
         super(self.__class__, self).__init__(**data)
-        if 'hostname' in data:
-            self.set_attributes(hostname=data['hostname'])
+
+    def _create(self):
+        return super(self.__class__, self)._create(hostname=self._data['hostname'])

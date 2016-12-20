@@ -15,6 +15,13 @@ class IxnTopologyBaseClass(IxnObject):
     action_2_status = {'start': 'started',
                        'stop': 'notStarted'}
 
+    def get_device_groups(self):
+        """
+        :return: dictionary {name: object} of all device groups.
+        """
+
+        return {o.obj_name(): o for o in self.get_objects_or_children_by_type('deviceGroup')}
+
     def action(self, action, timeout=64, *arguments):
         self.api.execute(action, self.obj_ref(), *arguments)
         now = time.time()

@@ -9,9 +9,9 @@ from os import path
 import time
 import logging
 
-from trafficgenerator.tgn_tcl import build_obj_ref_list, is_true, is_false
+from trafficgenerator.tgn_utils import TgnError, is_true
+from trafficgenerator.tgn_tcl import build_obj_ref_list
 from trafficgenerator.trafficgenerator import TrafficGenerator
-from trafficgenerator.tgn_utils import TgnError
 
 from ixn_object import IxnObject
 from ixn_port import IxnPort
@@ -177,8 +177,7 @@ class IxnApp(TrafficGenerator):
     def protocol_start(self, protocol):
         """ Start a protocol and wait for all protocols to start.
 
-        Raises:
-            TgnError: if some protocol failed to start.
+        :raise TgnError: if some protocol failed to start.
         """
         self.protocol_action(protocol, 'start')
 

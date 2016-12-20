@@ -13,7 +13,7 @@ class IxnTclWrapper(TgnTclWrapper):
 
     ver = None
 
-    def __init__(self, logger, ixn_install_dir, tgnlib_dir, tcl_interp=None):
+    def __init__(self, logger, ixn_install_dir, tcl_interp=None):
         super(IxnTclWrapper, self).__init__(logger, tcl_interp)
         self.source(path.join(ixn_install_dir, self.pkgIndexTail))
         self.ver = self.eval('package require IxTclNetwork')

@@ -34,7 +34,7 @@ class PyTest(TestCommand):
         sys.exit(errcode)
 
 setup(
-    name='ixnetwork',
+    name='ixnooapi',
     version=ixnetwork.__version__,
     url='https://github.com/shmir/IxNetwork/',
     license='Apache Software License',

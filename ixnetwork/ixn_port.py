@@ -51,6 +51,13 @@ class IxnPort(IxnObject):
         if not is_local_host(self.location):
             self.execute('releasePort')
 
+    def get_interfaces(self):
+        """
+        :return: dictionary {name: object} of all interfaces of the port.
+        """
+
+        return {o.obj_name(): o for o in self.get_objects_or_children_by_type('interface')}
+
     def send_arp_ns(self):
         self.execute('sendArp')
         self.execute('sendNs')

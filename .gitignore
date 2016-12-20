@@ -100,3 +100,4 @@ syntax: regexp
 ^ixnetwork/test/logs/configs_per_protocol$
 syntax: regexp
 ^\.pydevproject$
+ixnetwork/test/IxNetwork.ini

@@ -4,8 +4,7 @@ Classes and utilities to manage IXN protocol interface objects.
 @author yoram@ignissoft.com
 """
 
-from trafficgenerator.tgn_utils import TgnError
-from trafficgenerator.tgn_tcl import is_true
+from trafficgenerator.tgn_utils import is_true, TgnError
 from trafficgenerator.tgn_object import TgnL3
 
 from ixn_object import IxnObject

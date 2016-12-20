@@ -52,8 +52,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'ixnetwork'
-copyright = u'2016, Author'
-author = u'Author'
+copyright = u'2016, yoram@ignissoft.com'
+author = u'yoram@ignissoft.com'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

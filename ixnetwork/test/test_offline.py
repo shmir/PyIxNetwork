@@ -56,6 +56,30 @@ class IxnTestOffline(IxnTestBase):
 
         pass
 
+    def test_children(self):
+        """ Test specific get children methods. """
+        self.logger.info(IxnTestOffline.testAnalyzeConfig.__doc__)
+
+        self._load_config(path.join(path.dirname(__file__), ixn_config_files[0]))
+        root = self.ixn.root
+
+        ports = root.get_ports()
+        assert(len(ports) == 2)
+        for port in ports.values():
+            assert(len(port.get_interfaces()) == 1)
+
+        tis = root.get_traffic_items()
+        assert(len(tis) == 2)
+        for ti in tis.values():
+            assert(len(ti.get_flow_groups()) == 2)
+
+        self._load_config(path.join(path.dirname(__file__), ixn_config_files[1]))
+
+        topologies = root.get_topologies()
+        assert(len(topologies) == 2)
+        for topology in topologies.values():
+            assert(len(topology.get_device_groups()) == 1)
+
     def testBasicConfig(self):
         """ Test configuration build with basic objects - ports, interfaces, traffic items... """
         self.logger.info(IxnTestOffline.testBasicConfig.__doc__)

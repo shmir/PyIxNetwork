@@ -5,6 +5,8 @@ These tests serve two purposes:
 - Unit test for IxNetwork package.
 - Code snippet showing how to work with IxNetwork package.
 
+Note that in many places there are (relatively) long delays to make sure the tests work in all setups.
+
 Test setup:
 Two IXN ports connected back to back.
 
@@ -16,7 +18,7 @@ from os import path
 import time
 
 from ixnetwork.test.test_offline import IxnTestOffline, ixn_config_files
-from ixnetwork.ixn_statistics_view import IxnPortStatistics
+from ixnetwork.ixn_statistics_view import IxnPortStatistics, IxnTrafficItemStatistics
 
 
 class IxnTestOnline(IxnTestOffline):
@@ -37,6 +39,7 @@ class IxnTestOnline(IxnTestOffline):
         self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[0]))
         for port in self.ports:
             port.send_arp_ns()
+            time.sleep(8)
             for interface in port.get_children('interface'):
                 gateway = interface.get_child('ipv4', 'ipv6').get_attribute('gateway')
                 interface.ping(gateway)
@@ -62,9 +65,13 @@ class IxnTestOnline(IxnTestOffline):
         self.ixn.l23_traffic_start()
         time.sleep(8)
         self.ixn.l23_traffic_stop()
-        stats = IxnPortStatistics()
-        stats.read_stats()
-        print stats.get_stats('Port 1')
+        port_stats = IxnPortStatistics()
+        port_stats.read_stats()
+        print port_stats.get_object_stats('Port 1')
+        assert(int(port_stats.get_stat('Port 1', 'Frames Tx.')) == 1600)
+        ti_stats = IxnTrafficItemStatistics()
+        ti_stats.read_stats()
+        assert(int(ti_stats.get_object_stats('Traffic Item 1')['Rx Frames']) == 1600)
 
     def testNgpf(self):
         self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[1]))

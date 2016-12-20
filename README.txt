@@ -28,7 +28,7 @@ See inside for more info.
 
 Functionality
 The current version supports the following test flow:
-	Load configuration -> Get/Set specific attributes -> Start/Stop traffic -> Get statistics.
+	Load configuration -> Get/Set attributes -> Start/Stop traffic -> Get statistics.
 Supported operations:
 	- Basic operations - get/set attributes, get/create children.
 	- Connect - to chassis or lab server
@@ -37,6 +37,9 @@ Supported operations:
 	- Statistics - subscribe, read views, unsubscribe
 	- Save configuration and results
 	- Disconnect
+The package also support Add/Remove objects so it supports the following test case:
+	Build configuration -> Start/Stop traffic -> Get statistics.
+But this is less documented at this version.
 
 TestCenter and IxNetwork:
 IxNetwork package and TestCenter extend the same base classes from TrafficGenerator.

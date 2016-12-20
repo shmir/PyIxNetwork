@@ -23,8 +23,7 @@ class IxnTestBase(TgnTest):
     def setUp(self):
         super(IxnTestBase, self).setUp()
         if self.config.get('IXN', 'api').lower() == 'tcl':
-            api_wrapper = IxnTclWrapper(self.logger, self.config.get('IXN', 'install_dir'),
-                                        self.config.get('Tcl', 'tgn_lib'))
+            api_wrapper = IxnTclWrapper(self.logger, self.config.get('IXN', 'install_dir'))
         else:
             api_wrapper = IxnPythonWrapper(self.logger, self.config.get('IXN', 'install_dir'))
         self.ixn = IxnApp(self.logger, api_wrapper=api_wrapper)

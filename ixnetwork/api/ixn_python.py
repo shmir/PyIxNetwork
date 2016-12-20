@@ -2,6 +2,7 @@
 :author: yoram@ignissoft.com
 """
 
+import logging
 import itertools
 import posixpath
 import imp
@@ -12,14 +13,20 @@ class IxnPythonWrapper(object):
     def __init__(self, logger, ixn_install_dir):
         """ Init IXN Python package.
 
-        Add logger to log IXN Python package commands only.
-        This creates a clean Python script that can be used later for debug.
+        :param looger: application logger, if stream handler and log level is DEBUG -> enable IXN Python debug.
+        :param ixn_install_dir: full path to IXN installation directory up to (including) version number.
+        :todo: Add logger to log IXN Python package commands only to create a clean Python script for debug.
         """
 
         super(self.__class__, self).__init__()
         ixn_python_module = posixpath.sep.join([ixn_install_dir, 'API/Python/IxNetwork.py'])
         self.ixn = imp.load_source('IxNet', ixn_python_module).IxNet()
-        self.ixn._debug = True
+        stream_handler = None
+        for handler in logger.handlers:
+            if isinstance(handler, logging.StreamHandler):
+                stream_handler = handler
+        if stream_handler and logger.getEffectiveLevel() == 10:
+            self.ixn.setDebug(True)
 
     def getVersion(self):
         return self.ixn.getVersion()
