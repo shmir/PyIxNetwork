@@ -27,7 +27,7 @@ class IxnTestBase(TgnTest):
         else:
             api_wrapper = IxnPythonWrapper(self.logger, self.config.get('IXN', 'install_dir'))
         self.ixn = IxnApp(self.logger, api_wrapper=api_wrapper)
-        self.ixn.connect()
+        self.ixn.connect(self.config.get('IXN', 'tcl_server'), self.config.get('IXN', 'tcl_port'))
 
     def tearDown(self):
         super(IxnTestBase, self).tearDown()

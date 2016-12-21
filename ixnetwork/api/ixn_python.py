@@ -2,10 +2,17 @@
 :author: yoram@ignissoft.com
 """
 
+from sys import platform
 import logging
 import itertools
 import posixpath
 import imp
+
+
+if platform == 'win32':
+    py_tail = 'API/Python/IxNetwork.py'
+else:
+    py_tail = 'lib/PythonApi/IxNetwork.py'
 
 
 class IxnPythonWrapper(object):
@@ -19,7 +26,7 @@ class IxnPythonWrapper(object):
         """
 
         super(self.__class__, self).__init__()
-        ixn_python_module = posixpath.sep.join([ixn_install_dir, 'API/Python/IxNetwork.py'])
+        ixn_python_module = posixpath.sep.join([ixn_install_dir, py_tail])
         self.ixn = imp.load_source('IxNet', ixn_python_module).IxNet()
         stream_handler = None
         for handler in logger.handlers:

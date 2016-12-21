@@ -3,20 +3,22 @@
 """
 
 from os import path
+from sys import platform
 
 from trafficgenerator.tgn_tcl import TgnTclWrapper, get_args_pairs, tcl_file_name, tcl_str, tcl_list_2_py_list
+
+if platform == 'win32':
+    pkgIndex_tail = 'TclScripts/lib/IxTclNetwork/pkgIndex.tcl'
+else:
+    pkgIndex_tail = 'lib/IxTclNetwork/pkgIndex.tcl'
 
 
 class IxnTclWrapper(TgnTclWrapper):
 
-    pkgIndexTail = 'TclScripts/lib/IxTclNetwork/pkgIndex.tcl'
-
-    ver = None
-
     def __init__(self, logger, ixn_install_dir, tcl_interp=None):
         super(IxnTclWrapper, self).__init__(logger, tcl_interp)
-        self.source(path.join(ixn_install_dir, self.pkgIndexTail))
-        self.ver = self.eval('package require IxTclNetwork')
+        self.source(path.join(ixn_install_dir, pkgIndex_tail))
+        self.eval('package require IxTclNetwork')
 
     def ixnCommand(self, command, *arguments):
         return self.eval('ixNet ' + command + ' ' + ' '.join(arguments))
