@@ -56,7 +56,7 @@ class IxnTestOffline(IxnTestBase):
 
         pass
 
-    def test_children(self):
+    def testcChildren(self):
         """ Test specific get children methods. """
         self.logger.info(IxnTestOffline.testAnalyzeConfig.__doc__)
 
@@ -182,11 +182,6 @@ class IxnTestOffline(IxnTestBase):
     #
     # Auxiliary functions, no testing inside.
     #
-
-    def _load_config(self, config_file):
-        self.ixn.new_config()
-        self.ixn.load_config(config_file)
-        self.ixn.commit()
 
     def _build_config(self, num_ports, num_ints):
         self.ixn.new_config()

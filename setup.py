@@ -19,7 +19,7 @@ def read(*filenames, **kwargs):
             buf.append(f.read())
     return sep.join(buf)
 
-long_description = read('README.txt', 'CHANGES.txt')
+long_description = read('README.txt')
 
 
 class PyTest(TestCommand):
@@ -40,12 +40,12 @@ setup(
     license='Apache Software License',
     author='Yoram Shamir',
     tests_require=['pytest'],
-    install_requires=[],
+    install_requires=['tgnooapi'],
     cmdclass={'test': PyTest},
     author_email='yoram@ignissoft.com',
     description='OO Python package to automate Ixia IxNetwork traffic generator',
     long_description=long_description,
-    packages=['ixnetwork'],
+    packages=['ixnetwork', 'ixnetwork.test', 'ixnetwork.api'],
     include_package_data=True,
     platforms='any',
     test_suite='ixnetwork.test',

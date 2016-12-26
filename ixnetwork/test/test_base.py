@@ -34,3 +34,12 @@ class IxnTestBase(TgnTest):
 
     def testHelloWorld(self):
         pass
+
+    #
+    # Auxiliary functions, no testing inside.
+    #
+
+    def _load_config(self, config_file):
+        self.ixn.new_config()
+        self.ixn.load_config(config_file)
+        self.ixn.commit()
