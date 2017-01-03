@@ -6,7 +6,7 @@ Base class for all IXN package tests.
 
 from os import path
 
-from trafficgenerator.test.tgn_test import TgnTest
+from trafficgenerator.test.test_tgn import TgnTest
 
 from ixnetwork.api.ixn_tcl import IxnTclWrapper
 from ixnetwork.api.ixn_python import IxnPythonWrapper
