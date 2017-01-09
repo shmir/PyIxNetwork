@@ -12,9 +12,6 @@ from ixnetwork.api.ixn_tcl import IxnTclWrapper
 from ixnetwork.api.ixn_python import IxnPythonWrapper
 from ixnetwork.ixn_app import IxnApp
 
-ixn_config_files = ('configs/test_config.ixncfg',
-                    'configs/ngpf_config.ixncfg')
-
 
 class IxnTestBase(TgnTest):
 

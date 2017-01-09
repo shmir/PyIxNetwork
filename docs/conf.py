@@ -51,7 +51,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'ixnetwork'
+project = u'ixnooapi'
 copyright = u'2016, yoram@ignissoft.com'
 author = u'yoram@ignissoft.com'
 

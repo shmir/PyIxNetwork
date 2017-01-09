@@ -14,7 +14,7 @@ from collections import OrderedDict
 
 from trafficgenerator.tgn_tcl import build_obj_ref_list
 
-from ixnetwork.test.test_base import IxnTestBase, ixn_config_files
+from ixnetwork.test.test_base import IxnTestBase
 from ixnetwork.ixn_object import IxnObject
 from ixnetwork.ixn_port import IxnPort
 from ixnetwork.ixn_interface import IxnInterface
@@ -28,7 +28,7 @@ class IxnTestOffline(IxnTestBase):
         """ Test configuration load. """
         self.logger.info(IxnTestOffline.testAnalyzeConfig.__doc__)
 
-        self._load_config(path.join(path.dirname(__file__), ixn_config_files[0]))
+        self._load_config(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
         root = self.ixn.root
 
         root.get_children('vport')
@@ -60,7 +60,7 @@ class IxnTestOffline(IxnTestBase):
         """ Test specific get children methods. """
         self.logger.info(IxnTestOffline.testAnalyzeConfig.__doc__)
 
-        self._load_config(path.join(path.dirname(__file__), ixn_config_files[0]))
+        self._load_config(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
         root = self.ixn.root
 
         ports = root.get_ports()
@@ -73,7 +73,7 @@ class IxnTestOffline(IxnTestBase):
         for ti in tis.values():
             assert(len(ti.get_flow_groups()) == 2)
 
-        self._load_config(path.join(path.dirname(__file__), ixn_config_files[1]))
+        self._load_config(path.join(path.dirname(__file__), 'configs/ngpf_config.ixncfg'))
 
         topologies = root.get_topologies()
         assert(len(topologies) == 2)

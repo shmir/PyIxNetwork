@@ -6,6 +6,7 @@ Subpackages
 
 .. toctree::
 
+    ixnetwork.api
     ixnetwork.test
 
 Submodules
@@ -71,14 +72,6 @@ ixnetwork.ixn_statistics_view module
 ------------------------------------
 
 .. automodule:: ixnetwork.ixn_statistics_view
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-ixnetwork.ixn_tcl module
-------------------------
-
-.. automodule:: ixnetwork.ixn_tcl
     :members:
     :undoc-members:
     :show-inheritance:

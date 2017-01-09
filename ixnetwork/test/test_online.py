@@ -17,26 +17,26 @@ from os import path
 
 import time
 
-from ixnetwork.test.test_offline import IxnTestOffline, ixn_config_files
+from ixnetwork.test.test_base import IxnTestBase
 from ixnetwork.ixn_statistics_view import IxnPortStatistics, IxnTrafficItemStatistics
 
 
-class IxnTestOnline(IxnTestOffline):
+class IxnTestOnline(IxnTestBase):
 
     ports = []
 
     def testReservePorts(self):
-        self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[0]))
+        self._reserve_ports(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
         pass
 
     def testReleasePorts(self):
-        self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[0]))
+        self._reserve_ports(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
         for port in self.ports:
             port.release()
         pass
 
     def testInterfaces(self):
-        self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[0]))
+        self._reserve_ports(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
         for port in self.ports:
             port.send_arp_ns()
             time.sleep(8)
@@ -46,7 +46,7 @@ class IxnTestOnline(IxnTestOffline):
         pass
 
     def testProtocolsActions(self):
-        self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[0]))
+        self._reserve_ports(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
         self.ixn.send_arp_ns()
         self.ixn.protocols_start()
         time.sleep(8)
@@ -58,7 +58,7 @@ class IxnTestOnline(IxnTestOffline):
         pass
 
     def testGUITraffic(self):
-        self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[0]))
+        self._reserve_ports(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
         self.ixn.protocols_start()
         self.ixn.root.regenerate()
         self.ixn.traffic_apply()
@@ -74,7 +74,7 @@ class IxnTestOnline(IxnTestOffline):
         assert(int(ti_stats.get_object_stats('Traffic Item 1')['Rx Frames']) == 1600)
 
     def testNgpf(self):
-        self._reserve_ports(path.join(path.dirname(__file__), ixn_config_files[1]))
+        self._reserve_ports(path.join(path.dirname(__file__), 'configs/ngpf_config.ixncfg'))
         topologies = self.ixn.root.get_children('topology')
         self.ixn.protocols_start()
         time.sleep(8)

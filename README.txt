@@ -1,5 +1,5 @@
 
-+++ WORK IN PROGRESS - fully functional, testing, documentation and packaging under construction. +++
++++ WORK IN PROGRESS - fully functional, documentation under construction. +++
 
 TGN - Traffic Generator
 IXN - IxNetwork
@@ -14,16 +14,14 @@ The package works on top of multiple low level APIs:
 3. Any IxnCustomerApi as long as it supports the same API as all above APIs support (define ABC).
 
 Installation:
-Git clone this project.
+stable - pip instsll ixnooapi
+testing - pip install ixnooapi -r --extra-index-url https://testpypi.python.org/pypi
 
 Prerequisite:
 IxNetwork application installed.
 
-Licensing:
-This package uses STC Tcl API which is the default, non-licensed, API for STC.
-
 Getting started:
-Under ixnetwork.test.test_samples you will find some basic samples.
+Under ixnetwork.test.ixn_samples you will find some basic samples.
 See inside for more info.
 
 Functionality
@@ -31,11 +29,10 @@ The current version supports the following test flow:
 	Load configuration -> Get/Set attributes -> Start/Stop traffic -> Get statistics.
 Supported operations:
 	- Basic operations - get/set attributes, get/create children.
-	- Connect - to chassis or lab server
-	- Load configuration - load configuration (tcc or XML), reserve ports and analyze the configuration
-	- Start/Stop - arp, ping, devices, ports, streams
-	- Statistics - subscribe, read views, unsubscribe
-	- Save configuration and results
+	- Load configuration - load configuration (ixncfg), reserve ports and analyze the configuration
+	- Start/Stop - arp, ping, protocols, traffic items
+	- Statistics - read views
+	- Save configuration
 	- Disconnect
 The package also support Add/Remove objects so it supports the following test case:
 	Build configuration -> Start/Stop traffic -> Get statistics.
