@@ -10,7 +10,7 @@ import time
 from trafficgenerator.tgn_utils import is_local_host
 from trafficgenerator.tgn_utils import TgnError
 
-from ixn_object import IxnObject
+from ixnetwork.ixn_object import IxnObject
 
 
 def get_port(obj_ref):
@@ -31,21 +31,39 @@ class IxnPort(IxnObject):
         data['objType'] = 'vport'
         super(IxnPort, self).__init__(**data)
 
-    def reserve(self, location, wait_for_up=True, timeout=32):
-        self.location = location
-        if not is_local_host(location):
+    def reserve(self, location=None, force=False, wait_for_up=True, timeout=40):
+        """ Reserve port and optionally wait for port to come up.
+
+        :param location: port location as 'ip/module/port'. If None, the location will be taken from the configuration.
+        :param force: whether to revoke existing reservation (True) or not (False) - NOT SUPPORTED YET.
+        :param wait_for_up: True - wait for port to come up, False - return immediately.
+        :param timeout: how long (seconds) to wait for port to come up.
+        """
+
+        if location and not is_local_host(location):
             hostname, card, port = location.split('/')
             chassis = self.root.hw.get_chassis(hostname)
             self.set_attributes(commit=True, connectedTo=chassis.obj_ref() + '/card:' + card + '/port:' + port)
-            if wait_for_up:
-                self.wait_for_state('up', timeout)
 
-    def wait_for_state(self, state='up', timeout=40):
+        self.location = self.get_attribute('connectedTo')
+        if self.location and wait_for_up:
+            self.wait_for_states(timeout, 'up')
+
+    def wait_for_states(self, timeout=40, *states):
         for _ in range(timeout):
-            if self.get_attribute('state') == state:
+            if self.get_attribute('state') in states:
                 return
             time.sleep(1)
         raise TgnError('Failed to reserve port, port is ' + self.get_attribute('state'))
+
+    def is_online(self):
+        """
+        :returns: Port link status.
+                  True - port is up.
+                  False - port is offline.
+        """
+
+        return self.get_attribute('state').lower() == 'up'
 
     def release(self):
         if not is_local_host(self.location):

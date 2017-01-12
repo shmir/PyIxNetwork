@@ -4,7 +4,7 @@
 
 import os
 
-from ixn_object import IxnObject
+from ixnetwork.ixn_object import IxnObject
 
 
 class IxnTrafficItem(IxnObject):

@@ -101,7 +101,7 @@ class IxnObject(TgnObject):
         for child_type in types:
             children_list = self.api.getList(self.obj_ref(), child_type)
             children_objs.update(self._build_children_objs(child_type, children_list))
-        return children_objs.values()
+        return list(children_objs.values())
 
     def get_child_static(self, objType, seq_number=None):
         """ Returns IxnObject representing the requested child without reading it from the IXN.

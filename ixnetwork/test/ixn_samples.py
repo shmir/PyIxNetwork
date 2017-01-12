@@ -65,35 +65,35 @@ class IxnTestBase(unittest.TestCase):
         assert(len(ports) == 2)
 
         # Now we can iterate and print all objects:
-        print 'Name\tObject Reference\tPython Object'
+        print('Name\tObject Reference\tPython Object')
         for port in ports:
-            print '{}\t{}\t{}'.format(port.obj_name(), port.obj_ref(), port)
+            print('{}\t{}\t{}'.format(port.obj_name(), port.obj_ref(), port))
 
         # But... frequently used objects (like ports...) can be accessed specifically:
         ports = self.ixn.root.get_ports()
         assert(len(ports) == 2)
 
         # Now we can iterate and print all objects:
-        print 'Name\tObject Reference\tPython Object'
+        print('Name\tObject Reference\tPython Object')
         for name, obj in ports.items():
-            print '{}\t{}\t{}'.format(name, obj.obj_ref(), obj)
+            print('{}\t{}\t{}'.format(name, obj.obj_ref(), obj))
 
     def get_set_attribute(self):
         self.load_config()
         interface = self.ixn.root.get_ports()['Port 1'].get_interfaces()['Int 1-1']
 
         # Get all attributes
-        print interface.get_attributes()
+        print(interface.get_attributes())
 
         # Get group of attributes
-        print interface.get_attributes('type', 'mtu')
+        print(interface.get_attributes('type', 'mtu'))
 
         # Get specific attribute
-        print 'mtu: ' + interface.get_attribute('mtu')
+        print('mtu: ' + interface.get_attribute('mtu'))
 
         # Special cases - name and enabled:
-        print 'name: ' + interface.get_name()
-        print 'enabled: ' + str(interface.get_enabled())
+        print('name: ' + interface.get_name())
+        print('enabled: ' + str(interface.get_enabled()))
 
         # Set attribute
         interface.set_attributes(mtu=1234)
@@ -124,6 +124,6 @@ class IxnTestBase(unittest.TestCase):
         port_stats.read_stats()
         ti_stats = IxnTrafficItemStatistics()
         ti_stats.read_stats()
-        print port_stats.get_object_stats('Port 1')
-        print port_stats.get_counters('Frames Tx.')
+        print(port_stats.get_object_stats('Port 1'))
+        print(port_stats.get_counters('Frames Tx.'))
         assert(ti_stats.get_counter('Traffic Item 1', 'Rx Frames') == 1600)

@@ -4,7 +4,7 @@ Classes and utilities to manage IXN HW.
 @author yoram@ignissoft.com
 """
 
-from ixn_object import IxnObject
+from ixnetwork.ixn_object import IxnObject
 
 
 class IxnHw(IxnObject):

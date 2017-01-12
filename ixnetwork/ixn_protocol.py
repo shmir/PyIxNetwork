@@ -9,8 +9,8 @@ from itertools import chain
 
 from trafficgenerator.tgn_object import TgnL3
 
-from ixn_object import IxnObject
-from ixn_interface import filter_ints_based_on_vlan
+from ixnetwork.ixn_object import IxnObject
+from ixnetwork.ixn_interface import filter_ints_based_on_vlan
 
 
 class IxnProtocol(IxnObject):

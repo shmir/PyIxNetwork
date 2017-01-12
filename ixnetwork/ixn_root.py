@@ -4,7 +4,7 @@
 
 from trafficgenerator.tgn_tcl import tcl_str, build_obj_ref_list
 
-from ixn_object import IxnObject
+from ixnetwork.ixn_object import IxnObject
 
 
 class IxnRoot(IxnObject):

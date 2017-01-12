@@ -4,7 +4,7 @@ Classes and utilities to manage IXN protocol stack objects.
 @author yoram@ignissoft.com
 """
 
-from ixn_object import IxnObject
+from ixnetwork.ixn_object import IxnObject
 
 
 class IxnProtocolStack(IxnObject):

@@ -27,6 +27,16 @@ class IxnTestOnline(IxnTestBase):
 
     def testReservePorts(self):
         self._reserve_ports(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
+
+        for port in self.ports:
+            assert(port.is_online())
+
+        for port in self.ports:
+            port.release()
+
+        self.ixn.root.get_object_by_name('Port 1').reserve()
+        self.ixn.root.get_object_by_name('Port 2').reserve()
+
         pass
 
     def testReleasePorts(self):
@@ -67,7 +77,7 @@ class IxnTestOnline(IxnTestBase):
         self.ixn.l23_traffic_stop()
         port_stats = IxnPortStatistics()
         port_stats.read_stats()
-        print port_stats.get_object_stats('Port 1')
+        print(port_stats.get_object_stats('Port 1'))
         assert(int(port_stats.get_stat('Port 1', 'Frames Tx.')) == 1600)
         ti_stats = IxnTrafficItemStatistics()
         ti_stats.read_stats()

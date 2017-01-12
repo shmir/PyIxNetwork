@@ -7,7 +7,7 @@ Classes and utilities to manage IXN protocol interface objects.
 from trafficgenerator.tgn_utils import is_true, TgnError
 from trafficgenerator.tgn_object import TgnL3
 
-from ixn_object import IxnObject
+from ixnetwork.ixn_object import IxnObject
 
 
 def filter_ints_based_on_vlan(interfaces, vlan, count=1):
