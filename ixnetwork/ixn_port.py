@@ -29,7 +29,7 @@ class IxnPort(IxnObject):
 
     def __init__(self, **data):
         data['objType'] = 'vport'
-        super(IxnPort, self).__init__(**data)
+        super(self.__class__, self).__init__(**data)
 
     def reserve(self, location=None, force=False, wait_for_up=True, timeout=40):
         """ Reserve port and optionally wait for port to come up.

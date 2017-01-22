@@ -4,10 +4,8 @@ Classes and utilities to manage IXN application.
 @author yoram@ignissoft.com
 """
 
-import sys
 from os import path
 import time
-import logging
 
 from trafficgenerator.tgn_utils import TgnError, is_true
 from trafficgenerator.tgn_tcl import build_obj_ref_list
@@ -68,7 +66,7 @@ class IxnApp(TrafficGenerator):
         """ Set all kinds of application level objects - logger, api, etc.
 
         :param logger: python logger (e.g. logging.getLogger('log'))
-        :param api_wrapper: api wrapper object inheriting and implementing StcApi base class.
+        :param api_wrapper: api wrapper object inheriting and implementing IxnApi base class.
         """
 
         super(self.__class__, self).__init__()
@@ -96,17 +94,17 @@ class IxnApp(TrafficGenerator):
     def commit(self):
         self.api.commit()
 
-    def load_config(self, configFileName):
-        self.api.loadConfig(configFileName)
+    def load_config(self, config_file_name):
+        self.api.loadConfig(config_file_name)
         self.commit()
 
     def new_config(self):
         self.api.newConfig()
         self.commit()
 
-    def save_config(self, configFileName):
+    def save_config(self, config_file_name):
         self.commit()
-        self.api.saveConfig(path.abspath(configFileName))
+        self.api.saveConfig(path.abspath(config_file_name))
 
     #
     # IxNetwork GUI commands.
@@ -227,27 +225,3 @@ class IxnApp(TrafficGenerator):
         if (view not in self.objects):
             self.objects[view] = IxnStatisticsView(self.api, view)
         return self.objects[view].getStatistics()
-
-
-def ixnetwork(args):
-    """ Stand alone IXN application.
-
-    Serves as code snippet and environment testing.
-    """
-
-    # TODO: replace with ini file.
-    install_dir = 'C:/Program Files (x86)/Ixia/IxNetwork/7.40-EA'
-    log_level = 'INFO'
-    log_file_name = 'test/logs/ixnetwork.txt'
-    tgn_lib = 'C:/Tcl8532/lib/tgn'
-
-    logger = logging.getLogger('log')
-    logger.setLevel(log_level)
-    logger.addHandler(logging.FileHandler(log_file_name))
-    logger.addHandler(logging.StreamHandler(sys.stdout))
-
-    ixn = IxnApp(logger, install_dir, tgn_lib)
-    ixn.connect()
-
-if __name__ == "__main__":
-    sys.exit(ixnetwork((sys.argv[1:])))

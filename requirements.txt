@@ -1,2 +1,4 @@
-Tkinter
-trafficgenerator
+future
+configparser
+
+tgnooapi
