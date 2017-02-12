@@ -1,10 +1,6 @@
 """
 IxNetwork package tests that can run in offline mode.
 
-These tests serve two purposes:
-- Unit test for IxNetwork package.
-- Code snippet showing how to work with IxNetwork package.
-
 @author yoram@ignissoft.com
 """
 

@@ -31,7 +31,7 @@ class IxnPort(IxnObject):
         data['objType'] = 'vport'
         super(self.__class__, self).__init__(**data)
 
-    def reserve(self, location=None, force=False, wait_for_up=True, timeout=40):
+    def reserve(self, location=None, force=False, wait_for_up=True, timeout=80):
         """ Reserve port and optionally wait for port to come up.
 
         :param location: port location as 'ip/module/port'. If None, the location will be taken from the configuration.
@@ -54,7 +54,8 @@ class IxnPort(IxnObject):
             if self.get_attribute('state') in states:
                 return
             time.sleep(1)
-        raise TgnError('Failed to reserve port, port is ' + self.get_attribute('state'))
+        raise TgnError('Failed to reserve port, port is {} after {} seconds'.
+                       format(self.get_attribute('state'), timeout))
 
     def is_online(self):
         """

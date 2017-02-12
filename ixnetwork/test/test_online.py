@@ -1,10 +1,6 @@
 """
 IxNetwork package tests that require actual IxNetwork chassis and active ports.
 
-These tests serve two purposes:
-- Unit test for IxNetwork package.
-- Code snippet showing how to work with IxNetwork package.
-
 Note that in many places there are (relatively) long delays to make sure the tests work in all setups.
 
 Test setup:
@@ -78,10 +74,11 @@ class IxnTestOnline(IxnTestBase):
         port_stats = IxnPortStatistics()
         port_stats.read_stats()
         print(port_stats.get_object_stats('Port 1'))
-        assert(int(port_stats.get_stat('Port 1', 'Frames Tx.')) == 1600)
+        assert(int(port_stats.get_stat('Port 1', 'Frames Tx.')) >= 1600)
+        self.ixn.l23_traffic_start(blocking=True)
         ti_stats = IxnTrafficItemStatistics()
         ti_stats.read_stats()
-        assert(int(ti_stats.get_object_stats('Traffic Item 1')['Rx Frames']) == 1600)
+        assert(int(ti_stats.get_object_stats('Traffic Item 1')['Tx Frames']) == 1600)
 
     def testNgpf(self):
         self._reserve_ports(path.join(path.dirname(__file__), 'configs/ngpf_config.ixncfg'))

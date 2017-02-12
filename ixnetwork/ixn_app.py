@@ -4,8 +4,10 @@ Classes and utilities to manage IXN application.
 @author yoram@ignissoft.com
 """
 
+import sys
 from os import path
 import time
+from builtins import range
 
 from trafficgenerator.tgn_utils import TgnError, is_true
 from trafficgenerator.tgn_tcl import build_obj_ref_list
@@ -134,45 +136,23 @@ class IxnApp(TrafficGenerator):
     def traffic_apply(self):
         self.root.get_child_static('traffic').execute('apply')
 
-    def l23_traffic_start(self):
+    def l23_traffic_start(self, blocking=False):
         self.root.get_child_static('traffic').execute('startStatelessTraffic')
-        self._wait_traffic_state("true", timeout=8)
+        self.wait_traffic_state("started", timeout=16)
+        if blocking:
+            self.wait_traffic_state("stopped", timeout=sys.maxsize)
 
     def l23_traffic_stop(self):
         self.root.get_child_static('traffic').execute('stopStatelessTraffic')
-        self._wait_traffic_state("false", timeout=2)
+        self.wait_traffic_state("stopped", timeout=8)
 
-    def _wait_traffic_state(self, state, timeout):
-        for _ in range(32):
-            if self.root.get_child_static('traffic').get_attribute('isTrafficRunning') == state:
-                # Wait for counters.
-                time.sleep(4)
+    def wait_traffic_state(self, state, timeout):
+        for _ in range(timeout):
+            if self.root.get_child_static('traffic').get_attribute('state') == state:
                 return
             time.sleep(1)
         raise TgnError('Traffic failed, traffic is {} after {} seconds'.
-                       format(self.root.get_child_static('traffic').get_attribute('isTrafficRunning')), timeout)
-
-    def protocol_action(self, protocol, action):
-        action_state = {'start': 'started', 'stop': 'stopped', 'stop': 'stopped'}
-        protocol_objs = []
-        for port in self.root.get_objects_by_type('vport'):
-            protocols = port.get_child_static('protocols')
-            protocol_obj = protocols.get_child_static(protocol)
-            if is_true(protocol_obj.get_attribute('enabled')):
-                protocol_obj.execute(action)
-                protocol_objs.append(protocol_obj)
-        # Must wait before reading state
-        time.sleep(2)
-        for protocol_obj in protocol_objs:
-            runningState = protocol_obj.get_attribute('runningState')
-            timer = 16
-            while timer and runningState != action_state[action]:
-                time.sleep(1)
-                runningState = protocol_obj.get_attribute('runningState')
-                timer -= 1
-            if runningState != action_state[action]:
-                raise TgnError('Failed to {} port {} protocol {}'.
-                               format(action, port.obj_name(), protocol))
+                       format(self.root.get_child_static('traffic').get_attribute('isTrafficRunning'), timeout))
 
     def protocol_start(self, protocol):
         """ Start a protocol and wait for all protocols to start.
@@ -196,6 +176,28 @@ class IxnApp(TrafficGenerator):
             TgnError: if some protocol failed to stop.
         """
         self.protocol_action(protocol, 'abort')
+
+    def protocol_action(self, protocol, action):
+        action_state = {'start': 'started', 'stop': 'stopped', 'stop': 'stopped'}
+        protocol_objs = []
+        for port in self.root.get_objects_by_type('vport'):
+            protocols = port.get_child_static('protocols')
+            protocol_obj = protocols.get_child_static(protocol)
+            if is_true(protocol_obj.get_attribute('enabled')):
+                protocol_obj.execute(action)
+                protocol_objs.append(protocol_obj)
+        # Must wait before reading state
+        time.sleep(2)
+        for protocol_obj in protocol_objs:
+            runningState = protocol_obj.get_attribute('runningState')
+            timer = 16
+            while timer and runningState != action_state[action]:
+                time.sleep(1)
+                runningState = protocol_obj.get_attribute('runningState')
+                timer -= 1
+            if runningState != action_state[action]:
+                raise TgnError('Failed to {} port {} protocol {}'.
+                               format(action, port.obj_name(), protocol))
 
     #
     # Not tested beyond this point.
