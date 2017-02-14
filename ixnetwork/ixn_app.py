@@ -141,6 +141,8 @@ class IxnApp(TrafficGenerator):
         self.wait_traffic_state("started", timeout=16)
         if blocking:
             self.wait_traffic_state("stopped", timeout=sys.maxsize)
+        else:
+            time.sleep(2)
 
     def l23_traffic_stop(self):
         self.root.get_child_static('traffic').execute('stopStatelessTraffic')

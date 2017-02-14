@@ -15,9 +15,9 @@ class IxnStatisticsView(object):
     Note that Flow Statistics are poorly supported in this version as the object name spans over multiple column.
     """
 
-    def __init__(self, view, name_caption):
+    def __init__(self, view):
         root = IxnObject.root
-        self.name_caption = name_caption
+        self.name_caption = view_2_caption.get(view, 'Port Name')
         self.ixn_view = root.get_child_static('statistics').get_child_static('view:"{}"'.format(view))
 
     def _getStatistics(self):
@@ -90,10 +90,41 @@ class IxnStatisticsView(object):
 class IxnPortStatistics(IxnStatisticsView):
 
     def __init__(self):
-        super(self.__class__, self).__init__(view='Port Statistics', name_caption='Port Name')
+        super(self.__class__, self).__init__(view='Port Statistics')
 
 
 class IxnTrafficItemStatistics(IxnStatisticsView):
 
     def __init__(self):
-        super(self.__class__, self).__init__(view='Traffic Item Statistics', name_caption='Traffic Item')
+        super(self.__class__, self).__init__(view='Traffic Item Statistics')
+
+
+class IxnFlowStatistics(IxnStatisticsView):
+
+    def __init__(self):
+        super(self.__class__, self).__init__(view='Flow Statistics')
+
+    def read_stats(self):
+        """ Reads the statistics view from IXN and saves it in statistics dictionary.
+
+        Flow statistics require special implementation as the statistics name is dynamic and changes based on the
+        configuration.
+        """
+
+        captions, rows = self._getStatistics()
+        name_caption_index = captions.index('Tx Frames')
+        for _ in range(name_caption_index):
+            captions.pop(0)
+        self.captions = captions
+        self.statistics = OrderedDict()
+        for row in rows:
+            name = ''
+            for _ in range(name_caption_index):
+                name += row.pop(0) + '/'
+            name = name[:-1]
+            self.statistics[name] = row
+
+view_2_caption = {'Flow Statistics': None,
+                  'Port Statistics': 'Port Name',
+                  'Traffic Item Statistics': 'Traffic Item'
+                  }

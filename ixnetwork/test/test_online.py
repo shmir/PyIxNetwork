@@ -14,7 +14,7 @@ from os import path
 import time
 
 from ixnetwork.test.test_base import IxnTestBase
-from ixnetwork.ixn_statistics_view import IxnPortStatistics, IxnTrafficItemStatistics
+from ixnetwork.ixn_statistics_view import IxnPortStatistics, IxnTrafficItemStatistics, IxnFlowStatistics
 
 
 class IxnTestOnline(IxnTestBase):
@@ -65,7 +65,7 @@ class IxnTestOnline(IxnTestBase):
 
     def testGUITraffic(self):
         self._reserve_ports(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
-        self.ixn.protocols_start()
+        self.ixn.send_arp_ns()
         self.ixn.root.regenerate()
         self.ixn.traffic_apply()
         self.ixn.l23_traffic_start()
@@ -79,6 +79,9 @@ class IxnTestOnline(IxnTestBase):
         ti_stats = IxnTrafficItemStatistics()
         ti_stats.read_stats()
         assert(int(ti_stats.get_object_stats('Traffic Item 1')['Tx Frames']) == 1600)
+        flow_stats = IxnFlowStatistics()
+        flow_stats.read_stats()
+        assert(int(flow_stats.get_stat('Port 2/Port 1/Traffic Item 1', 'Tx Frames')) == 800)
 
     def testNgpf(self):
         self._reserve_ports(path.join(path.dirname(__file__), 'configs/ngpf_config.ixncfg'))
