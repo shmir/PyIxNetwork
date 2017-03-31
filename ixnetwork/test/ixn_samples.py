@@ -127,3 +127,15 @@ class IxnTestBase(unittest.TestCase):
         print(port_stats.get_object_stats('Port 1'))
         print(port_stats.get_counters('Frames Tx.'))
         assert(ti_stats.get_counter('Traffic Item 1', 'Rx Frames') == 1600)
+
+    def inventory(self):
+
+        chassis = self.ixn.root.hw.get_chassis(port1_location.split('/')[0])
+        chassis.get_inventory()
+
+        print('Full Inventory')
+        print('=' * len('Full Inventory'))
+        for module_name, module in chassis.modules.items():
+            print(module_name)
+            for port_name in module.ports:
+                print(port_name)

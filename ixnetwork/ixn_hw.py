@@ -4,6 +4,8 @@ Classes and utilities to manage IXN HW.
 @author yoram@ignissoft.com
 """
 
+from collections import OrderedDict
+
 from ixnetwork.ixn_object import IxnObject
 
 
@@ -16,7 +18,24 @@ class IxnHw(IxnObject):
         return IxnChassis(hostname=hostname)
 
 
-class IxnChassis(IxnObject):
+class IxnPhyBase(IxnObject):
+
+    def get_inventory(self):
+        self.attributes = self.get_attributes(*self.attributes_names)
+        for child_var, child_type_index_name in self.children_types.items():
+            child_type, child_index, child_name = child_type_index_name
+            children = OrderedDict()
+            for child in self.get_children(child_type):
+                children[child_name + child.get_attribute(child_index)] = child
+            setattr(self, child_var, children)
+            for child in getattr(self, child_var).values():
+                child.get_inventory()
+
+
+class IxnChassis(IxnPhyBase):
+
+    attributes_names = ('chassisType', 'chassisVersion')
+    children_types = {'modules': ('card', 'cardId', 'Slot ')}
 
     def __init__(self, **data):
         data['parent'] = self.root.hw
@@ -25,3 +44,15 @@ class IxnChassis(IxnObject):
 
     def _create(self):
         return super(self.__class__, self)._create(hostname=self._data['hostname'])
+
+
+class IxnCard(IxnPhyBase):
+
+    attributes_names = ('description',)
+    children_types = {'ports': ('port', 'portId', 'Port ')}
+
+
+class IxnPhyPort(IxnPhyBase):
+
+    attributes_names = ('description',)
+    children_types = {}

@@ -1,21 +1,21 @@
-ixnetwork.test package
-======================
+ixnetwork.api package
+=====================
 
 Submodules
 ----------
 
-ixnetwork.test.test_offline module
-----------------------------------
+ixnetwork.api.ixn_python module
+-------------------------------
 
-.. automodule:: ixnetwork.test.test_offline
+.. automodule:: ixnetwork.api.ixn_python
     :members:
     :undoc-members:
     :show-inheritance:
 
-ixnetwork.test.test_online module
----------------------------------
+ixnetwork.api.ixn_tcl module
+----------------------------
 
-.. automodule:: ixnetwork.test.test_online
+.. automodule:: ixnetwork.api.ixn_tcl
     :members:
     :undoc-members:
     :show-inheritance:
@@ -24,7 +24,7 @@ ixnetwork.test.test_online module
 Module contents
 ---------------
 
-.. automodule:: ixnetwork.test
+.. automodule:: ixnetwork.api
     :members:
     :undoc-members:
     :show-inheritance:

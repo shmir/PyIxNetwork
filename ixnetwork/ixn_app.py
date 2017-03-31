@@ -25,38 +25,7 @@ from ixnetwork.ixn_topology import IxnTopology, IxnDeviceGroup, IxnNgpfEthernet,
 from ixnetwork.ixn_statistics_view import IxnStatisticsView
 from ixnetwork.ixn_root import IxnRoot
 from ixnetwork.ixn_protocol_stack import IxnRange
-from ixnetwork.ixn_hw import IxnHw, IxnChassis
-
-
-TYPE_2_OBJECT = {'availableHardware': IxnHw,
-                 'bridge': IxnStpBridge,
-                 'chassis': IxnChassis,
-                 'device': IxnOpenFlowDevice,
-                 'deviceGroup': IxnDeviceGroup,
-                 'ethernet': IxnNgpfEthernet,
-                 'host': IxnIgmpHost,
-                 'interface': {'vport': IxnInterface},
-                 'ipv4': {'interface': IxnInterfaceL3,
-                          'etherenet': IxnNgpfIpv4},
-                 'ipv6': IxnInterfaceL3,
-                 'lacp': IxnLacp,
-                 'neighborRange': IxnBgpRouter,
-                 'querier': IxnIgmpQuerier,
-                 'range': IxnRange,
-                 'router': {'ospf': IxnOspfRouter,
-                            'ospfV3': IxnOspfV3Router,
-                            'pimsm': IxnPimsmRouter,
-                            'isis': IxnIsisRouter,
-                            'ldp': IxnLdpRouter},
-                 'routeRange': {'bgp': IxnBgpRouteRange,
-                                'ospf': IxnOspfRouteRange,
-                                'isis': IxnIsisRouteRange,
-                                'ldp': IxnLdpRouteRange},
-                 'source': {'interface': IxnPimsmSource},
-                 'topology': IxnTopology,
-                 'trafficItem': IxnTrafficItem,
-                 'vport': IxnPort,
-                 }
+from ixnetwork.ixn_hw import IxnHw, IxnChassis, IxnCard, IxnPhyPort
 
 
 class IxnApp(TrafficGenerator):
@@ -229,3 +198,35 @@ class IxnApp(TrafficGenerator):
         if (view not in self.objects):
             self.objects[view] = IxnStatisticsView(self.api, view)
         return self.objects[view].getStatistics()
+
+TYPE_2_OBJECT = {'availableHardware': IxnHw,
+                 'bridge': IxnStpBridge,
+                 'card': IxnCard,
+                 'chassis': IxnChassis,
+                 'device': IxnOpenFlowDevice,
+                 'deviceGroup': IxnDeviceGroup,
+                 'ethernet': IxnNgpfEthernet,
+                 'host': IxnIgmpHost,
+                 'interface': {'vport': IxnInterface},
+                 'ipv4': {'interface': IxnInterfaceL3,
+                          'etherenet': IxnNgpfIpv4},
+                 'ipv6': IxnInterfaceL3,
+                 'lacp': IxnLacp,
+                 'neighborRange': IxnBgpRouter,
+                 'port': IxnPhyPort,
+                 'querier': IxnIgmpQuerier,
+                 'range': IxnRange,
+                 'router': {'ospf': IxnOspfRouter,
+                            'ospfV3': IxnOspfV3Router,
+                            'pimsm': IxnPimsmRouter,
+                            'isis': IxnIsisRouter,
+                            'ldp': IxnLdpRouter},
+                 'routeRange': {'bgp': IxnBgpRouteRange,
+                                'ospf': IxnOspfRouteRange,
+                                'isis': IxnIsisRouteRange,
+                                'ldp': IxnLdpRouteRange},
+                 'source': {'interface': IxnPimsmSource},
+                 'topology': IxnTopology,
+                 'trafficItem': IxnTrafficItem,
+                 'vport': IxnPort,
+                 }

@@ -4,6 +4,22 @@ ixnetwork.test package
 Submodules
 ----------
 
+ixnetwork.test.ixn_samples
+--------------------------
+
+.. automodule:: ixnetwork.test.ixn_samples
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+ixnetwork.test.test_base module
+-------------------------------
+
+.. automodule:: ixnetwork.test.test_base
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 ixnetwork.test.test_offline module
 ----------------------------------
 

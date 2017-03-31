@@ -20,6 +20,14 @@ ixnetwork.ixn_app module
     :undoc-members:
     :show-inheritance:
 
+ixnetwork.ixn_hw module
+------------------------
+
+.. automodule:: ixnetwork.ixn_hw
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 ixnetwork.ixn_interface module
 ------------------------------
 
