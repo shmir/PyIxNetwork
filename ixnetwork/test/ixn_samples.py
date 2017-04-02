@@ -136,6 +136,6 @@ class IxnTestBase(unittest.TestCase):
         print('Full Inventory')
         print('=' * len('Full Inventory'))
         for module_name, module in chassis.modules.items():
-            print(module_name)
+            print('Module ' + module_name)
             for port_name in module.ports:
-                print(port_name)
+                print('Port ' + port_name)

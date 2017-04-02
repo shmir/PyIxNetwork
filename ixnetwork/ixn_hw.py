@@ -22,11 +22,11 @@ class IxnPhyBase(IxnObject):
 
     def get_inventory(self):
         self.attributes = self.get_attributes(*self.attributes_names)
-        for child_var, child_type_index_name in self.children_types.items():
-            child_type, child_index, child_name = child_type_index_name
+        for child_var, child_type_index in self.children_types.items():
+            child_type, child_index = child_type_index
             children = OrderedDict()
             for child in self.get_children(child_type):
-                children[child_name + child.get_attribute(child_index)] = child
+                children[child.get_attribute(child_index)] = child
             setattr(self, child_var, children)
             for child in getattr(self, child_var).values():
                 child.get_inventory()
@@ -35,7 +35,7 @@ class IxnPhyBase(IxnObject):
 class IxnChassis(IxnPhyBase):
 
     attributes_names = ('chassisType', 'chassisVersion')
-    children_types = {'modules': ('card', 'cardId', 'Slot ')}
+    children_types = {'modules': ('card', 'cardId')}
 
     def __init__(self, **data):
         data['parent'] = self.root.hw
@@ -49,7 +49,7 @@ class IxnChassis(IxnPhyBase):
 class IxnCard(IxnPhyBase):
 
     attributes_names = ('description',)
-    children_types = {'ports': ('port', 'portId', 'Port ')}
+    children_types = {'ports': ('port', 'portId')}
 
 
 class IxnPhyPort(IxnPhyBase):

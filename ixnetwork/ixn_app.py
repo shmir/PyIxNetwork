@@ -33,7 +33,7 @@ class IxnApp(TrafficGenerator):
 
     root = None
 
-    def __init__(self, logger, api_wrapper=None):
+    def __init__(self, logger, api_wrapper):
         """ Set all kinds of application level objects - logger, api, etc.
 
         :param logger: python logger (e.g. logging.getLogger('log'))
