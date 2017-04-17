@@ -135,21 +135,12 @@ class IxnApp(TrafficGenerator):
     def protocol_stop(self, protocol):
         """ Stop all protocols and wait for all protocols to stop.
 
-        Raises:
-            TgnError: if some protocol failed to stop.
+        :raise TgnError: if some protocol failed to stop.
         """
         self.protocol_action(protocol, 'stop')
 
-    def protocol_abort(self, protocol):
-        """ Abort all protocols and wait for all protocols to stop.
-
-        Raises:
-            TgnError: if some protocol failed to stop.
-        """
-        self.protocol_action(protocol, 'abort')
-
     def protocol_action(self, protocol, action):
-        action_state = {'start': 'started', 'stop': 'stopped', 'stop': 'stopped'}
+        action_state = {'start': 'started', 'stop': 'stopped'}
         protocol_objs = []
         for port in self.root.get_objects_by_type('vport'):
             protocols = port.get_child_static('protocols')
@@ -170,34 +161,25 @@ class IxnApp(TrafficGenerator):
                 raise TgnError('Failed to {} port {} protocol {}'.
                                format(action, port.obj_name(), protocol))
 
-    #
-    # Not tested beyond this point.
-    #
+    def quick_test_apply(self, quick_test):
+        self.root.get_quick_tests()[quick_test].execute('apply')
 
-    def l23TrafficOperation(self, action):
-        tis = build_obj_ref_list(self.get_objects(IxnL23TrafficItem))
-        self.api.execute(action + 'StatelessTraffic', tis)
+    def quick_test_start(self, quick_test, blocking=False):
+        self.root.get_quick_tests()[quick_test].execute('start')
+        if blocking:
+            return self.wait_quick_test_status(quick_test)
 
-    def l47TrafficOperation(self, action):
-        self.api.execute(action + 'ApplicationTraffic', self.root + '/traffic')
+    def quick_test_stop(self, quick_test):
+        self.root.get_quick_tests()[quick_test].execute('stop')
 
-    def l47TrafficApply(self):
-        self.l47TrafficOperation('apply')
-
-    def l47TrafficStart(self):
-        self.l47TrafficOperation('start')
-
-    def l47TrafficStop(self):
-        self.l47TrafficOperation('stop')
-
-    #
-    # IxNetwork results commands.
-    #
-
-    def getStatistics(self, view):
-        if (view not in self.objects):
-            self.objects[view] = IxnStatisticsView(self.api, view)
-        return self.objects[view].getStatistics()
+    def wait_quick_test_status(self, quick_test, status=False, timeout=3600):
+        results = self.root.get_quick_tests()[quick_test].get_child_static('results')
+        for _ in range(timeout):
+            if is_true(results.get_attribute('isRunning')) == status:
+                return results.get_attribute('result')
+            time.sleep(1)
+        raise TgnError('Quick test failed, quick test running state is {} after {} seconds'.
+                       format(results.get_attribute('isRunning'), timeout))
 
 TYPE_2_OBJECT = {'availableHardware': IxnHw,
                  'bridge': IxnStpBridge,

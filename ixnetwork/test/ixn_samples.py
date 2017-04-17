@@ -128,6 +128,14 @@ class IxnTestBase(unittest.TestCase):
         print(port_stats.get_counters('Frames Tx.'))
         assert(ti_stats.get_counter('Traffic Item 1', 'Rx Frames') == 1600)
 
+    def quick_test(self):
+        global ixn_config_file
+        ixn_config_file = path.join(path.dirname(__file__), 'configs/quick_tests.ixncfg')
+        self.reserve_ports()
+        print(self.ixn.root.get_quick_tests())
+        self.ixn.quick_test_apply('QuickTest3')
+        print(self.ixn.quick_test_start('QuickTest3', blocking=True))
+
     def inventory(self):
 
         chassis = self.ixn.root.hw.get_chassis(port1_location.split('/')[0])

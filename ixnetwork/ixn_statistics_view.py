@@ -20,22 +20,10 @@ class IxnStatisticsView(object):
         self.name_caption = view_2_caption.get(view, 'Port Name')
         self.ixn_view = root.get_child_static('statistics').get_child_static('view:"{}"'.format(view))
 
-    def _getStatistics(self):
-        page = self.ixn_view.get_child_static('page')
-        if is_false(page.get_attribute('isReady')):
-            raise TgnError('"{}" not ready'.format(self.obj_type()))
-        caption = page.get_list_attribute('columnCaptions')
-        rows = []
-        page.set_attributes(pageSize=50)
-        for page_num in range(1, int(page.get_attribute('totalPages')) + 1):
-            page.set_attributes(commit=True, currentPage=page_num)
-            rows += page.get_list_attribute('rowValues')
-        return caption, rows
-
     def read_stats(self):
         """ Reads the statistics view from IXN and saves it in statistics dictionary. """
 
-        captions, rows = self._getStatistics()
+        captions, rows = self._get_pages()
         name_caption_index = captions.index(self.name_caption)
         captions.pop(name_caption_index)
         self.captions = captions
@@ -86,6 +74,18 @@ class IxnStatisticsView(object):
 
         return int(self.get_stat(obj_name, counter_name))
 
+    def _get_pages(self):
+        page = self.ixn_view.get_child_static('page')
+        if is_false(page.get_attribute('isReady')):
+            raise TgnError('"{}" not ready'.format(self.obj_type()))
+        caption = page.get_list_attribute('columnCaptions')
+        rows = []
+        page.set_attributes(pageSize=50)
+        for page_num in range(1, int(page.get_attribute('totalPages')) + 1):
+            page.set_attributes(commit=True, currentPage=page_num)
+            rows += page.get_list_attribute('rowValues')
+        return caption, rows
+
 
 class IxnPortStatistics(IxnStatisticsView):
 
@@ -111,7 +111,7 @@ class IxnFlowStatistics(IxnStatisticsView):
         configuration.
         """
 
-        captions, rows = self._getStatistics()
+        captions, rows = self._get_pages()
         name_caption_index = captions.index('Tx Frames')
         for _ in range(name_caption_index):
             captions.pop(0)

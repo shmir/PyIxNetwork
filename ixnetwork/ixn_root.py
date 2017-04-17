@@ -35,6 +35,16 @@ class IxnRoot(IxnObject):
         traffic = self.get_child_static('traffic')
         return {o.obj_name(): o for o in traffic.get_objects_or_children_by_type('trafficItem')}
 
+    def get_quick_tests(self, *types):
+        """
+        :param types: list of requested types, empty list will return all quick tests.
+        :return: dictionary {name: object} of requested quick tests.
+        """
+
+        quickTest = self.get_child_static('quickTest')
+        return {o.obj_name(): o for o in quickTest.get_objects_or_children_by_type(*types) if
+                o.obj_name() != '::ixNet::OBJ-/quickTest/globals'}
+
     def regenerate(self, *traffic_items):
         traffic = self.get_child_static('traffic')
         traffic_items = traffic.get_objects_or_children_by_type('trafficItem')
