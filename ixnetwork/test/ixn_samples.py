@@ -29,10 +29,10 @@ port1_location = '192.168.42.61/1/1'
 port2_location = '192.168.42.61/1/2'
 
 
-class IxnTestBase(unittest.TestCase):
+class IxnSamples(unittest.TestCase):
 
     def setUp(self):
-        super(IxnTestBase, self).setUp()
+        super(IxnSamples, self).setUp()
         logger = logging.getLogger('log')
         logger.setLevel('DEBUG')
         logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -44,7 +44,8 @@ class IxnTestBase(unittest.TestCase):
         self.ixn.connect()
 
     def tearDown(self):
-        super(IxnTestBase, self).tearDown()
+        self.ixn.disconnect()
+        super(IxnSamples, self).tearDown()
 
     def load_config(self):
         self.ixn.new_config()

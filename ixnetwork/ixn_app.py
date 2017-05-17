@@ -10,19 +10,17 @@ import time
 from builtins import range
 
 from trafficgenerator.tgn_utils import TgnError, is_true
-from trafficgenerator.tgn_tcl import build_obj_ref_list
 from trafficgenerator.trafficgenerator import TrafficGenerator
 
 from ixnetwork.ixn_object import IxnObject
 from ixnetwork.ixn_port import IxnPort
-from ixnetwork.ixn_traffic import IxnTrafficItem, IxnL23TrafficItem
+from ixnetwork.ixn_traffic import IxnTrafficItem
 from ixnetwork.ixn_protocol import (IxnBgpRouter, IxnOspfRouter, IxnOspfV3Router, IxnBgpRouteRange, IxnOspfRouteRange,
                                     IxnPimsmRouter, IxnIgmpHost, IxnIgmpQuerier, IxnPimsmSource, IxnStpBridge,
                                     IxnOpenFlowDevice, IxnLacp, IxnIsisRouter, IxnIsisRouteRange, IxnLdpRouter,
                                     IxnLdpRouteRange)
 from ixnetwork.ixn_interface import IxnInterface, IxnInterfaceL3
 from ixnetwork.ixn_topology import IxnTopology, IxnDeviceGroup, IxnNgpfEthernet, IxnNgpfIpv4
-from ixnetwork.ixn_statistics_view import IxnStatisticsView
 from ixnetwork.ixn_root import IxnRoot
 from ixnetwork.ixn_protocol_stack import IxnRange
 from ixnetwork.ixn_hw import IxnHw, IxnChassis, IxnCard, IxnPhyPort

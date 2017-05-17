@@ -73,6 +73,7 @@ class IxnTestOnline(IxnTestBase):
         self.ixn.l23_traffic_stop()
         port_stats = IxnPortStatistics()
         port_stats.read_stats()
+        print(port_stats.get_all_stats())
         print(port_stats.get_object_stats('Port 1'))
         assert(int(port_stats.get_stat('Port 1', 'Frames Tx.')) >= 1600)
         self.ixn.l23_traffic_start(blocking=True)

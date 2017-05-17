@@ -32,6 +32,16 @@ class IxnStatisticsView(object):
             name = row.pop(name_caption_index)
             self.statistics[name] = row
 
+    def get_all_stats(self):
+        """
+        :returns: all statistics values for all objects.
+        """
+
+        all_stats = OrderedDict()
+        for obj_name in self.statistics:
+            all_stats[obj_name] = dict(zip(self.captions, self.statistics[obj_name]))
+        return all_stats
+
     def get_object_stats(self, obj_name):
         """
         :param obj_name: requested object name
