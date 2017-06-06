@@ -162,10 +162,10 @@ class IxnApp(TrafficGenerator):
     def quick_test_apply(self, quick_test):
         self.root.get_quick_tests()[quick_test].execute('apply')
 
-    def quick_test_start(self, quick_test, blocking=False):
+    def quick_test_start(self, quick_test, blocking=False, timeout=3600):
         self.root.get_quick_tests()[quick_test].execute('start')
         if blocking:
-            return self.wait_quick_test_status(quick_test)
+            return self.wait_quick_test_status(quick_test, False, timeout)
 
     def quick_test_stop(self, quick_test):
         self.root.get_quick_tests()[quick_test].execute('stop')
