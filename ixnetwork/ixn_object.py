@@ -114,7 +114,8 @@ class IxnObject(TgnObject):
         child_obj_ref = self.obj_ref() + '/' + objType
         if seq_number:
             child_obj_ref += ':' + str(seq_number)
-        return IxnObject(parent=self, objType=objType, objRef=child_obj_ref)
+        child_obj = self.get_object_by_ref(child_obj_ref)
+        return child_obj if child_obj else IxnObject(parent=self, objType=objType, objRef=child_obj_ref)
 
     def get_name(self):
         # self.get_attribute() will throw error in case name does not exists so we bypass it.
