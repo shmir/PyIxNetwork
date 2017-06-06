@@ -67,8 +67,7 @@ class IxnPort(IxnObject):
         return self.get_attribute('state').lower() == 'up'
 
     def release(self):
-        if not is_local_host(self.location):
-            self.execute('releasePort')
+        self.execute('releasePort')
 
     def get_interfaces(self):
         """
