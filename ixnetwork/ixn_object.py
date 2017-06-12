@@ -118,8 +118,10 @@ class IxnObject(TgnObject):
         return child_obj if child_obj else IxnObject(parent=self, objType=objType, objRef=child_obj_ref)
 
     def get_name(self):
-        # self.get_attribute() will throw error in case name does not exists so we bypass it.
-        name = self.api.getAttribute(self.obj_ref(), 'name')
+        try:
+            name = self.api.getAttribute(self.obj_ref(), 'name')
+        except KeyError:
+            name = '::ixNet::OK'
         return name if name != '::ixNet::OK' else self.obj_ref()
 
     def get_enabled(self):

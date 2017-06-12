@@ -7,7 +7,6 @@ IxNetwork package tests that can run in offline mode.
 from os import path
 import inspect
 from collections import OrderedDict
-from test.test_tcl import _tkinter
 
 from trafficgenerator.tgn_tcl import build_obj_ref_list
 
@@ -51,7 +50,7 @@ class IxnTestOffline(IxnTestBase):
         assert(len(vports) == 2)
         assert(type(vports[0]) is IxnPort)
 
-        self.assertRaises(_tkinter.TclError,  self._load_config, path.join(path.dirname(__file__), 'invalid.ixncfg'))
+        self.assertRaises(Exception,  self._load_config, path.join(path.dirname(__file__), 'invalid.ixncfg'))
 
         pass
 

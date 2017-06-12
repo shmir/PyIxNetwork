@@ -10,6 +10,7 @@ from trafficgenerator.test.test_tgn import TgnTest
 
 from ixnetwork.api.ixn_tcl import IxnTclWrapper
 from ixnetwork.api.ixn_python import IxnPythonWrapper
+from ixnetwork.api.ixn_rest import IxnRestWrapper
 from ixnetwork.ixn_app import IxnApp
 
 
@@ -21,10 +22,12 @@ class IxnTestBase(TgnTest):
         super(IxnTestBase, self).setUp()
         if self.config.get('IXN', 'api').lower() == 'tcl':
             api_wrapper = IxnTclWrapper(self.logger, self.config.get('IXN', 'install_dir'))
-        else:
+        elif self.config.get('IXN', 'api').lower() == 'python':
             api_wrapper = IxnPythonWrapper(self.logger, self.config.get('IXN', 'install_dir'))
+        else:
+            api_wrapper = IxnRestWrapper(self.logger)
         self.ixn = IxnApp(self.logger, api_wrapper=api_wrapper)
-        self.ixn.connect(self.config.get('IXN', 'tcl_server'), self.config.get('IXN', 'tcl_port'))
+        self.ixn.connect(self.config.get('IXN', 'api_server'), self.config.get('IXN', 'api_port'))
 
     def tearDown(self):
         super(IxnTestBase, self).tearDown()
