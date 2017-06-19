@@ -5,12 +5,35 @@
 from sys import platform
 import requests
 import itertools
+import time
 
+from trafficgenerator.tgn_utils import TgnError
 
 if platform == 'win32':
     py_tail = 'API/Python/IxNetwork.py'
 else:
     py_tail = 'lib/PythonApi/IxNetwork.py'
+
+
+def waitForComplete(response, sessionUrl, timeout=90):
+    # response: Provide the POST action response.  Generally, after an /operations action.
+    #           Such as /operations/startallprotocols, /operations/assignports
+    # sessionUrl: http://10.219.x.x:11009/api/v1/sessions/1/ixnetwork
+    #
+    # Returns 0 if the state is good
+    # Returns 1 if the  state remains down or IN_PROGRESS after timeout.
+
+    if 'errors' in response.json():
+        raise TgnError(response.json()['errors'][0])
+    if response.json()['state'] == 'SUCCESS':
+        return
+    for _ in range(timeout):
+        response = requests.get(sessionUrl)
+        if response.json()[0]['state'] not in ['IN_PROGRESS', 'down']:
+            return
+        time.sleep(1)
+    raise TgnError('{} operation failed, state is {} after {} seconds'.format(sessionUrl, response.json()['state'],
+                                                                              timeout))
 
 
 class IxnRestWrapper(object):
@@ -24,14 +47,27 @@ class IxnRestWrapper(object):
         self.logger = logger
 
     def request(self, command, url):
-        pass
+        self.logger.debug('{} - {}'.format(command.__name__, url))
+        response = command(url)
+        self.logger.debug('{}'.format(response))
+        self.logger.debug('{}'.format(response.json()))
+        return response
+
+    def get(self, url):
+        return self.request(requests.get, url)
+
+    def post(self, url):
+        response = self.request(requests.post, url)
+        if 'id' in response.json():
+            waitForComplete(response, url + response.json()['id'])
+        return response
 
     def getVersion(self):
         return self.ixn.getVersion()
 
     def connect(self, ip, port):
         self.server_url = 'http://{}:{}'.format(ip, port)
-        response = requests.post(self.server_url + '/api/v1/sessions')
+        response = self.post(self.server_url + '/api/v1/sessions')
         session = response.json()['links'][0]['href']
         self.root_url = self.server_url + session + '/ixnetwork'
 
@@ -39,26 +75,29 @@ class IxnRestWrapper(object):
         return self.root_url
 
     def commit(self):
-        self.ixn.commit()
+        pass
 
     def execute(self, command, *arguments):
-        return self.ixn.execute(command, *arguments)
+        oper_url = self.root_url + '/operations/' + command
+        response = self.post(oper_url)
+        waitForComplete(response, self.root_url + oper_url+response.json()["id"])
 
     def newConfig(self):
         self.execute('newConfig')
 
     def loadConfig(self, configFileName):
+        response = self.post(self.root_url + '/files/' + configFileName)
         self.execute('loadConfig', self.ixn.readFrom(configFileName.replace('\\', '/')))
 
     def saveConfig(self, configFileName):
         self.execute('saveConfig', self.ixn.writeTo(configFileName.replace('\\', '/')))
 
     def getList(self, objRef, childList):
-        response = requests.get(objRef + '/' + childList)
+        response = self.get(objRef + '/' + childList)
         return response.json()['links'][0]['href'].split()
 
     def getAttribute(self, objRef, attribute):
-        response = requests.get(self.server_url + objRef)
+        response = self.get(self.server_url + objRef)
         return response.json()[attribute]
 
     def getListAttribute(self, objRef, attribute):

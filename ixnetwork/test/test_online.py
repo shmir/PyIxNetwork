@@ -30,9 +30,6 @@ class IxnTestOnline(IxnTestBase):
         for port in self.ports:
             port.release()
 
-        self.ixn.root.get_object_by_name('Port 1').reserve()
-        self.ixn.root.get_object_by_name('Port 2').reserve()
-
         pass
 
     def testReleasePorts(self):

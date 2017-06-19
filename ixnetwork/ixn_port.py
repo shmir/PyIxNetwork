@@ -40,12 +40,15 @@ class IxnPort(IxnObject):
         :param timeout: how long (seconds) to wait for port to come up.
         """
 
-        if location and not is_local_host(location):
+        self.location = location
+        if self.location and not is_local_host(location):
             hostname, card, port = location.split('/')
             chassis = self.root.hw.get_chassis(hostname)
             self.set_attributes(commit=True, connectedTo=chassis.obj_ref() + '/card:' + card + '/port:' + port)
 
-        self.location = self.get_attribute('connectedTo')
+        while self.get_attribute('connectedTo') == '::ixNet::OBJ-null':
+            time.sleep(1)
+
         if self.location and wait_for_up:
             self.wait_for_states(timeout, 'up')
 
@@ -68,6 +71,7 @@ class IxnPort(IxnObject):
 
     def release(self):
         self.execute('releasePort')
+        self.set_attributes(commit=True, connectedTo='::ixNet::OBJ-null')
 
     def get_interfaces(self):
         """

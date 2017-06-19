@@ -103,3 +103,5 @@ syntax: regexp
 syntax: regexp
 ^\.pydevproject$
 ixnetwork/test/IxNetwork.ini
+
+rest_sample.py
