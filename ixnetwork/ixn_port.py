@@ -25,8 +25,6 @@ def get_port(obj_ref):
 
 class IxnPort(IxnObject):
 
-    location = None
-
     def __init__(self, **data):
         data['objType'] = 'vport'
         super(self.__class__, self).__init__(**data)
@@ -35,21 +33,27 @@ class IxnPort(IxnObject):
         """ Reserve port and optionally wait for port to come up.
 
         :param location: port location as 'ip/module/port'. If None, the location will be taken from the configuration.
-        :param force: whether to revoke existing reservation (True) or not (False) - NOT SUPPORTED YET.
+        :param force: whether to revoke existing reservation (True) or not (False).
         :param wait_for_up: True - wait for port to come up, False - return immediately.
         :param timeout: how long (seconds) to wait for port to come up.
         """
 
-        self.location = location
-        if self.location and not is_local_host(location):
-            hostname, card, port = location.split('/')
-            chassis = self.root.hw.get_chassis(hostname)
-            self.set_attributes(commit=True, connectedTo=chassis.obj_ref() + '/card:' + card + '/port:' + port)
+        if not location or is_local_host(location):
+            return
+
+        hostname, card, port = location.split('/')
+        chassis = self.root.hw.get_chassis(hostname)
+
+        # todo - test if port owned by me.
+        if force:
+            chassis.cards[card].ports[port].release()
+
+        self.set_attributes(commit=True, connectedTo=chassis.obj_ref() + '/card:' + card + '/port:' + port)
 
         while self.get_attribute('connectedTo') == '::ixNet::OBJ-null':
             time.sleep(1)
 
-        if self.location and wait_for_up:
+        if wait_for_up:
             self.wait_for_states(timeout, 'up')
 
     def wait_for_states(self, timeout=40, *states):

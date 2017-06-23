@@ -12,10 +12,12 @@ from ixnetwork.ixn_object import IxnObject
 class IxnHw(IxnObject):
 
     def get_chassis(self, hostname):
-        for chassis in self.get_children('chassis'):
+        for chassis in self.get_objects_by_type('chassis'):
             if chassis.get_attribute('hostname') == hostname:
                 return chassis
-        return IxnChassis(hostname=hostname)
+        chassis = IxnChassis(hostname=hostname)
+        chassis.get_inventory()
+        return chassis
 
 
 class IxnPhyBase(IxnObject):
@@ -35,7 +37,7 @@ class IxnPhyBase(IxnObject):
 class IxnChassis(IxnPhyBase):
 
     attributes_names = ('chassisType', 'chassisVersion')
-    children_types = {'modules': ('card', 'cardId')}
+    children_types = {'cards': ('card', 'cardId')}
 
     def __init__(self, **data):
         data['parent'] = self.root.hw
@@ -56,3 +58,6 @@ class IxnPhyPort(IxnPhyBase):
 
     attributes_names = ('description',)
     children_types = {}
+
+    def release(self):
+        self.execute('clearOwnership')
