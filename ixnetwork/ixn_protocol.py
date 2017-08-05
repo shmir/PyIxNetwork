@@ -17,7 +17,7 @@ class IxnProtocol(IxnObject):
     """ Base class for IXN classical protocol objects (e.g. OSPF router, IGMP Querier, MLD Host
         etc.). """
 
-    ixn_ints = {}
+    ixn_ints = OrderedDict()
 
     @classmethod
     def get_protocols_with_int(cls, ixn_int):
@@ -40,7 +40,7 @@ class IxnProtocolServer(IxnProtocol):
         for int_ref in self.get_attribute('interfaces').split(' '):
             self.ixn_ints[int_ref] = self.root.get_object_by_ref(int_ref)
 
-    def get_endpoints(self):
+    def get_endpoints(self, l3=None):
         return []
 
 
@@ -57,7 +57,7 @@ class IxnProtocolRouter(IxnProtocol):
             int_ref = ixn_router_int.get_attribute(self.interface_attribute)
             self.ixn_ints[ixn_router_int] = self.root.get_object_by_ref(int_ref)
 
-    def get_endpoints(self):
+    def get_endpoints(self, l3=None):
         return self.get_objects_by_type('routeRange')
 
 
@@ -66,7 +66,7 @@ class IxnProtocolRouter(IxnProtocol):
 class IxnBgpRouter(IxnProtocolServer):
     """ Represents IXN BGP router. """
 
-    def get_endpoints(self):
+    def get_endpoints(self, l3=None):
         return self.get_objects_by_type('routeRange')
 
 
@@ -87,7 +87,7 @@ class IxnPimsmRouter(IxnProtocolRouter):
 
     objType = 'router'
 
-    def get_endpoints(self):
+    def get_endpoints(self, l3=None):
         return self.get_object_by_type('interface').get_objects_by_type('joinPrune')
 
 
@@ -96,6 +96,9 @@ class IxnIsisRouter(IxnProtocolRouter):
 
     objType = 'router'
     interface_attribute = 'interfaceId'
+
+    def get_endpoints(self, l3):
+        return self.get_objects_with_attribute('routeRange', 'type', l3)
 
 
 class IxnLdpRouter(IxnProtocolRouter):
@@ -163,7 +166,7 @@ class IxnLdpRouteRange(IxnRouteRange):
 class IxnIgmpHost(IxnProtocolServer):
     """ Represents IXN IGMP host. """
 
-    def get_endpoints(self):
+    def get_endpoints(self, l3=None):
         return self.get_objects_by_type('group')
 
 
@@ -189,3 +192,41 @@ class IxnOpenFlowDevice(IxnProtocolRouter):
 class IxnLacp(IxnObject):
     """ Represents IXN LACP object. """
     pass
+
+
+class IxnRsvpNeighborPair(IxnProtocolServer):
+    """ Represents RSVP Neighbor Pair. """
+
+    def __init__(self, **data):
+        super(IxnProtocol, self).__init__(**data)
+        self.ixn_ints = OrderedDict()
+        ourIp = self.get_attribute('ourIp')
+        for ixn_int in self.get_ancestor_object_by_type('vport').get_interfaces().values():
+            for ixn_ip in ixn_int.get_objects_by_type('ipv4', 'ipv6'):
+                if ixn_ip.get_attribute('ip') == ourIp:
+                    self.ixn_ints[self] = ixn_int
+                    return
+
+
+class IxnStaticIp(IxnProtocolServer):
+    """ Represents RSVP Neighbor Pair. """
+
+    def __init__(self, **data):
+        super(IxnProtocol, self).__init__(**data)
+        self.ixn_ints = OrderedDict()
+        int_ref = self.get_attribute('protocolInterface')
+        self.ixn_ints[self] = self.root.get_object_by_ref(int_ref)
+
+    def get_endpoints(self, l3=None):
+        return [self]
+
+    @classmethod
+    def get_protocols_with_port(cls, ixn_port, l3, vlan=None):
+        static = ixn_port.get_child_static('protocols').get_child_static('static')
+        return [ip for ip in static.get_objects_by_type('ip') if ip.get_attribute('ipType').lower() == l3]
+
+
+class IxnBfdfRouter(IxnProtocolRouter):
+    """ Represents IXN BFD router. """
+
+    objType = 'router'
