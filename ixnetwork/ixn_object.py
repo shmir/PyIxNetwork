@@ -12,7 +12,11 @@ from trafficgenerator.tgn_object import TgnObject
 
 
 def extract_ixn_obj_type_from_obj_ref(obj_ref):
-    return re.search('.*/(.*)', obj_ref).group(1).split(':')[0]
+    return extract_ixn_full_obj_type_from_obj_ref(obj_ref).split('/')[-1]
+
+
+def extract_ixn_full_obj_type_from_obj_ref(obj_ref):
+    return re.sub(':[0-9]+', '', obj_ref)
 
 
 class IxnObject(TgnObject):

@@ -102,7 +102,7 @@ class IxnIsisRouter(IxnProtocolRouter):
 
 
 class IxnLdpRouter(IxnProtocolRouter):
-    """ Represents IXN ISIS router. """
+    """ Represents IXN LDP router. """
 
     objType = 'router'
     interface_attribute = 'protocolInterface'
