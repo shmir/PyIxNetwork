@@ -11,6 +11,7 @@ from trafficgenerator.tgn_object import TgnL3
 
 from ixnetwork.ixn_object import IxnObject
 from ixnetwork.ixn_interface import filter_ints_based_on_vlan
+from ixnetwork.ixn_traffic import TrafficEnd
 
 
 class IxnProtocol(IxnObject):
@@ -40,7 +41,7 @@ class IxnProtocolServer(IxnProtocol):
         for int_ref in self.get_attribute('interfaces').split(' '):
             self.ixn_ints[int_ref] = self.root.get_object_by_ref(int_ref)
 
-    def get_endpoints(self, l3=None):
+    def get_endpoints(self, l3=None, end=TrafficEnd.both):
         return []
 
 
@@ -57,7 +58,7 @@ class IxnProtocolRouter(IxnProtocol):
             int_ref = ixn_router_int.get_attribute(self.interface_attribute)
             self.ixn_ints[ixn_router_int] = self.root.get_object_by_ref(int_ref)
 
-    def get_endpoints(self, l3=None):
+    def get_endpoints(self, l3=None, end=TrafficEnd.both):
         return self.get_objects_by_type('routeRange')
 
 
@@ -66,7 +67,7 @@ class IxnProtocolRouter(IxnProtocol):
 class IxnBgpRouter(IxnProtocolServer):
     """ Represents IXN BGP router. """
 
-    def get_endpoints(self, l3=None):
+    def get_endpoints(self, l3=None, end=TrafficEnd.both):
         return self.get_objects_by_type('routeRange')
 
 
@@ -87,7 +88,7 @@ class IxnPimsmRouter(IxnProtocolRouter):
 
     objType = 'router'
 
-    def get_endpoints(self, l3=None):
+    def get_endpoints(self, l3=None, end=TrafficEnd.both):
         return self.get_object_by_type('interface').get_objects_by_type('joinPrune')
 
 
@@ -97,7 +98,7 @@ class IxnIsisRouter(IxnProtocolRouter):
     objType = 'router'
     interface_attribute = 'interfaceId'
 
-    def get_endpoints(self, l3):
+    def get_endpoints(self, l3=None, end=TrafficEnd.both):
         return self.get_objects_with_attribute('routeRange', 'type', l3)
 
 
@@ -166,7 +167,7 @@ class IxnLdpRouteRange(IxnRouteRange):
 class IxnIgmpHost(IxnProtocolServer):
     """ Represents IXN IGMP host. """
 
-    def get_endpoints(self, l3=None):
+    def get_endpoints(self, l3=None, end=TrafficEnd.both):
         return self.get_objects_by_type('group')
 
 
@@ -207,6 +208,16 @@ class IxnRsvpNeighborPair(IxnProtocolServer):
                     self.ixn_ints[self] = ixn_int
                     return
 
+    def get_endpoints(self, l3=None, end=TrafficEnd.both):
+        if end == TrafficEnd.source:
+            return [ep for ep in self.get_objects_by_type('destinationRange') if
+                    ep.get_attribute('behavior') == 'ingress']
+        elif end == TrafficEnd.destination:
+            return [ep for ep in self.get_objects_by_type('destinationRange') if
+                    ep.get_attribute('behavior') == 'egress']
+        else:
+            return self.get_objects_by_type('destinationRange')
+
 
 class IxnStaticIp(IxnProtocolServer):
     """ Represents RSVP Neighbor Pair. """
@@ -217,7 +228,7 @@ class IxnStaticIp(IxnProtocolServer):
         int_ref = self.get_attribute('protocolInterface')
         self.ixn_ints[self] = self.root.get_object_by_ref(int_ref)
 
-    def get_endpoints(self, l3=None):
+    def get_endpoints(self, l3=None, end=TrafficEnd.both):
         return [self]
 
     @classmethod

@@ -3,8 +3,20 @@
 """
 
 import os
+from enum import Enum
 
 from ixnetwork.ixn_object import IxnObject
+
+
+class TrafficEnd(Enum):
+    """ Traffic end types.
+
+    :todo: move to trafficgenerator.
+    """
+
+    source = 1
+    destination = 2
+    both = 3
 
 
 class IxnTrafficItem(IxnObject):
