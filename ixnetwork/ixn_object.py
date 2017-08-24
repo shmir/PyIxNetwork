@@ -23,10 +23,7 @@ class IxnObject(TgnObject):
     """ Base class for all IXN classes. """
 
     # Class level variables
-    logger = None
     root = None
-    api = None
-
     str_2_class = {}
 
     def get_obj_class(self, obj_type):

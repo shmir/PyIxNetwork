@@ -11,7 +11,6 @@ class IxnRoot(IxnObject):
 
     def __init__(self, **data):
         super(IxnRoot, self).__init__(**data)
-        self.traffic = self.get_child_static('traffic')
 
     def get_ports(self):
         """

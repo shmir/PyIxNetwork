@@ -29,8 +29,6 @@ from ixnetwork.ixn_hw import IxnHw, IxnChassis, IxnCard, IxnPhyPort
 class IxnApp(TrafficGenerator):
     """ IxNetwork driver. Equivalent to IxNetwork Application. """
 
-    root = None
-
     def __init__(self, logger, api_wrapper):
         """ Set all kinds of application level objects - logger, api, etc.
 
@@ -42,15 +40,15 @@ class IxnApp(TrafficGenerator):
         self.logger = logger
         self.api = api_wrapper
 
-        IxnObject.logger = self.logger
-        IxnObject.api = self.api
         IxnObject.str_2_class = TYPE_2_OBJECT
 
     def connect(self, tcl_server='localhost', tcl_port=8009):
         self.api.connect(tcl_server, tcl_port)
-        self.root = IxnRoot(objRef=self.api.getRoot(), objType='root')
+        self.root = IxnRoot(objRef=self.api.getRoot(), objType='root', parent=None)
+        self.root.logger = self.logger
+        self.root.api = self.api
         IxnObject.root = self.root
-        IxnObject.root.hw = self.root.get_child('availableHardware')
+        self.root.hw = self.root.get_child('availableHardware')
 
     def disconnect(self):
         """ Disconnect from chassis and server. """
