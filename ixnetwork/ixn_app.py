@@ -9,9 +9,12 @@ from os import path
 import time
 from builtins import range
 
-from trafficgenerator.tgn_utils import TgnError, is_true
+from trafficgenerator.tgn_utils import TgnError, is_true, ApiType
 from trafficgenerator.trafficgenerator import TrafficGenerator
 
+from ixnetwork.api.ixn_tcl import IxnTclWrapper
+from ixnetwork.api.ixn_python import IxnPythonWrapper
+from ixnetwork.api.ixn_rest import IxnRestWrapper
 from ixnetwork.ixn_object import IxnObject
 from ixnetwork.ixn_port import IxnPort
 from ixnetwork.ixn_traffic import IxnTrafficItem
@@ -24,6 +27,25 @@ from ixnetwork.ixn_topology import IxnTopology, IxnDeviceGroup, IxnNgpfEthernet,
 from ixnetwork.ixn_root import IxnRoot
 from ixnetwork.ixn_protocol_stack import IxnRange
 from ixnetwork.ixn_hw import IxnHw, IxnChassis, IxnCard, IxnPhyPort
+
+
+def init_ixn(api, logger, install_dir=None):
+    """ Create IXN object.
+
+    :param api: configuration file object (-c option)
+    :type api: trafficgenerator.tgn_utils.ApiType
+    :param logger: logger object
+    :param install_dir: IXN installation directory
+    :return: IXN object
+    """
+
+    if api == ApiType.tcl:
+        api_wrapper = IxnTclWrapper(logger, install_dir)
+    elif api == ApiType.python:
+        api_wrapper = IxnPythonWrapper(logger, install_dir)
+    else:
+        api_wrapper = IxnRestWrapper(logger)
+    return IxnApp(logger, api_wrapper)
 
 
 class IxnApp(TrafficGenerator):

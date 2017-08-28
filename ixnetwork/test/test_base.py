@@ -6,12 +6,10 @@ Base class for all IXN package tests.
 
 from os import path
 
+from trafficgenerator.tgn_utils import ApiType
 from trafficgenerator.test.test_tgn import TgnTest
 
-from ixnetwork.api.ixn_tcl import IxnTclWrapper
-from ixnetwork.api.ixn_python import IxnPythonWrapper
-from ixnetwork.api.ixn_rest import IxnRestWrapper
-from ixnetwork.ixn_app import IxnApp
+from ixnetwork.ixn_app import init_ixn
 
 
 class IxnTestBase(TgnTest):
@@ -20,13 +18,7 @@ class IxnTestBase(TgnTest):
 
     def setUp(self):
         super(IxnTestBase, self).setUp()
-        if self.config.get('IXN', 'api').lower() == 'tcl':
-            api_wrapper = IxnTclWrapper(self.logger, self.config.get('IXN', 'install_dir'))
-        elif self.config.get('IXN', 'api').lower() == 'python':
-            api_wrapper = IxnPythonWrapper(self.logger, self.config.get('IXN', 'install_dir'))
-        else:
-            api_wrapper = IxnRestWrapper(self.logger)
-        self.ixn = IxnApp(self.logger, api_wrapper=api_wrapper)
+        self.ixn = init_ixn(ApiType[self.config.get('IXN', 'api')], self.logger, self.config.get('IXN', 'install_dir'))
         self.ixn.connect(self.config.get('IXN', 'api_server'), self.config.get('IXN', 'api_port'))
 
     def tearDown(self):
