@@ -1,5 +1,6 @@
 future
 configparser
 enum34
+pytest-runner
 
-tgnooapi>=1.0.0.dev3
+tgnooapi==1.0.0rc1

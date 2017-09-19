@@ -30,7 +30,6 @@ setup(
     license='Apache Software License',
     author='Yoram Shamir',
     install_requires=install_requires,
-    setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     author_email='yoram@ignissoft.com',
     description='Python OO API package to automate Ixia IxNetwork traffic generator',
