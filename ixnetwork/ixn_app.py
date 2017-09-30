@@ -10,7 +10,7 @@ import time
 from builtins import range
 
 from trafficgenerator.tgn_utils import TgnError, is_true, ApiType
-from trafficgenerator.trafficgenerator import TrafficGenerator
+from trafficgenerator.tgn_app import TgnApp
 
 from ixnetwork.api.ixn_tcl import IxnTclWrapper
 from ixnetwork.api.ixn_python import IxnPythonWrapper
@@ -32,7 +32,7 @@ from ixnetwork.ixn_hw import IxnHw, IxnChassis, IxnCard, IxnPhyPort
 def init_ixn(api, logger, install_dir=None):
     """ Create IXN object.
 
-    :param api: configuration file object (-c option)
+    :param api: tcl/python/rest
     :type api: trafficgenerator.tgn_utils.ApiType
     :param logger: logger object
     :param install_dir: IXN installation directory
@@ -48,7 +48,7 @@ def init_ixn(api, logger, install_dir=None):
     return IxnApp(logger, api_wrapper)
 
 
-class IxnApp(TrafficGenerator):
+class IxnApp(TgnApp):
     """ IxNetwork driver. Equivalent to IxNetwork Application. """
 
     def __init__(self, logger, api_wrapper):
@@ -58,9 +58,7 @@ class IxnApp(TrafficGenerator):
         :param api_wrapper: api wrapper object inheriting and implementing IxnApi base class.
         """
 
-        super(self.__class__, self).__init__()
-        self.logger = logger
-        self.api = api_wrapper
+        super(self.__class__, self).__init__(logger, api_wrapper)
 
         IxnObject.str_2_class = TYPE_2_OBJECT
 

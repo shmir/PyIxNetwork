@@ -56,7 +56,7 @@ class IxnRestWrapper(object):
     def get(self, url):
         return self.request(requests.get, url)
 
-    def post(self, url):
+    def post(self, url, data):
         response = self.request(requests.post, url)
         if 'id' in response.json():
             waitForComplete(response, url + response.json()['id'])
@@ -86,8 +86,10 @@ class IxnRestWrapper(object):
         self.execute('newConfig')
 
     def loadConfig(self, configFileName):
-        response = self.post(self.root_url + '/files/' + configFileName)
-        self.execute('loadConfig', self.ixn.readFrom(configFileName.replace('\\', '/')))
+        import json
+        data = {'filename': configFileName}
+        response = self.post(self.root_url + '/files/', json.dumps(data))
+        print response
 
     def saveConfig(self, configFileName):
         self.execute('saveConfig', self.ixn.writeTo(configFileName.replace('\\', '/')))
@@ -98,7 +100,7 @@ class IxnRestWrapper(object):
 
     def getAttribute(self, objRef, attribute):
         response = self.get(self.server_url + objRef)
-        return response.json()[attribute]
+        return response.json().get(attribute, '::ixNet::OK')
 
     def getListAttribute(self, objRef, attribute):
         value = self.getAttribute(objRef, attribute)
