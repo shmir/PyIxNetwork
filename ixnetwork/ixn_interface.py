@@ -52,7 +52,7 @@ class IxnInterface(IxnObject):
         data['objType'] = 'interface'
         super(IxnInterface, self).__init__(**data)
 
-    def _create(self):
+    def _create(self, **attributes):
         """ Create new interface on IxNetwork.
 
         Set enabled and description (==name).
@@ -60,11 +60,12 @@ class IxnInterface(IxnObject):
         :return: interface object reference.
         """
 
-        int_ref = super(IxnInterface, self)._create()
-        self.api.setAttributes(int_ref, enabled=True)
+        attributes['enabled'] = True
         if 'name' in self._data:
-            self.api.setAttributes(int_ref, description=self._data['name'])
-        return int_ref
+            attributes['description'] = self._data['name']
+        obj_ref = self.api.add(self.obj_parent(), self.obj_type(), **attributes)
+        self.api.commit()
+        return self.api.remapIds(obj_ref)
 
     def send_arp_ns(self):
         self.execute('sendArpAndNS')

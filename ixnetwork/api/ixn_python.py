@@ -70,7 +70,20 @@ class IxnPythonWrapper(object):
         return [v[0] for v in value] if type(value[0]) is list else value
 
     def help(self, objRef):
-        return self.ixn.help(objRef)
+        output = self.ixn.help(objRef)
+        children = None
+        if 'Child Lists:' in output:
+            children = output.split('Child Lists:')[1].split('Attributes:')[0].split('Execs:')[0]
+            children_list = [c.strip().split()[0] for c in children.strip().split('\n')]
+        attributes = None
+        if 'Attributes:' in output:
+            attributes = output.split('Attributes:')[1].split('Execs:')[0]
+            attributes_list = [a.strip().split()[0][1:] for a in attributes.strip().split('\n')]
+        execs = None
+        if 'Execs:':
+            execs = output.split('Execs:')[1]
+            execs_list = [e.strip().split()[0] for e in execs.strip().split('\n')]
+        return children_list, attributes_list, execs_list
 
     def add(self, parent, obj_type, **attributes):
         """ IXN API add command
@@ -78,7 +91,7 @@ class IxnPythonWrapper(object):
         @param parent: object parent - object will be created under this parent.
         @param object_type: object type.
         @param attributes: additional attributes.
-        @return: STC object reference.
+        @return: IXN object reference.
         """
 
         return self.ixn.add(parent.obj_ref(), obj_type, *self._get_args_list(**attributes))

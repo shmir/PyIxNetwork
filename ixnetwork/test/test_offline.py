@@ -39,8 +39,10 @@ class IxnTestOffline(IxnTestBase):
         for ixn_port in root.get_objects_by_type('vport'):
             for ixn_int in ixn_port.get_children('interface'):
                 print(ixn_int.obj_name(), ' = ', ixn_int.obj_ref())
-                for ixn_ipv4 in ixn_int.get_children('ipv4'):
-                    print(ixn_ipv4.obj_name(), ' = ', ixn_ipv4.obj_ref())
+                ixn_ipv4 = ixn_int.get_child('ipv4')
+                print(ixn_ipv4.obj_name(), ' = ', ixn_ipv4.obj_ref())
+                ixn_ipv6 = ixn_int.get_child('ipv6')
+                assert(ixn_ipv6 is None)
 
         for ixn_port in root.get_objects_by_type('vport'):
             for ixn_obj in ixn_port.get_children():
@@ -54,7 +56,7 @@ class IxnTestOffline(IxnTestBase):
 
         pass
 
-    def testcChildren(self):
+    def testChildren(self):
         """ Test specific get children methods. """
         self.logger.info(IxnTestOffline.testAnalyzeConfig.__doc__)
 
@@ -191,7 +193,7 @@ class IxnTestOffline(IxnTestBase):
             ixn_port = IxnPort(name=port_name, parent=self.ixn.root)
             for int_num in range(1, num_ints + 1):
                 int_name = '{} int {}'.format(port_name, int_num)
-                self.logger.info('Build Device "{}"'.format(int_name))
+                self.logger.info('Build Interface "{}"'.format(int_name))
                 ixn_int = IxnInterface(name=int_name, parent=ixn_port)
                 ixn_int_eth = ixn_int.get_child_static('ethernet')
                 macAddress = '00:11:22:33:{}:{}'.format(port_num, int_num)

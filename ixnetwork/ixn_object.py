@@ -24,6 +24,7 @@ class IxnObject(TgnObject):
 
     # Class level variables
     str_2_class = {}
+    root = None
 
     def get_obj_class(self, obj_type):
         """ Returns the object class based on parent and object types.
@@ -139,25 +140,12 @@ class IxnObject(TgnObject):
         return self.api.execute(command, self.obj_ref(), *arguments)
 
     def help(self, objRef):
-        output = self.api.help(self.obj_ref())
-        children = None
-        if 'Child Lists:' in output:
-            children = output.split('Child Lists:')[1].split('Attributes:')[0].split('Execs:')[0]
-        attributes = None
-        if 'Attributes:' in output:
-            attributes = output.split('Attributes:')[1].split('Execs:')[0]
-        execs = None
-        if 'Execs:':
-            execs = output.split('Execs:')[1]
-        return children.strip().split('\n'), attributes.strip().split('\n'), execs.strip().split('\n')
+        return self.api.help(self.obj_ref())
 
     def get_all_attributes(self, objRef):
         _, attributes, _ = self.help(objRef)
-        attr_vals = {}
-        for attribute in [attribute.strip().split()[0][1:] for attribute in attributes]:
-            attr_vals[attribute] = self.get_attribute(attribute)
-        return attr_vals
+        return {a: self.get_attribute(a) for a in attributes}
 
     def get_all_child_types(self, objRef):
         children, _, _ = self.help(objRef)
-        return [attribute.strip().split()[0] for attribute in children]
+        return children

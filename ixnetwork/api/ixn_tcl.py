@@ -50,7 +50,20 @@ class IxnTclWrapper(TgnTclWrapper):
         return value if value[0][0] != '{' else [tcl_list_2_py_list(v[1:-1]) for v in value]
 
     def help(self, objRef):
-        return self.ixnCommand('help', objRef)
+        output = self.ixnCommand('help', objRef)
+        children = None
+        if 'Child Lists:' in output:
+            children = output.split('Child Lists:')[1].split('Attributes:')[0].split('Execs:')[0]
+            children_list = [c.strip().split()[0] for c in children.strip().split('\n')]
+        attributes = None
+        if 'Attributes:' in output:
+            attributes = output.split('Attributes:')[1].split('Execs:')[0]
+            attributes_list = [a.strip().split()[0][1:] for a in attributes.strip().split('\n')]
+        execs = None
+        if 'Execs:':
+            execs = output.split('Execs:')[1]
+            execs_list = [e.strip().split()[0] for e in execs.strip().split('\n')]
+        return children_list, attributes_list, execs_list
 
     def getRoot(self):
         return self.ixnCommand('getRoot')
@@ -76,7 +89,7 @@ class IxnTclWrapper(TgnTclWrapper):
         @param parent: object parent - object will be created under this parent.
         @param object_type: object type.
         @param attributes: additional attributes.
-        @return: STC object reference.
+        @return: IXN object reference.
         """
         return self.ixnCommand('add', parent.obj_ref(), obj_type, get_args_pairs(attributes))
 
