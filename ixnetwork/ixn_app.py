@@ -68,7 +68,7 @@ class IxnApp(TgnApp):
         self.root.logger = self.logger
         self.root.api = self.api
         IxnObject.root = self.root
-        self.root.hw = self.root.get_child('availableHardware')
+        self.root.hw = self.root.get_child_static('availableHardware')
 
     def disconnect(self):
         """ Disconnect from chassis and server. """

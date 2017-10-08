@@ -46,9 +46,9 @@ class IxnRestWrapper(object):
 
         self.logger = logger
 
-    def request(self, command, url):
+    def request(self, command, url, **kwargs):
         self.logger.debug('{} - {}'.format(command.__name__, url))
-        response = command(url)
+        response = command(url, **kwargs)
         self.logger.debug('{}'.format(response))
         self.logger.debug('{}'.format(response.json()))
         return response
@@ -56,8 +56,8 @@ class IxnRestWrapper(object):
     def get(self, url):
         return self.request(requests.get, url)
 
-    def post(self, url, data):
-        response = self.request(requests.post, url)
+    def post(self, url, data=None):
+        response = self.request(requests.post, url, json=data)
         if 'id' in response.json():
             waitForComplete(response, url + response.json()['id'])
         return response
@@ -86,17 +86,15 @@ class IxnRestWrapper(object):
         self.execute('newConfig')
 
     def loadConfig(self, configFileName):
-        import json
         data = {'filename': configFileName}
-        response = self.post(self.root_url + '/files/', json.dumps(data))
-        print response
+        self.post(self.root_url + '/operations/loadConfig', data)
 
     def saveConfig(self, configFileName):
         self.execute('saveConfig', self.ixn.writeTo(configFileName.replace('\\', '/')))
 
     def getList(self, objRef, childList):
         response = self.get(objRef + '/' + childList)
-        return response.json()['links'][0]['href'].split()
+        return [c['links'][0]['href'] for c in response.json()]
 
     def getAttribute(self, objRef, attribute):
         response = self.get(self.server_url + objRef)
