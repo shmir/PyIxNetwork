@@ -4,7 +4,6 @@
 
 from sys import platform
 import requests
-import itertools
 import time
 
 from trafficgenerator.tgn_utils import TgnError
@@ -68,7 +67,7 @@ class IxnRestWrapper(object):
         self.root_url = self.server_url + self.session
 
     def getRoot(self):
-        return 'ixnetwork'
+        return self.session + 'ixnetwork'
 
     def commit(self):
         pass
@@ -92,14 +91,14 @@ class IxnRestWrapper(object):
         self.post(self.root_url + 'ixnetwork/operations/saveConfig', data)
 
     def getList(self, objRef, childList):
-        response = self.get(self.root_url + objRef + '/' + childList)
+        response = self.get(self.server_url + objRef + '/' + childList)
         if type(response.json()) is list:
             return [self._get_href(c) for c in response.json()]
         else:
             return [self._get_href(response.json())]
 
     def getAttribute(self, objRef, attribute):
-        response = self.get(self.root_url + objRef)
+        response = self.get(self.server_url + objRef)
         return response.json().get(attribute, '::ixNet::OK')
 
     def getListAttribute(self, objRef, attribute):
@@ -107,7 +106,7 @@ class IxnRestWrapper(object):
         return [v[0] for v in value] if type(value[0]) is list else value
 
     def help(self, objRef):
-        response = self.options(self.root_url + objRef)
+        response = self.options(self.server_url + objRef)
         children = response.json()['custom']['children']
         children_list = [c['name'] for c in children]
         attributes = response.json()['custom']['attributes']
@@ -125,14 +124,14 @@ class IxnRestWrapper(object):
         @return: STC object reference.
         """
 
-        response = self.post(self.root_url + parent.ref + '/' + obj_type, attributes)
+        response = self.post(self.server_url + parent.ref + '/' + obj_type, attributes)
         return self._get_href(response.json())
 
     def setAttributes(self, objRef, **attributes):
-        self.patch(self.root_url + objRef, attributes)
+        self.patch(self.server_url + objRef, attributes)
 
     def remapIds(self, objRef):
         return objRef
 
     def _get_href(self, response_entry):
-        return response_entry['links'][0]['href'].replace(self.session, '')
+        return response_entry['links'][0]['href']

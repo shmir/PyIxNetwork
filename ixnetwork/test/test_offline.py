@@ -8,8 +8,6 @@ from os import path
 import inspect
 from collections import OrderedDict
 
-from trafficgenerator.tgn_tcl import build_obj_ref_list
-
 from ixnetwork.test.test_base import IxnTestBase
 from ixnetwork.ixn_object import IxnObject
 from ixnetwork.ixn_port import IxnPort
@@ -104,8 +102,8 @@ class IxnTestOffline(IxnTestBase):
         ixn_ti = IxnL23TrafficItem(name='One interface')
         ixn_ti.set_attributes(trafficType='ipv4')
         ixn_ti_es = IxnObject(parent=ixn_ti, objType='endpointSet')
-        sources = list(ixn_ports)[0].get_objects_by_type('interface')[0].obj_ref()
-        destinations = list(ixn_ports)[1].get_objects_by_type('interface')[0].obj_ref()
+        sources = [list(ixn_ports)[0].get_objects_by_type('interface')[0].obj_ref()]
+        destinations = [list(ixn_ports)[1].get_objects_by_type('interface')[0].obj_ref()]
         ixn_ti_es.set_attributes(sources=sources, destinations=destinations)
 
         self._save_config()
@@ -123,13 +121,13 @@ class IxnTestOffline(IxnTestBase):
         ixn_ti.set_attributes(trafficType='ipv4')
 
         ixn_ti_es = IxnObject(parent=ixn_ti, objType='endpointSet')
-        sources = build_obj_ref_list(list(ixn_ports.values())[0])
-        destinations = build_obj_ref_list(list(ixn_ports.values())[1])
+        sources = [ixn_ports.keys()[0].obj_ref()]
+        destinations = [ixn_ports.keys()[1].obj_ref()]
         ixn_ti_es.set_attributes(sources=sources, destinations=destinations)
 
         ixn_ti_es = IxnObject(parent=ixn_ti, objType='endpointSet')
-        sources = build_obj_ref_list(list(ixn_ports.values())[1])
-        destinations = build_obj_ref_list(list(ixn_ports.values())[0])
+        sources = [ixn_ports.keys()[1].obj_ref()]
+        destinations = [ixn_ports.keys()[0].obj_ref()]
         ixn_ti_es.set_attributes(sources=sources, destinations=destinations)
 
         ixn_ti = IxnL23TrafficItem(name='Raw TI with two EPs')
@@ -137,21 +135,24 @@ class IxnTestOffline(IxnTestBase):
 
         ixn_ti_es = IxnObject(parent=ixn_ti, objType='endpointSet')
         ixn_ti_es.api.commit()
-        sources = list(ixn_ports)[0].obj_ref() + '/protocols'
-        destinations = list(ixn_ports)[1].obj_ref() + '/protocols'
+        sources = [ixn_ports.keys()[0].obj_ref() + '/protocols']
+        destinations = [ixn_ports.keys()[1].obj_ref() + '/protocols']
         ixn_ti_es.set_attributes(sources=sources, destinations=destinations)
         ixn_ti_es.api.commit()
-        ixn_ti_hls = IxnObject(parent=ixn_ti, objType='highLevelStream')
-        ixn_ti_hls.set_attributes(endpointSetId=1)
 
         ixn_ti_es = IxnObject(parent=ixn_ti, objType='endpointSet')
         ixn_ti_es.api.commit()
-        sources = list(ixn_ports)[1].obj_ref() + '/protocols'
-        destinations = list(ixn_ports)[0].obj_ref() + '/protocols'
+        sources = [ixn_ports.keys()[1].obj_ref() + '/protocols']
+        destinations = [ixn_ports.keys()[0].obj_ref() + '/protocols']
         ixn_ti_es.set_attributes(sources=sources, destinations=destinations)
         ixn_ti_es.api.commit()
-        ixn_ti_hls = IxnObject(parent=ixn_ti, objType='highLevelStream')
-        ixn_ti_hls.set_attributes(endpointSetId=1)
+
+        ixn_tis = self.ixn.root.get_child_static('traffic').get_children('trafficItem')
+        assert(len(ixn_tis) == 2)
+        ixn_eps = ixn_tis[0].get_children('endpointSet')
+        assert(len(ixn_eps) == 2)
+        ixn_eps = ixn_tis[1].get_children('endpointSet')
+        assert(len(ixn_eps) == 2)
 
         self._save_config()
         pass
@@ -172,12 +173,12 @@ class IxnTestOffline(IxnTestBase):
             topo_name = 'Topo {}'.format(topo_num)
             self.logger.info('Create Topo "{}"'.format(topo_name))
             ixn_topo = IxnTopology(name=topo_name)
-            ixn_topo.set_attributes(vports=ixn_port.obj_ref())
+            ixn_topo.set_attributes(vports=[ixn_port.obj_ref()])
             ixn_dg = IxnDeviceGroup(parent=ixn_topo)
             ixn_dg.set_attributes(multiplier=topo_num)
             ixn_eth = IxnNgpfEthernet(parent=ixn_dg)
             ixn_eth.get_attribute('mac')
-            ixn_ipv4 = IxnNgpfIpv4(parent=ixn_eth)
+            IxnNgpfIpv4(parent=ixn_eth)
 
     #
     # Auxiliary functions, no testing inside.

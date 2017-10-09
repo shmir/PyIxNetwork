@@ -5,7 +5,8 @@
 from os import path
 from sys import platform
 
-from trafficgenerator.tgn_tcl import TgnTclWrapper, get_args_pairs, tcl_file_name, tcl_str, tcl_list_2_py_list
+from trafficgenerator.tgn_tcl import TgnTclWrapper, get_args_pairs, tcl_file_name, tcl_str, tcl_list_2_py_list,\
+    py_list_to_tcl_list
 
 if platform == 'win32':
     pkgIndex_tail = 'TclScripts/lib/IxTclNetwork/pkgIndex.tcl'
@@ -81,7 +82,10 @@ class IxnTclWrapper(TgnTclWrapper):
         self.execute('newConfig')
 
     def setAttributes(self, objRef, **attributes):
-        self.ixnCommand('setMultiAttribute', tcl_str(objRef), get_args_pairs(attributes))
+        string_attributes = {}
+        for attribute, value in attributes.items():
+            string_attributes[attribute] = py_list_to_tcl_list(value) if type(value) is list else value
+        self.ixnCommand('setMultiAttribute', tcl_str(objRef), get_args_pairs(string_attributes))
 
     def add(self, parent, obj_type, **attributes):
         """ IXN API add command
