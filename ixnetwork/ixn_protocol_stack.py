@@ -10,7 +10,7 @@ from ixnetwork.ixn_object import IxnObject
 class IxnProtocolStack(IxnObject):
 
     def action(self, oper):
-        self.api.execute(oper, self.obj_ref())
+        self.execute(oper, self.obj_ref())
 
     def start(self):
         self.action('start')

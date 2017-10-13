@@ -16,6 +16,8 @@ else:
 
 class IxnTclWrapper(TgnTclWrapper):
 
+    null = '::ixNet::OBJ-null'
+
     def __init__(self, logger, ixn_install_dir, tcl_interp=None):
         super(IxnTclWrapper, self).__init__(logger, tcl_interp)
         self.source(path.join(ixn_install_dir, pkgIndex_tail))

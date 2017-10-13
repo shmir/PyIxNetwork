@@ -140,6 +140,7 @@ class IxnSamples(unittest.TestCase):
     def inventory(self):
 
         chassis = self.ixn.root.hw.get_chassis(port1_location.split('/')[0])
+        chassis.get_inventory()
 
         print('Full Inventory')
         print('=' * len('Full Inventory'))

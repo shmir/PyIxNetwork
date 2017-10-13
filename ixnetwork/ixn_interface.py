@@ -74,7 +74,7 @@ class IxnInterface(IxnObject):
         self.execute('sendRs')
 
     def ping(self, ip):
-        rc = self.execute('sendPing', ip)
+        rc = self.execute('sendPing', self.ref, ip)
         if 'failed' in rc:
             raise TgnError(rc)
 

@@ -54,13 +54,13 @@ class IxnTrafficItem(IxnObject):
         return {o.obj_name(): o for o in self.get_objects_or_children_by_type('highLevelStream')}
 
     def generate(self):
-        self.api.execute('generate', self.getObjRef())
+        self.execute('generate')
 
     def start(self):
-        self.api.execute('startStatelessTraffic', self.getObjRef())
+        self.execute('startStatelessTraffic')
 
     def stop(self):
-        self.api.execute('stopStatelessTraffic', self.getObjRef())
+        self.execute('stopStatelessTraffic')
 
 
 class IxnL23TrafficItem(IxnTrafficItem):

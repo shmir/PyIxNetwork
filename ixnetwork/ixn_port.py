@@ -46,9 +46,9 @@ class IxnPort(IxnObject):
 
         # todo - test if port owned by me.
         if force:
-            chassis.cards[card].ports[port].release()
+            chassis.get_card(int(card)).get_port(int(port)).release()
 
-        self.set_attributes(commit=True, connectedTo=chassis.obj_ref() + '/card:' + card + '/port:' + port)
+        self.set_attributes(commit=True, connectedTo=chassis.get_card(int(card)).get_port(int(port)).ref)
 
         while self.get_attribute('connectedTo') == '::ixNet::OBJ-null':
             time.sleep(1)
@@ -74,8 +74,8 @@ class IxnPort(IxnObject):
         return self.get_attribute('state').lower() == 'up'
 
     def release(self):
-        self.execute('releasePort')
-        self.set_attributes(commit=True, connectedTo='::ixNet::OBJ-null')
+        self.execute('releasePort', [self.ref])
+        self.set_attributes(commit=True, connectedTo=self.api.null)
 
     def get_interfaces(self):
         """
@@ -85,8 +85,8 @@ class IxnPort(IxnObject):
         return {o.obj_name(): o for o in self.get_objects_or_children_by_type('interface')}
 
     def send_arp_ns(self):
-        self.execute('sendArp')
-        self.execute('sendNs')
+        self.execute('sendArp', self.ref)
+        self.execute('sendNs', self.ref)
 
     def send_rs(self):
         self.execute('sendRs')

@@ -116,7 +116,8 @@ class IxnObject(TgnObject):
         if seq_number:
             child_obj_ref += ':' + str(seq_number)
         child_obj = self.get_object_by_ref(child_obj_ref)
-        return child_obj if child_obj else IxnObject(parent=self, objType=objType, objRef=child_obj_ref)
+        child_obj_type = self.get_obj_class(objType)
+        return child_obj if child_obj else child_obj_type(parent=self, objType=objType, objRef=child_obj_ref)
 
     def get_name(self):
         name = self.api.getAttribute(self.obj_ref(), 'name')

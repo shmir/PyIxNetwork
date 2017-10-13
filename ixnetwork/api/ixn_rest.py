@@ -5,6 +5,7 @@
 from sys import platform
 import requests
 import time
+import re
 
 from trafficgenerator.tgn_utils import TgnError
 
@@ -15,6 +16,8 @@ else:
 
 
 class IxnRestWrapper(object):
+
+    null = 'null'
 
     def __init__(self, logger):
         """ Init IXN REST package.
@@ -27,20 +30,25 @@ class IxnRestWrapper(object):
     def waitForComplete(self, response, timeout=90):
         if 'errors' in response.json():
             raise TgnError(response.json()['errors'][0])
-        if response.json()['state'] == 'SUCCESS':
+        if response.json()['state'].lower() == 'error':
+            raise TgnError('post {} failed'.format(response.url))
+        if response.json()['state'].lower() == 'success':
             return
         for _ in range(timeout):
-            response = requests.get(self.session_url)
-            if response.json()[0]['state'] not in ['IN_PROGRESS', 'down']:
+            response = requests.get(self.root_url)
+            if response.json()[0]['state'].lower() not in ['in_progress', 'down']:
                 return
             time.sleep(1)
-        raise TgnError('{} operation failed, state is {} after {} seconds'.format(self.session,
-                                                                                  response.json()['state'], timeout))
+        raise TgnError('{} operation failed, state is {} after {} seconds'.
+                       format(self.session, response.json()['state'], timeout))
 
     def request(self, command, url, **kwargs):
         self.logger.debug('{} - {} - {}'.format(command.__name__, url, kwargs))
         response = command(url, **kwargs)
         self.logger.debug('{}'.format(response))
+        if response.status_code == 400:
+            raise TgnError('failed to {} {} {} - status code {}'.
+                           format(command.__name__, url, kwargs, response.status_code))
         return response
 
     def get(self, url):
@@ -72,9 +80,16 @@ class IxnRestWrapper(object):
     def commit(self):
         pass
 
-    def execute(self, command, *arguments):
-        oper_url = self.root_url + 'ixnetwork/operations/' + command
-        return self.post(oper_url)
+    def execute(self, command, objRef=None, *arguments):
+        data = {}
+        if objRef:
+            operations_url = '{}operations/'.format(re.sub('[0-9]', '', objRef.replace(self.session, '')))
+        else:
+            operations_url = 'ixnetwork/operations/'
+        for argument in arguments:
+            data['arg' + str(len(data) + 1)] = argument
+        response = self.post(self.root_url + operations_url + command, data)
+        return response.json()['result']
 
     def getVersion(self):
         return self.execute('getVersion')
