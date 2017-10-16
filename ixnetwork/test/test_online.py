@@ -24,6 +24,9 @@ class IxnTestOnline(IxnTestBase):
     def testReservePorts(self):
         self._reserve_ports(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
 
+    def testPortsOnline(self):
+        self._reserve_ports(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
+
         for port in self.ports:
             assert(port.is_online())
 

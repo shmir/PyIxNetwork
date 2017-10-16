@@ -6,12 +6,14 @@ Classes and utilities to manage IXN classical protocols objects.
 
 from collections import OrderedDict
 from itertools import chain
+from IPy import IP
 
 from trafficgenerator.tgn_object import TgnL3
 
 from ixnetwork.ixn_object import IxnObject
 from ixnetwork.ixn_interface import filter_ints_based_on_vlan
 from ixnetwork.ixn_traffic import TrafficEnd
+from trafficgenerator.tgn_utils import is_ipv4
 
 
 class IxnProtocol(IxnObject):
@@ -67,8 +69,28 @@ class IxnProtocolRouter(IxnProtocol):
 class IxnBgpRouter(IxnProtocolServer):
     """ Represents IXN BGP router. """
 
+    def __init__(self, **data):
+        super(IxnBgpRouter, self).__init__(**data)
+        if IP(self.get_attribute('dutIpAddress')).version() == 4:
+            self.__class__ = IxnBgpRouterIpV4
+        else:
+            self.__class__ = IxnBgpRouterIpV6
+
     def get_endpoints(self, l3=None, end=TrafficEnd.both):
         return self.get_objects_by_type('routeRange')
+
+    @classmethod
+    def get_protocols_with_port(cls, ixn_port, l3, vlan=None):
+        cls = IxnBgpRouterIpV4 if is_ipv4(l3) else IxnBgpRouterIpV6
+        return super(IxnBgpRouter, cls).get_protocols_with_port(ixn_port, l3, vlan)
+
+
+class IxnBgpRouterIpV4(IxnBgpRouter):
+    pass
+
+
+class IxnBgpRouterIpV6(IxnBgpRouter):
+    pass
 
 
 class IxnOspfRouter(IxnProtocolRouter):
