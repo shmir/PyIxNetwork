@@ -105,3 +105,4 @@ syntax: regexp
 ixnetwork/test/IxNetwork.ini
 
 rest_sample.py
+ixnetwork/test/configs/invalid.ixncfg
