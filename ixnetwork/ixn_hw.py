@@ -27,7 +27,7 @@ class IxnPhyBase(IxnObject):
             child_type, child_index = child_type_index
             children = OrderedDict()
             for child in self.get_children(child_type):
-                children[child.get_attribute(child_index)] = child
+                children[int(child.get_attribute(child_index))] = child
             setattr(self, child_var, children)
             for child in getattr(self, child_var).values():
                 child.get_inventory()

@@ -13,17 +13,17 @@ import unittest
 import logging
 import time
 
-from ixnetwork.api.ixn_tcl import IxnTclWrapper
-from ixnetwork.api.ixn_python import IxnPythonWrapper
-from ixnetwork.ixn_app import IxnApp
+from ixnetwork.ixn_app import init_ixn
 from ixnetwork.ixn_statistics_view import IxnPortStatistics, IxnTrafficItemStatistics
+from trafficgenerator.tgn_utils import ApiType
 
 
-# API type = tcl or python. The default is tcl with DEBUG log messages (see bellow) because it gives best visibility.
-api = 'tcl'
+# API type = tcl, python or rest. The default is tcl with DEBUG log messages for best visibility.
+api = ApiType.rest
+tcl_port = 11009
+log_level = logging.DEBUG
+
 install_dir = 'C:/Program Files (x86)/Ixia/IxNetwork/8.01-GA'
-
-ixn_config_file = path.join(path.dirname(__file__), 'configs/test_config.ixncfg')
 
 port1_location = '192.168.42.61/1/1'
 port2_location = '192.168.42.61/1/2'
@@ -34,14 +34,10 @@ class IxnSamples(unittest.TestCase):
     def setUp(self):
         super(IxnSamples, self).setUp()
         logger = logging.getLogger('log')
-        logger.setLevel('DEBUG')
+        logger.setLevel(log_level)
         logger.addHandler(logging.StreamHandler(sys.stdout))
-        if api == 'tcl':
-            api_wrapper = IxnTclWrapper(logger, install_dir)
-        else:
-            api_wrapper = IxnPythonWrapper(logger, install_dir)
-        self.ixn = IxnApp(logger, api_wrapper=api_wrapper)
-        self.ixn.connect()
+        self.ixn = init_ixn(api, logger, install_dir)
+        self.ixn.connect(tcl_port=tcl_port)
 
     def tearDown(self):
         self.ixn.disconnect()
@@ -145,6 +141,6 @@ class IxnSamples(unittest.TestCase):
         print('Full Inventory')
         print('=' * len('Full Inventory'))
         for module_name, module in chassis.cards.items():
-            print('Card ' + module_name)
+            print('Card ' + str(module_name))
             for port_name in module.ports:
-                print('Port ' + port_name)
+                print('Port ' + str(port_name))
