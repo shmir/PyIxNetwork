@@ -125,7 +125,7 @@ class IxnObject(TgnObject):
         return name
 
     def get_enabled(self):
-        enabled = self.api.getAttribute(self.obj_ref(), 'enabled')
+        enabled = self.get_attribute('enabled')
         return is_true(enabled) if enabled != '::ixNet::OK' else True
 
     def set_attributes(self, commit=False, **attributes):

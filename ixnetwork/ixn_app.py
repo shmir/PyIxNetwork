@@ -98,6 +98,22 @@ class IxnApp(TgnApp):
     # IxNetwork GUI commands.
     #
 
+    def reserve(self, ports, force=False, wait_for_up=True, timeout=80):
+        """ Reserve port and optionally wait for port to come up.
+
+        :param ports: dict of <port, ip/module/port'>.
+        :param force: whether to revoke existing reservation (True) or not (False).
+        :param wait_for_up: True - wait for port to come up, False - return immediately.
+        :param timeout: how long (seconds) to wait for port to come up.
+        """
+
+        if force:
+            for port in ports:
+                port.release()
+
+        for port, location in ports.items():
+            port.reserve(location, False, wait_for_up, timeout)
+
     def send_arp_ns(self):
         self.api.execute('sendArpAll')
         self.api.execute('sendNsAll')
@@ -171,19 +187,23 @@ class IxnApp(TgnApp):
                 raise TgnError('Failed to {} port {} protocol {}'.
                                format(action, port.obj_name(), protocol))
 
-    def quick_test_apply(self, quick_test):
-        self.root.get_quick_tests()[quick_test].execute('apply')
+    def quick_test_apply(self, name):
+        quick_test = self.root.get_quick_tests()[name]
+        quick_test.execute('apply', quick_test.ref)
 
-    def quick_test_start(self, quick_test, blocking=False, timeout=3600):
-        self.root.get_quick_tests()[quick_test].execute('start')
+    def quick_test_start(self, name, blocking=False, timeout=3600):
+        quick_test = self.root.get_quick_tests()[name]
+        quick_test.execute('start', quick_test.ref)
         if blocking:
-            return self.wait_quick_test_status(quick_test, False, timeout)
+            return self.wait_quick_test_status(name, False, timeout)
 
-    def quick_test_stop(self, quick_test):
-        self.root.get_quick_tests()[quick_test].execute('stop')
+    def quick_test_stop(self, name):
+        quick_test = self.root.get_quick_tests()[name]
+        quick_test.execute('stop', quick_test.ref)
 
-    def wait_quick_test_status(self, quick_test, status=False, timeout=3600):
-        results = self.root.get_quick_tests()[quick_test].get_child_static('results')
+    def wait_quick_test_status(self, name, status=False, timeout=3600):
+        quick_test = self.root.get_quick_tests()[name]
+        results = quick_test.get_child_static('results')
         for _ in range(timeout):
             if is_true(results.get_attribute('isRunning')) == status:
                 return results.get_attribute('result')

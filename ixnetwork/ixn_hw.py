@@ -76,4 +76,4 @@ class IxnPhyPort(IxnPhyBase):
     children_types = {}
 
     def release(self):
-        self.execute('clearOwnership')
+        self.execute('clearOwnership', (self.ref,))

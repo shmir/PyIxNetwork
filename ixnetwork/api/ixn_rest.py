@@ -87,7 +87,7 @@ class IxnRestWrapper(object):
     def execute(self, command, objRef=None, *arguments):
         data = {}
         if objRef:
-            operations_url = '{}/operations/'.format(re.sub('[0-9]', '', objRef.replace(self.session, '')))
+            operations_url = '{}/operations/'.format(re.sub('\/[0-9]+', '', objRef.replace(self.session, '')))
         else:
             operations_url = 'ixnetwork/operations/'
         for argument in arguments:

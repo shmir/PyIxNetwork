@@ -19,14 +19,16 @@ from trafficgenerator.tgn_utils import ApiType
 
 
 # API type = tcl, python or rest. The default is tcl with DEBUG log messages for best visibility.
-api = ApiType.rest
-tcl_port = 11009
+api = ApiType.tcl
+tcl_port = 8009
 log_level = logging.DEBUG
 
 install_dir = 'C:/Program Files (x86)/Ixia/IxNetwork/8.01-GA'
 
-port1_location = '192.168.42.61/1/1'
-port2_location = '192.168.42.61/1/2'
+port1_location = '192.168.42.61/2/1'
+port2_location = '192.168.42.61/2/2'
+
+ixn_config_file = path.join(path.dirname(__file__), 'configs/test_config.ixncfg')
 
 
 class IxnSamples(unittest.TestCase):
@@ -103,8 +105,8 @@ class IxnSamples(unittest.TestCase):
     def reserve_ports(self):
         self.load_config()
         self.ports = self.ixn.root.get_children('vport')
-        self.ixn.root.get_object_by_name('Port 1').reserve(port1_location)
-        self.ixn.root.get_object_by_name('Port 2').reserve(port2_location)
+        self.ixn.reserve({self.ixn.root.get_object_by_name('Port 1'): port1_location,
+                          self.ixn.root.get_object_by_name('Port 2'): port2_location}, force=True)
 
     def protocols(self):
         self.reserve_ports()
@@ -117,9 +119,10 @@ class IxnSamples(unittest.TestCase):
         self.ixn.l23_traffic_start()
         time.sleep(8)
         self.ixn.l23_traffic_stop()
-        port_stats = IxnPortStatistics()
+        time.sleep(2)
+        port_stats = IxnPortStatistics(self.ixn.root)
         port_stats.read_stats()
-        ti_stats = IxnTrafficItemStatistics()
+        ti_stats = IxnTrafficItemStatistics(self.ixn.root)
         ti_stats.read_stats()
         print(port_stats.get_object_stats('Port 1'))
         print(port_stats.get_counters('Frames Tx.'))

@@ -5,17 +5,22 @@ IXN - IxNetwork
 This package implements Python OO API for Ixia IxNetwork traffic generator.
 
 The package works on top of multiple low level APIs:
-1. IxnTclWrapper - a Python wrapper (using Python Tk package) over IXN native Tcl API (IxTclNetwork) .
-	Instead of using Tk (and SpirentTestCenter package) the calling application can provide its own connection to Tcl
-	interpreter as long as the connection supports the 'eval' command and can perform STC Tcl API commands.
-2. IxnPythonWrapper - a Python wrapper over IXN native Python API (StcPython.py)
-3. Any IxnCustomerApi as long as it supports the same API as all above APIs support (define ABC).
+1. IxnRestWrapper - a Python wrapper of IXN native REST API.
+	Available for IXN versions that supports REST.
+	Allows client less operation of IXN scripts. 
+2. IxnTclWrapper - a Python wrapper (using Python Tk package) over IXN native Tcl API (IxTclNetwork) .
+	Available for all IXN versions.
+	Instead of using Tk (and IxTclNetwork package) the calling application can provide its own connection to Tcl
+	interpreter as long as the connection supports the 'eval' command and can perform IXN Tcl API commands.
+3. IxnPythonWrapper - a Python wrapper over IXN native Python API (StcPython.py).
+	Available for IXN versions that	support python.
+4. Any IxnCustomerApi as long as it supports the same API as all above APIs support (define ABC).
 
 Installation:
 stable - pip instsll ixnooapi
 
 Prerequisite:
-IxNetwork application installed.
+When using Tcl or Python wrappers - IxNetwork application installed. 
 
 Getting started:
 Under ixnetwork.test.ixn_samples you will find some basic samples.
