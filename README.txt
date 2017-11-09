@@ -1,6 +1,4 @@
 
-+++ WORK IN PROGRESS - fully functional, documentation under construction. +++
-
 TGN - Traffic Generator
 IXN - IxNetwork
 
@@ -15,7 +13,6 @@ The package works on top of multiple low level APIs:
 
 Installation:
 stable - pip instsll ixnooapi
-testing - pip install ixnooapi -r --extra-index-url https://testpypi.python.org/pypi
 
 Prerequisite:
 IxNetwork application installed.

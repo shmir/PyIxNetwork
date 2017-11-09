@@ -24,7 +24,6 @@ class IxnObject(TgnObject):
 
     # Class level variables
     str_2_class = {}
-    root = None
 
     def get_obj_class(self, obj_type):
         """ Returns the object class based on parent and object types.
@@ -79,7 +78,7 @@ class IxnObject(TgnObject):
         # IXN returns '::ixNet::OK' for invalid attributes. We want error.
         if value == '::ixNet::OK':
             raise TgnError(self.obj_ref() + ' does not have attribute ' + attribute)
-        return value
+        return str(value)
 
     def get_list_attribute(self, attribute):
         """
@@ -138,7 +137,7 @@ class IxnObject(TgnObject):
         self.set_attributes(enabled=enabled)
 
     def execute(self, command, *arguments):
-        return self.api.execute(command, self.obj_ref(), *arguments)
+        return self.api.execute(command, self.ref, *arguments)
 
     def help(self, objRef):
         return self.api.help(self.obj_ref())

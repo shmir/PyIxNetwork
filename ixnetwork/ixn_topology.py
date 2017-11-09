@@ -23,7 +23,7 @@ class IxnTopologyBaseClass(IxnObject):
         return {o.obj_name(): o for o in self.get_objects_or_children_by_type('deviceGroup')}
 
     def action(self, action, timeout=64, *arguments):
-        self.execute(action, *arguments)
+        self.execute(action, (self.ref,) + arguments)
         now = time.time()
         while self.get_attribute('status') != self.action_2_status[action] and time.time() - now <= timeout:
             time.sleep(1)

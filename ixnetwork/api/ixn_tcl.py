@@ -4,9 +4,11 @@
 
 from os import path
 from sys import platform
+import re
 
-from trafficgenerator.tgn_tcl import TgnTclWrapper, get_args_pairs, tcl_file_name, tcl_str, tcl_list_2_py_list,\
-    py_list_to_tcl_list
+from trafficgenerator.tgn_utils import TgnError
+from trafficgenerator.tgn_tcl import (TgnTclWrapper, get_args_pairs, tcl_file_name, tcl_str, tcl_list_2_py_list,
+                                      py_list_to_tcl_list, build_obj_ref_list)
 
 if platform == 'win32':
     pkgIndex_tail = 'TclScripts/lib/IxTclNetwork/pkgIndex.tcl'
@@ -34,10 +36,21 @@ class IxnTclWrapper(TgnTclWrapper):
         return self.ixnCommand('commit')
 
     def connect(self, ip, port):
-        return self.ixnCommand('connect ' + ip + ' -port ' + str(port) + ' -version ' + self.getVersion())
+        client_version = self.getVersion()
+        self.ixnCommand('connect ' + ip + ' -port ' + str(port) + ' -version ' + client_version)
+        major_client_version = re.findall('^[\d]+.[\d]+', client_version)[0]
+        client_version = client_version.split('.')[:2]
+        buildNumber = self.getAttribute(self.getRoot() + '/globals', 'buildNumber')
+        major_server_version = re.findall('^[\d]+.[\d]+', buildNumber)[0]
+        if major_client_version != major_server_version:
+            raise TgnError('Client version {} != Server version {}'.format(major_client_version, major_server_version))
+        return client_version
 
-    def execute(self, command, *arguments):
-        return self.ixnCommand('exec ' + command, *arguments)
+    def execute(self, command, objRef=None, *arguments):
+        flatten_arguments = []
+        for argument in arguments:
+            flatten_arguments.append(' '.join(argument) if type(argument) in [list, tuple] else argument)
+        return self.ixnCommand('exec ' + command, *flatten_arguments)
 
     def getList(self, objRef, childList):
         children_list = self.ixnCommand('getList', objRef, childList)
@@ -75,10 +88,10 @@ class IxnTclWrapper(TgnTclWrapper):
         return self.ixnCommand('getVersion')
 
     def loadConfig(self, configFileName):
-        self.execute('loadConfig', self.ixnCommand('readFrom', tcl_file_name(configFileName)))
+        self.execute('loadConfig', None, self.ixnCommand('readFrom', tcl_file_name(configFileName)))
 
     def saveConfig(self, configFileName):
-        self.execute('saveConfig', self.ixnCommand('writeTo', tcl_file_name(configFileName)))
+        self.execute('saveConfig', None, self.ixnCommand('writeTo', tcl_file_name(configFileName)))
 
     def newConfig(self):
         self.execute('newConfig')
@@ -108,3 +121,12 @@ class IxnTclWrapper(TgnTclWrapper):
 
     def remapIds(self, objRef):
         return self.eval('lindex [ixNet remapIds ' + objRef + '] 0')
+
+    def regenerate(self, traffic, *traffic_items):
+        self.execute('generate', None, tcl_str(build_obj_ref_list(*traffic_items)))
+
+    def startStatelessTraffic(self, traffic, *traffic_items):
+        self.execute('startStatelessTraffic', None, tcl_str(build_obj_ref_list(*traffic_items)))
+
+    def stopStatelessTraffic(self, traffic, *traffic_items):
+        self.execute('stopStatelessTraffic', None, tcl_str(build_obj_ref_list(*traffic_items)))

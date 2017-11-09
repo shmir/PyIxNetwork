@@ -6,7 +6,7 @@ from collections import OrderedDict
 
 from trafficgenerator.tgn_utils import is_false, TgnError
 
-from ixnetwork.ixn_object import IxnObject
+from ixnetwork.api.ixn_rest import IxnRestWrapper
 
 
 class IxnStatisticsView(object):
@@ -15,10 +15,18 @@ class IxnStatisticsView(object):
     Note that Flow Statistics are poorly supported in this version as the object name spans over multiple column.
     """
 
-    def __init__(self, view):
-        root = IxnObject.root
-        self.name_caption = view_2_caption.get(view, 'Port Name')
-        self.ixn_view = root.get_child_static('statistics').get_child_static('view:"{}"'.format(view))
+    def __init__(self, root, name):
+        self.root = root
+        self.name_caption = view_2_caption.get(name, 'Port Name')
+        statistics = self.root.get_child_static('statistics')
+        if type(self.root.api) is IxnRestWrapper:
+            views = statistics.get_children('view')
+            for view in views:
+                if view.get_attribute('caption') == name:
+                    self.ixn_view = view
+                    break
+        else:
+            self.ixn_view = statistics.get_child_static('view:"{}"'.format(name))
 
     def read_stats(self):
         """ Reads the statistics view from IXN and saves it in statistics dictionary. """
@@ -99,20 +107,20 @@ class IxnStatisticsView(object):
 
 class IxnPortStatistics(IxnStatisticsView):
 
-    def __init__(self):
-        super(self.__class__, self).__init__(view='Port Statistics')
+    def __init__(self, root):
+        super(self.__class__, self).__init__(root, 'Port Statistics')
 
 
 class IxnTrafficItemStatistics(IxnStatisticsView):
 
-    def __init__(self):
-        super(self.__class__, self).__init__(view='Traffic Item Statistics')
+    def __init__(self, root):
+        super(self.__class__, self).__init__(root, 'Traffic Item Statistics')
 
 
 class IxnFlowStatistics(IxnStatisticsView):
 
-    def __init__(self):
-        super(self.__class__, self).__init__(view='Flow Statistics')
+    def __init__(self, root):
+        super(self.__class__, self).__init__(root, 'Flow Statistics')
 
     def read_stats(self):
         """ Reads the statistics view from IXN and saves it in statistics dictionary.

@@ -4,7 +4,6 @@ Classes and utilities to manage IXN port (vport) objects.
 @author yoram@ignissoft.com
 """
 
-import re
 import time
 
 from trafficgenerator.tgn_utils import is_local_host
@@ -19,8 +18,9 @@ def get_port(obj_ref):
     :return: the ancestor port object of the obj_ref.
     """
 
-    root = IxnObject.root
-    return root.get_object_by_ref(re.search('(.*[vport|topology]:\d+).*', obj_ref).group(1))
+    raise Exception('Poor implementation')
+#     root = IxnObject.root
+#     return root.get_object_by_ref(re.search('(.*[vport|topology]:\d+).*', obj_ref).group(1))
 
 
 class IxnPort(IxnObject):
@@ -89,4 +89,4 @@ class IxnPort(IxnObject):
         self.execute('sendNs', self.ref)
 
     def send_rs(self):
-        self.execute('sendRs')
+        self.execute('sendRs', self.ref)

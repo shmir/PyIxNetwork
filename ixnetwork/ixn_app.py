@@ -4,7 +4,6 @@ Classes and utilities to manage IXN application.
 @author yoram@ignissoft.com
 """
 
-import sys
 from os import path
 import time
 from builtins import range
@@ -43,8 +42,10 @@ def init_ixn(api, logger, install_dir=None):
         api_wrapper = IxnTclWrapper(logger, install_dir)
     elif api == ApiType.python:
         api_wrapper = IxnPythonWrapper(logger, install_dir)
-    else:
+    elif api == ApiType.rest:
         api_wrapper = IxnRestWrapper(logger)
+    else:
+        raise TgnError('{} API not supported - use Tcl, python or REST'.format(api))
     return IxnApp(logger, api_wrapper)
 
 
@@ -118,28 +119,21 @@ class IxnApp(TgnApp):
         """
         self.api.execute('stopAllProtocols')
 
+    def regenerate(self):
+        traffic = self.root.get_child_static('traffic')
+        self.root.regenerate(traffic.get_objects_or_children_by_type('trafficItem'))
+
     def traffic_apply(self):
-        self.root.get_child_static('traffic').execute('apply')
+        traffic = self.root.get_child_static('traffic')
+        self.root.get_child_static('traffic').execute('apply', traffic.ref)
 
     def l23_traffic_start(self, blocking=False):
-        self.root.get_child_static('traffic').execute('startStatelessTraffic')
-        self.wait_traffic_state("started", timeout=16)
-        if blocking:
-            self.wait_traffic_state("stopped", timeout=sys.maxsize)
-        else:
-            time.sleep(2)
+        traffic = self.root.get_child_static('traffic')
+        self.root.l23_traffic_start(traffic.get_objects_or_children_by_type('trafficItem'), blocking)
 
     def l23_traffic_stop(self):
-        self.root.get_child_static('traffic').execute('stopStatelessTraffic')
-        self.wait_traffic_state("stopped", timeout=8)
-
-    def wait_traffic_state(self, state, timeout):
-        for _ in range(timeout):
-            if self.root.get_child_static('traffic').get_attribute('state') == state:
-                return
-            time.sleep(1)
-        raise TgnError('Traffic failed, traffic is {} after {} seconds'.
-                       format(self.root.get_child_static('traffic').get_attribute('isTrafficRunning'), timeout))
+        traffic = self.root.get_child_static('traffic')
+        self.root.l23_traffic_stop(traffic.get_objects_or_children_by_type('trafficItem'))
 
     def protocol_start(self, protocol):
         """ Start a protocol and wait for all protocols to start.
@@ -162,7 +156,7 @@ class IxnApp(TgnApp):
             protocols = port.get_child_static('protocols')
             protocol_obj = protocols.get_child_static(protocol)
             if is_true(protocol_obj.get_attribute('enabled')):
-                protocol_obj.execute(action)
+                protocol_obj.execute(action, protocol_obj.ref)
                 protocol_objs.append(protocol_obj)
         # Must wait before reading state
         time.sleep(2)

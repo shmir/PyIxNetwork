@@ -2,7 +2,10 @@
 @author yoram@ignissoft.com
 """
 
-from trafficgenerator.tgn_tcl import tcl_str, build_obj_ref_list
+import sys
+import time
+
+from trafficgenerator.tgn_utils import TgnError
 
 from ixnetwork.ixn_object import IxnObject
 
@@ -46,5 +49,26 @@ class IxnRoot(IxnObject):
 
     def regenerate(self, *traffic_items):
         traffic = self.get_child_static('traffic')
-        traffic_items = traffic.get_objects_or_children_by_type('trafficItem')
-        self.api.execute('generate', tcl_str(build_obj_ref_list(traffic_items)))
+        self.api.regenerate(traffic, *traffic_items)
+
+    def l23_traffic_start(self, traffic_items, blocking=False):
+        traffic = self.get_child_static('traffic')
+        self.api.startStatelessTraffic(traffic, traffic_items)
+        self.wait_traffic_state("started", timeout=16)
+        if blocking:
+            self.wait_traffic_state('stopped', timeout=int(2.628e+6))
+        else:
+            time.sleep(2)
+
+    def l23_traffic_stop(self, *traffic_items):
+        traffic = self.get_child_static('traffic')
+        self.api.stopStatelessTraffic(traffic, *traffic_items)
+        self.wait_traffic_state("stopped", timeout=8)
+
+    def wait_traffic_state(self, state, timeout):
+        for _ in range(timeout):
+            if self.get_child_static('traffic').get_attribute('state') == state:
+                return
+            time.sleep(1)
+        raise TgnError('Traffic failed, traffic is {} after {} seconds'.
+                       format(self.get_child_static('traffic').get_attribute('isTrafficRunning'), timeout))

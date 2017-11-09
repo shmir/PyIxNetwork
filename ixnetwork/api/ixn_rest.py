@@ -36,7 +36,11 @@ class IxnRestWrapper(object):
             return
         for _ in range(timeout):
             response = requests.get(self.root_url)
-            if response.json()[0]['state'].lower() not in ['in_progress', 'down']:
+            if type(response.json()) == dict:
+                state = response.json()['state']
+            else:
+                state = response.json()[0]['state']
+            if state.lower() not in ['in_progress', 'down']:
                 return
             time.sleep(1)
         raise TgnError('{} operation failed, state is {} after {} seconds'.
@@ -83,7 +87,7 @@ class IxnRestWrapper(object):
     def execute(self, command, objRef=None, *arguments):
         data = {}
         if objRef:
-            operations_url = '{}operations/'.format(re.sub('[0-9]', '', objRef.replace(self.session, '')))
+            operations_url = '{}/operations/'.format(re.sub('[0-9]', '', objRef.replace(self.session, '')))
         else:
             operations_url = 'ixnetwork/operations/'
         for argument in arguments:
@@ -118,7 +122,12 @@ class IxnRestWrapper(object):
 
     def getListAttribute(self, objRef, attribute):
         value = self.getAttribute(objRef, attribute)
-        return [v[0] for v in value] if type(value[0]) is list else value
+        if type(value) is dict:
+            return [v[0] for v in value.values()]
+        elif type(value[0]) is list:
+            return [v[0] for v in value]
+        else:
+            return value
 
     def help(self, objRef):
         response = self.options(self.server_url + objRef)
@@ -147,6 +156,15 @@ class IxnRestWrapper(object):
 
     def remapIds(self, objRef):
         return objRef
+
+    def regenerate(self, traffic, *traffic_items):
+        self.execute('generateifrequired', traffic.ref, traffic.ref)
+
+    def startStatelessTraffic(self, traffic, traffic_items):
+        self.execute('startstatelesstraffic', traffic.ref, [ti.ref for ti in traffic_items])
+
+    def stopStatelessTraffic(self, traffic, traffic_items):
+        self.execute('stopstatelesstraffic', traffic.ref, [ti.ref for ti in traffic_items])
 
     def _get_href(self, response_entry):
         return response_entry['links'][0]['href']
