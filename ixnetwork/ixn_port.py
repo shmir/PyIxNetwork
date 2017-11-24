@@ -12,17 +12,6 @@ from trafficgenerator.tgn_utils import TgnError
 from ixnetwork.ixn_object import IxnObject
 
 
-def get_port(obj_ref):
-    """
-    :param obj_ref: port/deviceGroup child object reference.
-    :return: the ancestor port object of the obj_ref.
-    """
-
-    raise Exception('Poor implementation')
-#     root = IxnObject.root
-#     return root.get_object_by_ref(re.search('(.*[vport|topology]:\d+).*', obj_ref).group(1))
-
-
 class IxnPort(IxnObject):
 
     def __init__(self, **data):

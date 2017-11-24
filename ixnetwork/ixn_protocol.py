@@ -241,7 +241,7 @@ class IxnRsvpNeighborPair(IxnProtocolServer):
             return self.get_objects_by_type('destinationRange')
 
 
-class IxnStaticIp(IxnProtocolServer):
+class IxnStaticIp(IxnProtocolServer, TgnL3):
     """ Represents RSVP Neighbor Pair. """
 
     def __init__(self, **data):
@@ -252,6 +252,12 @@ class IxnStaticIp(IxnProtocolServer):
 
     def get_endpoints(self, l3=None, end=TrafficEnd.both):
         return [self]
+
+    def ip(self):
+        return self.get_attribute('ipStart')
+
+    def num_ips(self):
+        return int(self.get_attribute('count'))
 
     @classmethod
     def get_protocols_with_port(cls, ixn_port, l3, vlan=None):
