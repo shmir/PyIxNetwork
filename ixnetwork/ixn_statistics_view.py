@@ -142,6 +142,7 @@ class IxnFlowStatistics(IxnStatisticsView):
             name = name[:-1]
             self.statistics[name] = row
 
+
 view_2_caption = {'Flow Statistics': None,
                   'Port Statistics': 'Port Name',
                   'Traffic Item Statistics': 'Traffic Item'

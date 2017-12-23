@@ -149,3 +149,12 @@ class IxnObject(TgnObject):
     def get_all_child_types(self, objRef):
         children, _, _ = self.help(objRef)
         return children
+
+    def get_objects_from_attribute(self, attribute):
+        objects = []
+        for handle in self.get_attribute(attribute).split():
+            obj = self.root.get_object_by_ref(handle)
+            if not obj:
+                obj = IxnObject(objRef=handle, parent=self)
+            objects.append(obj)
+        return objects

@@ -211,6 +211,7 @@ class IxnApp(TgnApp):
         raise TgnError('Quick test failed, quick test running state is {} after {} seconds'.
                        format(results.get_attribute('isRunning'), timeout))
 
+
 TYPE_2_OBJECT = {'availableHardware': IxnHw,
                  'bridge': IxnStpBridge,
                  'card': IxnCard,
