@@ -1,8 +1,9 @@
 """
+Classes and utilities to manage IXN topologies and NGPF.
+
 @author yoram@ignissoft.com
 """
 
-import os
 import time
 
 from trafficgenerator.tgn_utils import TgnError
@@ -46,10 +47,7 @@ class IxnTopologyBaseClass(IxnObject):
 
 
 class IxnTopology(IxnTopologyBaseClass):
-    """ Represents IXN topology.
-
-    Currently supports topology under single port only.
-    """
+    """ Represents IXN topology. """
 
     def __init__(self, **data):
         data['objType'] = 'topology'
@@ -57,45 +55,41 @@ class IxnTopology(IxnTopologyBaseClass):
         super(self.__class__, self).__init__(**data)
 
 
-class IxnMultivalueBase(IxnTopologyBaseClass):
-    """ Represents IXN device group. """
-
-
 class IxnDeviceGroup(IxnTopologyBaseClass):
     """ Represents IXN device group. """
 
     def __init__(self, **data):
         data['objType'] = 'deviceGroup'
-        super(IxnDeviceGroup, self).__init__(**data)
+        super(self.__class__, self).__init__(**data)
+
+
+class IxnNetworkGroup(IxnTopologyBaseClass):
+    """ Represents IXN network group. """
+
+    def __init__(self, **data):
+        data['objType'] = 'networkGroup'
+        super(self.__class__, self).__init__(**data)
 
 
 class IxnNextGenProtocol(IxnTopologyBaseClass):
-    """ Represents IXN device group. """
+    """ Represents IXN NGPF. """
 
     def __init__(self, **data):
         data['objType'] = self.protocol
         super(IxnNextGenProtocol, self).__init__(**data)
-
-    def getProtocolItems(self):
-        items = {}
-        for item in self.getChildren('item'):
-            name = self.getName() + ' ' + os.path.basename(item).split(':')[1]
-            objectDict = {'-name': name,
-                          '-objRef': item,
-                          '-type': 'ProtocolNgpfItem',
-                          '-subType': self.getSubType()}
-            items[name] = IxnNextGenProtocolItem(self.api, objectDict)
-        return items
 
 
 class IxnNgpfEthernet(IxnNextGenProtocol):
     protocol = 'ethernet'
 
 
+class IxnNgpfVlan(IxnNextGenProtocol):
+    protocol = 'vlan'
+
+
 class IxnNgpfIpv4(IxnNextGenProtocol):
     protocol = 'ipv4'
 
 
-class IxnNextGenProtocolItem(IxnTopologyBaseClass):
-
-    pass
+class IxnNgpfIpv6(IxnNextGenProtocol):
+    protocol = 'ipv6'

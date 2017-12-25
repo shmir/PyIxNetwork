@@ -22,7 +22,8 @@ from ixnetwork.ixn_protocol import (IxnBgpRouter, IxnOspfRouter, IxnOspfV3Router
                                     IxnOpenFlowDevice, IxnLacp, IxnIsisRouter, IxnIsisRouteRange, IxnLdpRouter,
                                     IxnLdpRouteRange, IxnRsvpNeighborPair, IxnStaticIp, IxnBfdfRouter)
 from ixnetwork.ixn_interface import IxnInterface, IxnInterfaceL3
-from ixnetwork.ixn_topology import IxnTopology, IxnDeviceGroup, IxnNgpfEthernet, IxnNgpfIpv4
+from ixnetwork.ixn_topology import (IxnTopology, IxnNgpfEthernet, IxnNgpfVlan, IxnNgpfIpv4, IxnNgpfIpv6,
+                                    IxnDeviceGroup, IxnNetworkGroup)
 from ixnetwork.ixn_root import IxnRoot
 from ixnetwork.ixn_protocol_stack import IxnRange
 from ixnetwork.ixn_hw import IxnHw, IxnChassis, IxnCard, IxnPhyPort
@@ -224,10 +225,12 @@ TYPE_2_OBJECT = {'availableHardware': IxnHw,
                  'ip': IxnStaticIp,
                  'ipv4': {'interface': IxnInterfaceL3,
                           'etherenet': IxnNgpfIpv4},
-                 'ipv6': IxnInterfaceL3,
+                 'ipv6': {'interface': IxnInterfaceL3,
+                          'etherenet': IxnNgpfIpv6},
                  'lacp': IxnLacp,
                  'neighborPair': IxnRsvpNeighborPair,
                  'neighborRange': IxnBgpRouter,
+                 'networkGroup': IxnNetworkGroup,
                  'port': IxnPhyPort,
                  'querier': IxnIgmpQuerier,
                  'range': IxnRange,
@@ -244,5 +247,6 @@ TYPE_2_OBJECT = {'availableHardware': IxnHw,
                  'source': {'interface': IxnPimsmSource},
                  'topology': IxnTopology,
                  'trafficItem': IxnTrafficItem,
+                 'vlan': IxnNgpfVlan,
                  'vport': IxnPort,
                  }
