@@ -9,11 +9,6 @@ import re
 
 from trafficgenerator.tgn_utils import TgnError
 
-if platform == 'win32':
-    py_tail = 'API/Python/IxNetwork.py'
-else:
-    py_tail = 'lib/PythonApi/IxNetwork.py'
-
 
 class IxnRestWrapper(object):
 
