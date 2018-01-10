@@ -17,6 +17,7 @@ def read(*filenames, **kwargs):
             buf.append(f.read())
     return sep.join(buf)
 
+
 with open('requirements.txt') as f:
     required = f.read().splitlines()
 install_requires = [r for r in required if r and r[0] != '#' and not r.startswith('git')]
@@ -24,7 +25,7 @@ install_requires = [r for r in required if r and r[0] != '#' and not r.startswit
 long_description = read('README.txt')
 
 setup(
-    name='ixnooapi',
+    name='pyixnetwork',
     version=ixnetwork.__version__,
     url='https://github.com/shmir/PyIxNetwork/',
     license='Apache Software License',

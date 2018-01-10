@@ -18,11 +18,17 @@ from ixnetwork.ixn_topology import IxnTopology, IxnDeviceGroup, IxnNgpfEthernet,
 
 class IxnTestOffline(IxnTestBase):
 
-    def testAnalyzeConfig(self):
+    def testLoadConfig(self):
         """ Test configuration load. """
+        self.logger.info(IxnTestOffline.testLoadConfig.__doc__)
+
+        self._load_config(path.join(path.dirname(__file__), 'configs\\test_config.ixncfg'))
+
+    def testAnalyzeConfig(self):
+        """ Test configuration analysis. """
         self.logger.info(IxnTestOffline.testAnalyzeConfig.__doc__)
 
-        self._load_config(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
+        self._load_config(path.join(path.dirname(__file__), 'configs\\test_config.ixncfg'))
         root = self.ixn.root
 
         root.get_children('vport')
@@ -107,7 +113,6 @@ class IxnTestOffline(IxnTestBase):
         ixn_ti_es.set_attributes(sources=sources, destinations=destinations)
 
         self._save_config()
-        pass
 
     def testFlowGroups(self):
         """ Test configuration build with various flow group types. """
@@ -155,7 +160,6 @@ class IxnTestOffline(IxnTestBase):
         assert(len(ixn_eps) == 2)
 
         self._save_config()
-        pass
 
     def testTopologies(self):
         """ Test configuration build with topologies """

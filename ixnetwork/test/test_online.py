@@ -33,8 +33,6 @@ class IxnTestOnline(IxnTestBase):
         for port in self.ports:
             port.release()
 
-        pass
-
     def testReload(self):
 
         self._reserve_ports(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
@@ -44,8 +42,6 @@ class IxnTestOnline(IxnTestBase):
 
         self.ixn.root.get_object_by_name('Port 2').reserve(self.config.get('IXN', 'port1'))
         self.ixn.root.get_object_by_name('Port 1').reserve(self.config.get('IXN', 'port2'))
-
-        pass
 
     def testReleasePorts(self):
         self._reserve_ports(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))

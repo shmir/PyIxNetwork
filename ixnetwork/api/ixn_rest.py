@@ -2,7 +2,7 @@
 :author: yoram@ignissoft.com
 """
 
-from sys import platform
+from os import path
 import requests
 import time
 import re
@@ -96,13 +96,30 @@ class IxnRestWrapper(object):
     def newConfig(self):
         self.execute('newConfig')
 
-    def loadConfig(self, configFileName):
-        data = {'filename': configFileName}
+    def loadConfig(self, config_file_name):
+        basename = path.basename(config_file_name)
+        with open(config_file_name, mode='rb') as f:
+            configContent = f.read()
+
+        urlHeadersData = {'content-type': 'application/octet-stream'}
+        uploadUrl = self.root_url + 'ixnetwork/files/' + basename
+        self.request(requests.post, uploadUrl, data=configContent, headers=urlHeadersData)
+
+        data = {'arg1': basename}
         self.post(self.root_url + 'ixnetwork/operations/loadConfig', data)
 
-    def saveConfig(self, configFileName):
-        data = {'filename': configFileName}
+    def saveConfig(self, config_file_name):
+        basename = path.basename(config_file_name)
+
+        data = {'arg1': basename}
         self.post(self.root_url + 'ixnetwork/operations/saveConfig', data)
+
+        urlHeadersData = {'content-type': 'application/octet-stream'}
+        uploadUrl = self.root_url + 'ixnetwork/files/' + basename
+        r = self.request(requests.get, uploadUrl, headers=urlHeadersData)
+
+        with open(config_file_name, mode='wb') as f:
+            f.write(r.content)
 
     def getList(self, objRef, childList):
         response = self.get(self.server_url + objRef + '/' + childList)

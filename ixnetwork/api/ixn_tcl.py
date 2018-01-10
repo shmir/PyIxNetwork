@@ -87,11 +87,11 @@ class IxnTclWrapper(TgnTclWrapper):
     def getVersion(self):
         return self.ixnCommand('getVersion')
 
-    def loadConfig(self, configFileName):
-        self.execute('loadConfig', None, self.ixnCommand('readFrom', tcl_file_name(configFileName)))
+    def loadConfig(self, config_file_name):
+        self.execute('loadConfig', None, self.ixnCommand('readFrom', tcl_file_name(config_file_name)))
 
-    def saveConfig(self, configFileName):
-        self.execute('saveConfig', None, self.ixnCommand('writeTo', tcl_file_name(configFileName)))
+    def saveConfig(self, config_file_name):
+        self.execute('saveConfig', None, self.ixnCommand('writeTo', tcl_file_name(config_file_name)))
 
     def newConfig(self):
         self.execute('newConfig')

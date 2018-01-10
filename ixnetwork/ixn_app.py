@@ -84,7 +84,7 @@ class IxnApp(TgnApp):
         self.api.commit()
 
     def load_config(self, config_file_name):
-        self.api.loadConfig(config_file_name)
+        self.api.loadConfig(config_file_name.replace('\\', '/'))
         self.commit()
 
     def new_config(self):
