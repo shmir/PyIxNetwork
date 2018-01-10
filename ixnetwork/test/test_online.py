@@ -43,11 +43,12 @@ class IxnTestOnline(IxnTestBase):
         self.ixn.root.get_object_by_name('Port 2').reserve(self.config.get('IXN', 'port1'))
         self.ixn.root.get_object_by_name('Port 1').reserve(self.config.get('IXN', 'port2'))
 
+        self._reserve_ports(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
+
     def testReleasePorts(self):
         self._reserve_ports(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
         for port in self.ports:
             port.release()
-        pass
 
     def testInterfaces(self):
         self._reserve_ports(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
@@ -57,7 +58,6 @@ class IxnTestOnline(IxnTestBase):
             for interface in port.get_children('interface'):
                 gateway = interface.get_child('ipv4', 'ipv6').get_attribute('gateway')
                 interface.ping(gateway)
-        pass
 
     def testProtocolsActions(self):
         self._reserve_ports(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
@@ -112,7 +112,6 @@ class IxnTestOnline(IxnTestBase):
         ethernet = device_group.get_child('ethernet')
         ethernet.start()
         ethernet.stop()
-        pass
 
     def _reserve_ports(self, config_file):
         self._load_config(config_file)

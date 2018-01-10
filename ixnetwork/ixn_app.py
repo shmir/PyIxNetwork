@@ -7,6 +7,7 @@ Classes and utilities to manage IXN application.
 from os import path
 import time
 from builtins import range
+from collections import OrderedDict
 
 from trafficgenerator.tgn_utils import TgnError, is_true, ApiType
 from trafficgenerator.tgn_app import TgnApp
@@ -86,6 +87,8 @@ class IxnApp(TgnApp):
     def load_config(self, config_file_name):
         self.api.loadConfig(config_file_name.replace('\\', '/'))
         self.commit()
+        self.root.objects = OrderedDict()
+        self.root.hw = self.root.get_child_static('availableHardware')
 
     def new_config(self):
         self.api.newConfig()
