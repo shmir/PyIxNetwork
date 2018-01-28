@@ -105,6 +105,8 @@ class IxnRestWrapper(object):
         uploadUrl = self.root_url + 'ixnetwork/files/' + basename
         self.request(requests.post, uploadUrl, data=configContent, headers=urlHeadersData)
 
+        time.sleep(16)
+
         data = {'arg1': basename}
         self.post(self.root_url + 'ixnetwork/operations/loadConfig', data)
 
