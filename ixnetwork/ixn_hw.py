@@ -49,8 +49,12 @@ class IxnChassis(IxnPhyBase):
         return super(self.__class__, self)._create(hostname=self._data['hostname'])
 
     def get_card(self, card_id):
+        import re
         if card_id not in self.cards:
-            self.cards[card_id] = IxnCard(parent=self, ObjType='card', objRef=self.card_refs[card_id-1])
+            for card_ref in self.card_refs:
+                if card_id == int(re.split('/|:', card_ref)[-1]):
+                    self.cards[card_id] = IxnCard(parent=self, ObjType='card', objRef=card_ref)
+                    break
         return self.cards[card_id]
 
 
