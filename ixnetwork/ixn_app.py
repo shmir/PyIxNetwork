@@ -75,7 +75,9 @@ class IxnApp(TgnApp):
 
     def disconnect(self):
         """ Disconnect from chassis and server. """
-        pass
+        if self.root.ref is not None:
+            self.api.disconnect()
+        self.root = None
 
     #
     # IxNetwork operation commands.
@@ -85,12 +87,16 @@ class IxnApp(TgnApp):
         self.api.commit()
 
     def load_config(self, config_file_name):
+        self.root.objects = OrderedDict()
+        prefs = self.root.get_child_static('globals').get_child_static('preferences')
+        prefs.set_attributes(connectPortsOnLoadConfig=False)
         self.api.loadConfig(config_file_name.replace('\\', '/'))
         self.commit()
-        self.root.objects = OrderedDict()
+        self.root.get_children('vport')
         self.root.hw = self.root.get_child_static('availableHardware')
 
     def new_config(self):
+        self.root.objects = OrderedDict()
         self.api.newConfig()
         self.commit()
 

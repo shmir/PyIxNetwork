@@ -4,8 +4,10 @@
 
 from os import path
 import requests
+import ast
 import time
 import re
+import copy
 
 from trafficgenerator.tgn_utils import TgnError
 
@@ -26,7 +28,8 @@ class IxnRestWrapper(object):
         if 'errors' in response.json():
             raise TgnError(response.json()['errors'][0])
         if response.json()['state'].lower() == 'error':
-            raise TgnError('post {} failed'.format(response.url))
+            result = ast.literal_eval(response.content.replace('null', '""'))['result'].strip()
+            raise TgnError('wait for post {} failed - {}'.format(response.url, result))
         if response.json()['state'].lower() == 'success':
             return
         for _ in range(timeout):
@@ -42,12 +45,16 @@ class IxnRestWrapper(object):
                        format(self.session, response.json()['state'], timeout))
 
     def request(self, command, url, **kwargs):
-        self.logger.debug('{} - {} - {}'.format(command.__name__, url, kwargs))
+        kwargs_to_print = copy.deepcopy(kwargs)
+        if 'headers' in kwargs and kwargs['headers'].get('content-type', None) == 'application/octet-stream':
+            kwargs_to_print['data'] = 'actual octet-stream not logged...'
+        self.logger.debug('{} - {} - {}'.format(command.__name__, url, kwargs_to_print))
         response = command(url, **kwargs)
         self.logger.debug('{}'.format(response))
-        if response.status_code == 400:
-            raise TgnError('failed to {} {} {} - status code {}'.
-                           format(command.__name__, url, kwargs, response.status_code))
+        if response.status_code >= 400:
+            text = ast.literal_eval(response.text).get('errors', None) if response.text else None
+            raise TgnError('failed to {} {} {} - status code {} - text - {}'.
+                           format(command.__name__, url, kwargs, response.status_code, text))
         return response
 
     def get(self, url):
@@ -67,11 +74,27 @@ class IxnRestWrapper(object):
         if response.status_code != 200:
             raise TgnError('object {} failed to set attributes {}'.format(url, data))
 
+    def delete(self, url):
+        return self.request(requests.delete, url)
+
     def connect(self, ip, port):
         self.server_url = 'http://{}:{}'.format(ip, port)
         response = self.post(self.server_url + '/api/v1/sessions')
         self.session = response.json()['links'][0]['href'] + '/'
         self.root_url = self.server_url + self.session
+        for _ in range(80):
+            try:
+                response = self.get(self.server_url + self.session + 'ixnetwork')
+                return
+            except TgnError as _:
+                pass
+            time.sleep(1)
+        raise TgnError('failed to connect - {}'.
+                       format(self.get(self.server_url + self.session + 'ixnetwork').json()['errors']))
+
+    def disconnect(self):
+        if self.session.split('/')[-2] != '1':
+            self.delete(self.root_url)
 
     def getRoot(self):
         return self.session + 'ixnetwork'
@@ -103,12 +126,22 @@ class IxnRestWrapper(object):
 
         urlHeadersData = {'content-type': 'application/octet-stream'}
         uploadUrl = self.root_url + 'ixnetwork/files/' + basename
-        self.request(requests.post, uploadUrl, data=configContent, headers=urlHeadersData)
-
-        time.sleep(16)
+        response = self.request(requests.post, uploadUrl, data=configContent, headers=urlHeadersData)
+        if 'id' in response.json():
+            self.waitForComplete(response)
 
         data = {'arg1': basename}
         self.post(self.root_url + 'ixnetwork/operations/loadConfig', data)
+
+        for _ in range(80):
+            try:
+                response = self.get(self.server_url + self.session + 'ixnetwork/globals')
+                return
+            except TgnError as _:
+                pass
+            time.sleep(1)
+        raise TgnError('failed to connect - {}'.
+                       format(self.get(self.server_url + self.session + 'ixnetwork/globals').json()['errors']))
 
     def saveConfig(self, config_file_name):
         basename = path.basename(config_file_name)

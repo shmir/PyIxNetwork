@@ -101,7 +101,7 @@ class IxnStatisticsView(object):
         page.set_attributes(pageSize=50)
         for page_num in range(1, int(page.get_attribute('totalPages')) + 1):
             page.set_attributes(commit=True, currentPage=page_num)
-            rows += page.get_list_attribute('rowValues')
+            rows += page.get_list_attribute('pageValues')
         return caption, rows
 
 
