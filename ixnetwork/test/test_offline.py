@@ -22,13 +22,13 @@ class IxnTestOffline(IxnTestBase):
         """ Test configuration load. """
         self.logger.info(IxnTestOffline.testLoadConfig.__doc__)
 
-        self._load_config(path.join(path.dirname(__file__), 'configs\\test_config.ixncfg'))
+        self._load_config('test_config')
 
     def testAnalyzeConfig(self):
         """ Test configuration analysis. """
         self.logger.info(IxnTestOffline.testAnalyzeConfig.__doc__)
 
-        self._load_config(path.join(path.dirname(__file__), 'configs\\test_config.ixncfg'))
+        self._load_config('test_config')
         root = self.ixn.root
 
         root.get_children('vport')
@@ -64,22 +64,21 @@ class IxnTestOffline(IxnTestBase):
         """ Test specific get children methods. """
         self.logger.info(IxnTestOffline.testAnalyzeConfig.__doc__)
 
-        self._load_config(path.join(path.dirname(__file__), 'configs/test_config.ixncfg'))
-        root = self.ixn.root
+        self._load_config('test_config')
 
-        ports = root.get_ports()
+        ports = self.ixn.root.get_ports()
         assert(len(ports) == 2)
         for port in ports.values():
             assert(len(port.get_interfaces()) == 1)
 
-        tis = root.get_traffic_items()
+        tis = self.ixn.root.get_traffic_items()
         assert(len(tis) == 2)
         for ti in tis.values():
             assert(len(ti.get_flow_groups()) == 2)
 
-        self._load_config(path.join(path.dirname(__file__), 'configs/ngpf_config.ixncfg'))
+        self._load_config('ngpf_config')
 
-        topologies = root.get_topologies()
+        topologies = self.ixn.root.get_topologies()
         assert(len(topologies) == 2)
         for topology in topologies.values():
             assert(len(topology.get_device_groups()) == 1)

@@ -46,6 +46,9 @@ class IxnTclWrapper(TgnTclWrapper):
             raise TgnError('Client version {} != Server version {}'.format(major_client_version, major_server_version))
         return client_version
 
+    def disconnect(self):
+        pass
+
     def execute(self, command, objRef=None, *arguments):
         flatten_arguments = []
         for argument in arguments:

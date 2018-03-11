@@ -43,15 +43,33 @@ class IxnPort(IxnObject):
             time.sleep(1)
 
         if wait_for_up:
-            self.wait_for_states(timeout, 'up')
+            self.wait_for_up(timeout)
+
+    def wait_for_up(self, timeout=40):
+        """ Wait until port is up and running, including all parameters (admin state, oper state, license etc.).
+
+        :param timeout: max time to wait for port up.
+        """
+
+        self.wait_for_states(timeout, 'up')
+        connectionStatus = self.get_attribute('connectionStatus').strip()
+        if connectionStatus.split(':')[0] != self.get_attribute('assignedTo').split(':')[0]:
+            raise TgnError ('Failed to reach up state, port connection status is {} after {} seconds'.
+                            format(connectionStatus, timeout))
 
     def wait_for_states(self, timeout=40, *states):
+        """ Wait until port reaches one of the requested states.
+
+        :param timeout: max time to wait for requested port states.
+        """
+
+        state = self.get_attribute('state')
         for _ in range(timeout):
-            if self.get_attribute('state') in states:
+            if state in states:
                 return
             time.sleep(1)
-        raise TgnError('Failed to reserve port, port is {} after {} seconds'.
-                       format(self.get_attribute('state'), timeout))
+            state = self.get_attribute('state')
+        raise TgnError('Failed to reach states {}, port state is {} after {} seconds'.format(states, state, timeout))
 
     def is_online(self):
         """
@@ -63,8 +81,9 @@ class IxnPort(IxnObject):
         return self.get_attribute('state').lower() == 'up'
 
     def release(self):
+        if self.get_attribute('connectedTo') != self.api.null:
+            self.set_attributes(commit=True, connectedTo=self.api.null)
         self.execute('releasePort', [self.ref])
-        self.set_attributes(commit=True, connectedTo=self.api.null)
 
     def get_interfaces(self):
         """
