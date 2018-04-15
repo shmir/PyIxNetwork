@@ -143,6 +143,16 @@ class IxnRestWrapper(object):
         raise TgnError('failed to connect - {}'.
                        format(self.get(self.server_url + self.session + 'ixnetwork/globals').json()['errors']))
 
+        for _ in range(8):
+            try:
+                response = self.get(self.server_url + self.session + 'ixnetwork/vport')
+                return
+            except TgnError as _:
+                pass
+            time.sleep(1)
+        raise TgnError('failed to connect - {}'.
+                       format(self.get(self.server_url + self.session + 'ixnetwork/vport').json()['errors']))
+
     def saveConfig(self, config_file_name):
         basename = path.basename(config_file_name)
 
