@@ -37,7 +37,11 @@ class IxnPort(IxnObject):
         if force:
             chassis.get_card(int(card)).get_port(int(port)).release()
 
-        self.set_attributes(commit=True, connectedTo=chassis.get_card(int(card)).get_port(int(port)).ref)
+        try:
+            phy_port = chassis.get_card(int(card)).get_port(int(port))
+        except KeyError as _:
+            raise TgnError('Physical port {} unreachable'.format(location))
+        self.set_attributes(commit=True, connectedTo=phy_port.ref)
 
         while self.get_attribute('connectedTo') == '::ixNet::OBJ-null':
             time.sleep(1)
@@ -54,8 +58,8 @@ class IxnPort(IxnObject):
         self.wait_for_states(timeout, 'up')
         connectionStatus = self.get_attribute('connectionStatus').strip()
         if connectionStatus.split(':')[0] != self.get_attribute('assignedTo').split(':')[0]:
-            raise TgnError ('Failed to reach up state, port connection status is {} after {} seconds'.
-                            format(connectionStatus, timeout))
+            raise TgnError('Failed to reach up state, port connection status is {} after {} seconds'.
+                           format(connectionStatus, timeout))
 
     def wait_for_states(self, timeout=40, *states):
         """ Wait until port reaches one of the requested states.

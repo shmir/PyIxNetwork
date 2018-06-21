@@ -51,8 +51,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'ixnooapi'
-copyright = u'2016, yoram@ignissoft.com'
+project = u'pyixnetwork'
+copyright = u'2018, yoram@ignissoft.com'
 author = u'yoram@ignissoft.com'
 
 # The version info for the project you're documenting, acts as replacement for

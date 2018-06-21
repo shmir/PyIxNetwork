@@ -183,6 +183,19 @@ class IxnTestOffline(IxnTestBase):
             ixn_eth.get_attribute('mac')
             IxnNgpfIpv4(parent=ixn_eth)
 
+    def testBackdoor(self):
+        print('session = {}'.format(self.ixn.api.session))
+        ixn_globals = self.ixn.api.getList(self.ixn.root.ref, 'globals')[0]
+        print('ixn_globals = {}'.format(ixn_globals))
+        print(self.ixn.api.getAttributes(ixn_globals))
+
+        ixn_prefs = self.ixn.api.getList(ixn_globals, 'preferences')[0]
+        print('ixn_prefs = {}'.format(ixn_prefs))
+        print(self.ixn.api.getAttributes(ixn_prefs))
+
+        self.ixn.api.setAttributes(ixn_prefs, connectPortsOnLoadConfig=True)
+        print(self.ixn.api.getAttributes(ixn_prefs))
+
     #
     # Auxiliary functions, no testing inside.
     #

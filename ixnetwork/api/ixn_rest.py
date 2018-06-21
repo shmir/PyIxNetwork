@@ -177,6 +177,9 @@ class IxnRestWrapper(object):
         response = self.get(self.server_url + objRef)
         return response.json().get(attribute, '::ixNet::OK')
 
+    def getAttributes(self, objRef):
+        return self.get(self.server_url + objRef).json()
+
     def getListAttribute(self, objRef, attribute):
         value = self.getAttribute(objRef, attribute)
         if type(value) is dict:
