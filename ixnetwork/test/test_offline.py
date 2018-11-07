@@ -56,9 +56,7 @@ class IxnTestOffline(IxnTestBase):
         assert(len(vports) == 2)
         assert(type(vports[0]) is IxnPort)
 
-        self.assertRaises(Exception,  self._load_config, path.join(path.dirname(__file__), 'configs/invalid.ixncfg'))
-
-        pass
+        self.assertRaises(Exception, self._load_config, path.join(path.dirname(__file__), 'configs/invalid.ixncfg'))
 
     def testChildren(self):
         """ Test specific get children methods. """

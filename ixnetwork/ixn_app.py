@@ -29,6 +29,9 @@ from ixnetwork.ixn_root import IxnRoot
 from ixnetwork.ixn_protocol_stack import IxnRange
 from ixnetwork.ixn_hw import IxnHw, IxnChassis, IxnCard, IxnPhyPort
 
+from testcenter.api.stc_tcl import StcTclWrapper
+from testcenter.stc_app import StcApp
+
 
 def init_ixn(api, logger, install_dir=None):
     """ Create IXN object.
@@ -41,7 +44,10 @@ def init_ixn(api, logger, install_dir=None):
     """
 
     if api == ApiType.tcl:
-        api_wrapper = IxnTclWrapper(logger, install_dir)
+        if 'ixia' in install_dir.lower():
+            api_wrapper = IxnTclWrapper(logger, install_dir)
+        else:
+            api_wrapper = StcTclWrapper(logger, install_dir)
     elif api == ApiType.python:
         api_wrapper = IxnPythonWrapper(logger, install_dir)
     elif api == ApiType.rest:
@@ -51,7 +57,43 @@ def init_ixn(api, logger, install_dir=None):
     return IxnApp(logger, api_wrapper)
 
 
-class IxnApp(TgnApp):
+class IxnApp(object):
+
+    def __init__(self, logger, api_wrapper):
+        if type(api_wrapper) is IxnTclWrapper:
+            self.app = IxnApp_(logger, api_wrapper)
+        else:
+            self.app = StcApp(logger, api_wrapper)
+
+    def connect(self, tcl_server='localhost', tcl_port=8009):
+        if type(self.app) is IxnApp_:
+            self.app.connect(tcl_server, tcl_port)
+            self.root = self.app.root
+        else:
+            self.app.connect()
+            self.root = self.app.project
+
+    def new_config(self):
+        if type(self.app) is IxnApp_:
+            self.app.root.objects = OrderedDict()
+            self.app.api.newConfig()
+            self.app.commit()
+
+    def load_config(self, config_file_name):
+        if type(self.app) is IxnApp_:
+            self.app.load_config(config_file_name)
+        else:
+            stc_config_file_name = path.splitext(config_file_name)[0]
+            self.app.load_config(stc_config_file_name + '.tcc')
+
+    def commit(self):
+        if type(self.app) is IxnApp_:
+            self.app.commit()
+        else:
+            self.app.api.apply()
+
+
+class IxnApp_(TgnApp):
     """ IxNetwork driver. Equivalent to IxNetwork Application. """
 
     def __init__(self, logger, api_wrapper):
@@ -62,7 +104,6 @@ class IxnApp(TgnApp):
         """
 
         super(self.__class__, self).__init__(logger, api_wrapper)
-
         IxnObject.str_2_class = TYPE_2_OBJECT
 
     def connect(self, tcl_server='localhost', tcl_port=8009):
