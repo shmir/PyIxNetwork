@@ -7,27 +7,27 @@ Base class for all IXN package tests.
 from os import path
 
 from trafficgenerator.tgn_utils import ApiType
-from trafficgenerator.test.test_tgn import TgnTest
+from trafficgenerator.test.test_tgn import TestTgnBase
 
 from ixnetwork.ixn_app import init_ixn
 
 
-class IxnTestBase(TgnTest):
+class TestIxnBase(TestTgnBase):
 
-    TgnTest.config_file = path.join(path.dirname(__file__), 'IxNetwork.ini')
+    TestTgnBase.config_file = path.join(path.dirname(__file__), 'IxNetwork.ini')
 
-    def setUp(self):
-        super(IxnTestBase, self).setUp()
+    def setup(self):
+        super(TestIxnBase, self).setup()
         self.ixn = init_ixn(ApiType[self.config.get('IXN', 'api')], self.logger, self.config.get('IXN', 'install_dir'))
         self.ixn.connect(self.config.get('IXN', 'server'), self.config.get('IXN', 'api_port'))
 
-    def tearDown(self):
+    def teardown(self):
         for port in self.ixn.root.get_objects_or_children_by_type('vport'):
             port.release()
         self.ixn.disconnect()
-        super(IxnTestBase, self).tearDown()
+        super(TestIxnBase, self).teardown()
 
-    def testHelloWorld(self):
+    def test_hello_world(self):
         pass
 
     #
