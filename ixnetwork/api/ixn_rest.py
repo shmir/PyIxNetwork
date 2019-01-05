@@ -49,7 +49,7 @@ class IxnRestWrapper(object):
         if 'headers' in kwargs and kwargs['headers'].get('content-type', None) == 'application/octet-stream':
             kwargs_to_print['data'] = 'actual octet-stream not logged...'
         self.logger.debug('{} - {} - {}'.format(command.__name__, url, kwargs_to_print))
-        response = command(url, **kwargs)
+        response = command(url, verify=False, **kwargs)
         self.logger.debug('{}'.format(response))
         if response.status_code >= 400:
             text = ast.literal_eval(response.text).get('errors', None) if response.text else None
@@ -57,12 +57,12 @@ class IxnRestWrapper(object):
                            format(command.__name__, url, kwargs, response.status_code, text))
         return response
 
-    def get(self, url):
-        return self.request(requests.get, url)
+    def get(self, url, **kwargs):
+        return self.request(requests.get, url, **kwargs)
 
     def post(self, url, data=None):
         response = self.request(requests.post, url, json=data)
-        if 'id' in response.json():
+        if response.status_code != 201 and 'id' in response.json():
             self.waitForComplete(response)
         return response
 
@@ -79,6 +79,11 @@ class IxnRestWrapper(object):
 
     def connect(self, ip, port):
         self.server_url = 'http://{}:{}'.format(ip, port)
+        try:
+            self.get(self.server_url + '/api/v1/sessions')
+        except Exception as _:
+            self.server_url = 'https://{}:{}'.format(ip, port)
+            self.get(self.server_url + '/api/v1/sessions')
         response = self.post(self.server_url + '/api/v1/sessions')
         self.session = response.json()['links'][0]['href'] + '/'
         self.root_url = self.server_url + self.session

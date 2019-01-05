@@ -7,8 +7,9 @@ IxNetwork package tests that can run in offline mode.
 from os import path
 import inspect
 from collections import OrderedDict
+import pytest
 
-from ixnetwork.test.test_base import IxnTestBase
+from ixnetwork.test.test_base import TestIxnBase
 from ixnetwork.ixn_object import IxnObject
 from ixnetwork.ixn_port import IxnPort
 from ixnetwork.ixn_interface import IxnInterface
@@ -16,17 +17,17 @@ from ixnetwork.ixn_traffic import IxnL23TrafficItem
 from ixnetwork.ixn_topology import IxnTopology, IxnDeviceGroup, IxnNgpfEthernet, IxnNgpfIpv4
 
 
-class IxnTestOffline(IxnTestBase):
+class TestIxnOffline(TestIxnBase):
 
-    def testLoadConfig(self):
+    def test_load_config(self, api):
         """ Test configuration load. """
-        self.logger.info(IxnTestOffline.testLoadConfig.__doc__)
+        self.logger.info(TestIxnOffline.test_load_config.__doc__)
 
         self._load_config('test_config')
 
-    def testAnalyzeConfig(self):
+    def test_analyze_config(self, api):
         """ Test configuration analysis. """
-        self.logger.info(IxnTestOffline.testAnalyzeConfig.__doc__)
+        self.logger.info(TestIxnOffline.test_analyze_config.__doc__)
 
         self._load_config('test_config')
         root = self.ixn.root
@@ -56,13 +57,12 @@ class IxnTestOffline(IxnTestBase):
         assert(len(vports) == 2)
         assert(type(vports[0]) is IxnPort)
 
-        self.assertRaises(Exception,  self._load_config, path.join(path.dirname(__file__), 'configs/invalid.ixncfg'))
+        with pytest.raises(Exception):
+            self._load_config(path.join(path.dirname(__file__), 'configs/invalid.ixncfg'))
 
-        pass
-
-    def testChildren(self):
+    def testChildren(self, api):
         """ Test specific get children methods. """
-        self.logger.info(IxnTestOffline.testAnalyzeConfig.__doc__)
+        self.logger.info(TestIxnOffline.testChildren.__doc__)
 
         self._load_config('test_config')
 
@@ -83,9 +83,9 @@ class IxnTestOffline(IxnTestBase):
         for topology in topologies.values():
             assert(len(topology.get_device_groups()) == 1)
 
-    def testBasicConfig(self):
+    def testBasicConfig(self, api):
         """ Test configuration build with basic objects - ports, interfaces, traffic items... """
-        self.logger.info(IxnTestOffline.testBasicConfig.__doc__)
+        self.logger.info(TestIxnOffline.testBasicConfig.__doc__)
 
         num_ports = 2
         num_ints = 2
@@ -113,9 +113,9 @@ class IxnTestOffline(IxnTestBase):
 
         self._save_config()
 
-    def testFlowGroups(self):
+    def testFlowGroups(self, api):
         """ Test configuration build with various flow group types. """
-        self.logger.info(IxnTestOffline.testFlowGroups.__doc__)
+        self.logger.info(TestIxnOffline.testFlowGroups.__doc__)
 
         num_ports = 2
         num_ints = 2
@@ -160,9 +160,9 @@ class IxnTestOffline(IxnTestBase):
 
         self._save_config()
 
-    def testTopologies(self):
+    def testTopologies(self, api):
         """ Test configuration build with topologies """
-        self.logger.info(IxnTestOffline.testTopologies.__doc__)
+        self.logger.info(TestIxnOffline.testTopologies.__doc__)
 
         num_ports = 2
         num_ints = 0
@@ -183,7 +183,7 @@ class IxnTestOffline(IxnTestBase):
             ixn_eth.get_attribute('mac')
             IxnNgpfIpv4(parent=ixn_eth)
 
-    def testBackdoor(self):
+    def testBackdoor(self, api):
         print('session = {}'.format(self.ixn.api.session))
         ixn_globals = self.ixn.api.getList(self.ixn.root.ref, 'globals')[0]
         print('ixn_globals = {}'.format(ixn_globals))

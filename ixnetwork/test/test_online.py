@@ -13,18 +13,18 @@ import json
 
 import time
 
-from ixnetwork.test.test_base import IxnTestBase
+from ixnetwork.test.test_base import TestIxnBase
 from ixnetwork.ixn_statistics_view import IxnPortStatistics, IxnTrafficItemStatistics, IxnFlowStatistics
 
 
-class IxnTestOnline(IxnTestBase):
+class TestIxnOnline(TestIxnBase):
 
     ports = []
 
-    def testReservePorts(self):
+    def test_reserve_Ports(self, api):
         self._reserve_ports('test_config', wait_for_up=False)
 
-    def testPortsOnline(self):
+    def test_ports_online(self, api):
         self._reserve_ports('test_config')
 
         for port in self.ports:
@@ -33,24 +33,24 @@ class IxnTestOnline(IxnTestBase):
         for port in self.ports:
             port.release()
 
-    def testReload(self):
+    def test_reload(self, api):
 
         self._reserve_ports('test_config')
 
         for port in self.ports:
             port.release()
 
-        self.ixn.root.get_object_by_name('Port 2').reserve(self.config.get('IXN', 'port1'))
-        self.ixn.root.get_object_by_name('Port 1').reserve(self.config.get('IXN', 'port2'))
+        self.ixn.root.get_object_by_name('Port 2').reserve(self.port1)
+        self.ixn.root.get_object_by_name('Port 1').reserve(self.port2)
 
         self._reserve_ports('test_config')
 
-    def testReleasePorts(self):
+    def test_release_ports(self, api):
         self._reserve_ports('test_config')
         for port in self.ports:
             port.release()
 
-    def testInterfaces(self):
+    def test_interfaces(self, api):
         self._reserve_ports('test_config')
         for port in self.ports:
             port.send_arp_ns()
@@ -58,7 +58,7 @@ class IxnTestOnline(IxnTestBase):
                 gateway = interface.get_child('ipv4', 'ipv6').get_attribute('gateway')
                 interface.ping(gateway)
 
-    def testProtocolsActions(self):
+    def test_protocols_actions(self, api):
         self._reserve_ports('test_config')
         self.ixn.send_arp_ns()
         self.ixn.protocols_start()
@@ -69,7 +69,7 @@ class IxnTestOnline(IxnTestBase):
         time.sleep(16)
         self.ixn.protocol_stop('ospf')
 
-    def testGUITraffic(self):
+    def test_gui_traffic(self, api):
         # Sometimes ARP fails on IxVM? To be sure, send automatic ARP (seems more stable...)
         self._reserve_ports('test_config_arp_on_link_up')
         self.ixn.regenerate()
@@ -90,7 +90,7 @@ class IxnTestOnline(IxnTestBase):
         flow_stats.read_stats()
         assert(int(flow_stats.get_stat('Port 2/Port 1/Traffic Item 1', 'Tx Frames')) == 800)
 
-    def testNgpf(self):
+    def test_ngpf(self, api):
         self._reserve_ports('ngpf_config')
         topologies = self.ixn.root.get_children('topology')
         self.ixn.protocols_start()
@@ -114,8 +114,8 @@ class IxnTestOnline(IxnTestBase):
     def _reserve_ports(self, config_file, wait_for_up=True):
         self._load_config(config_file)
         self.ports = self.ixn.root.get_children('vport')
-        self.ixn.root.get_object_by_name('Port 1').reserve(self.config.get('IXN', 'port1'), wait_for_up=False)
-        self.ixn.root.get_object_by_name('Port 2').reserve(self.config.get('IXN', 'port2'), wait_for_up=False)
+        self.ixn.root.get_object_by_name('Port 1').reserve(self.port1, wait_for_up=False)
+        self.ixn.root.get_object_by_name('Port 2').reserve(self.port2, wait_for_up=False)
         if wait_for_up:
             for port in self.ports:
                 port.wait_for_up(60)
