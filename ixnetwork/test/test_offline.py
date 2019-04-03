@@ -9,6 +9,7 @@ import inspect
 from collections import OrderedDict
 import pytest
 
+from trafficgenerator.tgn_utils import ApiType
 from ixnetwork.test.test_base import TestIxnBase
 from ixnetwork.ixn_object import IxnObject
 from ixnetwork.ixn_port import IxnPort
@@ -184,6 +185,8 @@ class TestIxnOffline(TestIxnBase):
             IxnNgpfIpv4(parent=ixn_eth)
 
     def testBackdoor(self, api):
+        if self.api != ApiType.rest:
+            pytest.skip("backdoor supported only for rest API")
         print('session = {}'.format(self.ixn.api.session))
         ixn_globals = self.ixn.api.getList(self.ixn.root.ref, 'globals')[0]
         print('ixn_globals = {}'.format(ixn_globals))

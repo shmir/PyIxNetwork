@@ -10,7 +10,6 @@ import pytest
 from trafficgenerator.test.test_tgn import TestTgnBase
 
 from ixnetwork.ixn_app import init_ixn
-from ecdsa.ecdsa import __main__
 
 
 class TestIxnBase(TestTgnBase):
@@ -52,7 +51,3 @@ class TestIxnBase(TestTgnBase):
         self.ixn.new_config()
         self.ixn.load_config(config_file)
         self.ixn.commit()
-
-
-if __name__ == __main__:
-    pass

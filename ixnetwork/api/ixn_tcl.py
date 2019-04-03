@@ -126,7 +126,8 @@ class IxnTclWrapper(TgnTclWrapper):
         return self.eval('lindex [ixNet remapIds ' + objRef + '] 0')
 
     def regenerate(self, traffic, *traffic_items):
-        self.execute('generate', None, tcl_str(build_obj_ref_list(*traffic_items)))
+        if traffic_items:
+            self.execute('generate', None, tcl_str(build_obj_ref_list(*traffic_items)))
 
     def startStatelessTraffic(self, traffic, *traffic_items):
         self.execute('startStatelessTraffic', None, tcl_str(build_obj_ref_list(*traffic_items)))

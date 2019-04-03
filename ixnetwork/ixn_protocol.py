@@ -20,7 +20,9 @@ class IxnProtocol(IxnObject):
     """ Base class for IXN classical protocol objects (e.g. OSPF router, IGMP Querier, MLD Host
         etc.). """
 
-    ixn_ints = OrderedDict()
+    def __init__(self, **data):
+        super(IxnProtocol, self).__init__(**data)
+        self.ixn_ints = OrderedDict()
 
     @classmethod
     def get_protocols_with_int(cls, ixn_int):
@@ -38,7 +40,7 @@ class IxnProtocolServer(IxnProtocol):
     """ Base class for IXN protocol server (e.g. IGMP Querier, MLD Host etc.). """
 
     def __init__(self, **data):
-        super(IxnProtocol, self).__init__(**data)
+        super(IxnProtocolServer, self).__init__(**data)
         self.ixn_ints = OrderedDict()
         for int_ref in self.get_attribute('interfaces').split(' '):
             self.ixn_ints[int_ref] = self.root.get_object_by_ref(int_ref)
@@ -55,7 +57,6 @@ class IxnProtocolRouter(IxnProtocol):
     def __init__(self, **data):
         data['objType'] = self.objType
         super(IxnProtocolRouter, self).__init__(**data)
-        self.ixn_ints = OrderedDict()
         for ixn_router_int in self.get_children('interface'):
             int_ref = ixn_router_int.get_attribute(self.interface_attribute)
             self.ixn_ints[ixn_router_int] = self.root.get_object_by_ref(int_ref)
@@ -159,6 +160,18 @@ class IxnOspfRouteRange(IxnRouteRange):
         self.numberOfRoutes = int(self.get_attribute('numberOfRoutes'))
 
 
+class IxnOspfv3RouteRange(IxnRouteRange):
+    """ Represents IXN OSPF route range. """
+
+    def __init__(self, **data):
+        super(IxnRouteRange, self).__init__(**data)
+        self.numberOfRoutes = int(self.get_attribute('numberOfRoutes'))
+        self.firstRoute = self.get_attribute('firstRoute')
+
+    def ip(self):
+        return self.firstRoute
+
+
 class IxnPimsmSource(IxnRouteRange):
     """ Represents IXN BGP route range. """
 
@@ -222,7 +235,6 @@ class IxnRsvpNeighborPair(IxnProtocolServer):
 
     def __init__(self, **data):
         super(IxnProtocol, self).__init__(**data)
-        self.ixn_ints = OrderedDict()
         ourIp = self.get_attribute('ourIp')
         for ixn_int in self.get_ancestor_object_by_type('vport').get_interfaces().values():
             for ixn_ip in ixn_int.get_objects_by_type('ipv4', 'ipv6'):
@@ -246,7 +258,6 @@ class IxnStaticIp(IxnProtocolServer, TgnL3):
 
     def __init__(self, **data):
         super(IxnProtocol, self).__init__(**data)
-        self.ixn_ints = OrderedDict()
         int_ref = self.get_attribute('protocolInterface')
         self.ixn_ints[self] = self.root.get_object_by_ref(int_ref)
 

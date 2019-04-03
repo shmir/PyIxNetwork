@@ -4,5 +4,6 @@ enum34
 pytest-runner
 IPy
 requests
+pytest
 
-pytrafficgen>=1.2.0
+pytrafficgen==1.5.2

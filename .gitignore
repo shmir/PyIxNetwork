@@ -109,3 +109,5 @@ ixnetwork/test/configs/invalid.ixncfg
 
 .idea
 .pytest_cache
+
+ixnetwork/test/Sample_IPv4_Traffic_With_CloudShell.py
