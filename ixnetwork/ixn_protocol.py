@@ -41,7 +41,6 @@ class IxnProtocolServer(IxnProtocol):
 
     def __init__(self, **data):
         super(IxnProtocolServer, self).__init__(**data)
-        self.ixn_ints = OrderedDict()
         for int_ref in self.get_attribute('interfaces').split(' '):
             self.ixn_ints[int_ref] = self.root.get_object_by_ref(int_ref)
 
@@ -234,7 +233,7 @@ class IxnRsvpNeighborPair(IxnProtocolServer):
     """ Represents RSVP Neighbor Pair. """
 
     def __init__(self, **data):
-        super(IxnProtocol, self).__init__(**data)
+        super(IxnProtocolServer, self).__init__(**data)
         ourIp = self.get_attribute('ourIp')
         for ixn_int in self.get_ancestor_object_by_type('vport').get_interfaces().values():
             for ixn_ip in ixn_int.get_objects_by_type('ipv4', 'ipv6'):
@@ -254,10 +253,10 @@ class IxnRsvpNeighborPair(IxnProtocolServer):
 
 
 class IxnStaticIp(IxnProtocolServer, TgnL3):
-    """ Represents RSVP Neighbor Pair. """
+    """ Represents Static IP. """
 
     def __init__(self, **data):
-        super(IxnProtocol, self).__init__(**data)
+        super(IxnProtocolServer, self).__init__(**data)
         int_ref = self.get_attribute('protocolInterface')
         self.ixn_ints[self] = self.root.get_object_by_ref(int_ref)
 

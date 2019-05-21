@@ -6,7 +6,7 @@ from trafficgenerator.tgn_utils import ApiType
 
 def pytest_addoption(parser):
     parser.addoption('--api', action='store', default='rest', help='api options: rest or tcl')
-    parser.addoption('--server', action='store', default='localhost:11009', help='REST server in format ip:port')
+    parser.addoption('--server', action='store', default='192.168.65.27:8008', help='REST server in format ip:port')
     parser.addoption('--chassis', action='store', default='192.168.42.217', help='chassis IP address')
     parser.addoption('--port1', action='store', default='1/1', help='module1/port1')
     parser.addoption('--port2', action='store', default='1/2', help='module2/port2')
