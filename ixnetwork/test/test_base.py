@@ -18,8 +18,6 @@ class TestIxnBase(TestTgnBase):
 
     def setup(self):
         super(TestIxnBase, self).setup()
-        self._get_config()
-
         self.ixn = init_ixn(self.api, self.logger, self.config.get('IXN', 'install_dir'))
         self.ixn.connect(self.server_ip, self.server_port)
 
@@ -35,15 +33,6 @@ class TestIxnBase(TestTgnBase):
     #
     # Auxiliary functions, no testing inside.
     #
-
-    def _get_config(self):
-
-        server_ip = pytest.config.getoption('--server')  # @UndefinedVariable
-        self.server_ip = server_ip.split(':')[0]
-        self.server_port = server_ip.split(':')[1] if len(server_ip.split(':')) == 2 else 8009
-        chassis = pytest.config.getoption('--chassis')  # @UndefinedVariable
-        self.port1 = '{}/{}'.format(chassis, pytest.config.getoption('--port1'))  # @UndefinedVariable
-        self.port2 = '{}/{}'.format(chassis, pytest.config.getoption('--port2'))  # @UndefinedVariable
 
     def _load_config(self, config_name):
         version = self.config.get('IXN', 'config_version')

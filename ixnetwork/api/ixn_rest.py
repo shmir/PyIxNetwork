@@ -33,7 +33,7 @@ class IxnRestWrapper(object):
         if response.json()['state'].lower() == 'success':
             return
         for _ in range(timeout):
-            response = requests.get(self.root_url)
+            response = requests.get(self.root_url, verify=False)
             if type(response.json()) == dict:
                 state = response.json()['state']
             else:
@@ -78,8 +78,8 @@ class IxnRestWrapper(object):
         return self.request(requests.delete, url)
 
     def connect(self, ip, port):
-        self.server_url = 'http://{}:{}'.format(ip, port)
         try:
+            self.server_url = 'http://{}:{}'.format(ip, port)
             self.get(self.server_url + '/api/v1/sessions')
         except Exception as _:
             self.server_url = 'https://{}:{}'.format(ip, port)
@@ -110,7 +110,7 @@ class IxnRestWrapper(object):
     def execute(self, command, objRef=None, *arguments):
         data = {}
         if objRef:
-            operations_url = '{}/operations/'.format(re.sub('\/[0-9]+', '', objRef.replace(self.session, '')))
+            operations_url = '{}/operations/'.format(re.sub(r'\/[0-9]+', '', objRef.replace(self.session, '')))
         else:
             operations_url = 'ixnetwork/operations/'
         for argument in arguments:

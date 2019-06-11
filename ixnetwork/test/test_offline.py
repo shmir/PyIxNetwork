@@ -114,9 +114,9 @@ class TestIxnOffline(TestIxnBase):
 
         self._save_config()
 
-    def testFlowGroups(self, api):
+    def test_flow_groups(self, api):
         """ Test configuration build with various flow group types. """
-        self.logger.info(TestIxnOffline.testFlowGroups.__doc__)
+        self.logger.info(TestIxnOffline.test_flow_groups.__doc__)
 
         num_ports = 2
         num_ints = 2
@@ -126,13 +126,13 @@ class TestIxnOffline(TestIxnBase):
         ixn_ti.set_attributes(trafficType='ipv4')
 
         ixn_ti_es = IxnObject(parent=ixn_ti, objType='endpointSet')
-        sources = [ixn_ports.keys()[0].obj_ref()]
-        destinations = [ixn_ports.keys()[1].obj_ref()]
+        sources = [list(ixn_ports.keys())[0].ref]
+        destinations = [list(ixn_ports.keys())[1].ref]
         ixn_ti_es.set_attributes(sources=sources, destinations=destinations)
 
         ixn_ti_es = IxnObject(parent=ixn_ti, objType='endpointSet')
-        sources = [ixn_ports.keys()[1].obj_ref()]
-        destinations = [ixn_ports.keys()[0].obj_ref()]
+        sources = [list(ixn_ports.keys())[1].ref]
+        destinations = [list(ixn_ports.keys())[0].ref]
         ixn_ti_es.set_attributes(sources=sources, destinations=destinations)
 
         ixn_ti = IxnL23TrafficItem(name='Raw TI with two EPs')
@@ -140,15 +140,15 @@ class TestIxnOffline(TestIxnBase):
 
         ixn_ti_es = IxnObject(parent=ixn_ti, objType='endpointSet')
         ixn_ti_es.api.commit()
-        sources = [ixn_ports.keys()[0].obj_ref() + '/protocols']
-        destinations = [ixn_ports.keys()[1].obj_ref() + '/protocols']
+        sources = [list(ixn_ports.keys())[0].ref + '/protocols']
+        destinations = [list(ixn_ports.keys())[1].ref + '/protocols']
         ixn_ti_es.set_attributes(sources=sources, destinations=destinations)
         ixn_ti_es.api.commit()
 
         ixn_ti_es = IxnObject(parent=ixn_ti, objType='endpointSet')
         ixn_ti_es.api.commit()
-        sources = [ixn_ports.keys()[1].obj_ref() + '/protocols']
-        destinations = [ixn_ports.keys()[0].obj_ref() + '/protocols']
+        sources = [list(ixn_ports.keys())[1].ref + '/protocols']
+        destinations = [list(ixn_ports.keys())[0].ref + '/protocols']
         ixn_ti_es.set_attributes(sources=sources, destinations=destinations)
         ixn_ti_es.api.commit()
 

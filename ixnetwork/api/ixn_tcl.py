@@ -38,10 +38,10 @@ class IxnTclWrapper(TgnTclWrapper):
     def connect(self, ip, port):
         client_version = self.getVersion()
         self.ixnCommand('connect ' + ip + ' -port ' + str(port) + ' -version ' + client_version)
-        major_client_version = re.findall('^[\d]+.[\d]+', client_version)[0]
+        major_client_version = re.findall(r'^[\d]+.[\d]+', client_version)[0]
         client_version = client_version.split('.')[:2]
         buildNumber = self.getAttribute(self.getRoot() + '/globals', 'buildNumber')
-        major_server_version = re.findall('^[\d]+.[\d]+', buildNumber)[0]
+        major_server_version = re.findall(r'^[\d]+.[\d]+', buildNumber)[0]
         if major_client_version != major_server_version:
             raise TgnError('Client version {} != Server version {}'.format(major_client_version, major_server_version))
         return client_version
