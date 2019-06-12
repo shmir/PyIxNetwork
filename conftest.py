@@ -4,22 +4,39 @@ import pytest
 from trafficgenerator.tgn_utils import ApiType
 
 
-def_api = 'rest'
+api_ = 'tcl'
+api_ = 'rest'
+config_version = 850
+
 server = 'localhost'
-if def_api == 'rest':
-    server += ':11009'
-else:
-    server += ':8009'
+server_os = 'windows'
+auth = None
 chassis = '192.168.42.207'
 chassis = '192.168.65.53'
 
+server = '192.168.65.34'
+server_os = 'linux'
+auth = ('admin', 'admin')
+chassis = '192.168.65.53'
+
+if server_os == 'linux':
+    server += ':443'
+else:
+    if api_ == 'rest':
+        server += ':11009'
+    else:
+        server += ':8009'
+
 
 def pytest_addoption(parser):
-    parser.addoption('--api', action='store', default=def_api, help='api options: rest or tcl')
+    parser.addoption('--api', action='store', default=api_, help='api options: rest or tcl')
     parser.addoption('--server', action='store', default=server, help='REST server in format ip:port')
     parser.addoption('--chassis', action='store', default=chassis, help='chassis IP address')
     parser.addoption('--port1', action='store', default='1/1', help='module1/port1')
     parser.addoption('--port2', action='store', default='1/2', help='module2/port2')
+    parser.addoption('--auth', action='store', default=auth, nargs=2, type=list,
+                     help='username,password for Linux API server')
+    parser.addoption('--config-version', action='store', default=config_version, help='configuration version')
 
 
 @pytest.fixture
@@ -35,6 +52,8 @@ def config(request):
     chassis = request.config.getoption('--chassis')  # @UndefinedVariable
     request.cls.port1 = '{}/{}'.format(chassis, request.config.getoption('--port1'))  # @UndefinedVariable
     request.cls.port2 = '{}/{}'.format(chassis, request.config.getoption('--port2'))  # @UndefinedVariable
+    request.cls.auth = request.config.getoption('--auth')  # @UndefinedVariable
+    request.cls.config_version = request.config.getoption('--config-version')
 
 
 def pytest_generate_tests(metafunc):

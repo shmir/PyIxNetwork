@@ -35,7 +35,7 @@ class IxnTclWrapper(TgnTclWrapper):
     def commit(self):
         return self.ixnCommand('commit')
 
-    def connect(self, ip, port):
+    def connect(self, ip, port, auth=None):
         client_version = self.getVersion()
         self.ixnCommand('connect ' + ip + ' -port ' + str(port) + ' -version ' + client_version)
         major_client_version = re.findall(r'^[\d]+.[\d]+', client_version)[0]

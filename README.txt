@@ -12,7 +12,7 @@ Allows client less operation of IXN scripts.
 Available for all IXN versions.
 Instead of using Tk (and IxTclNetwork package) the calling application can provide its own connection to Tcl
 interpreter as long as the connection supports the 'eval' command and can perform IXN Tcl API commands.
-3. IxnPythonWrapper - a Python wrapper over IXN native Python API (StcPython.py).
+3. IxnPythonWrapper - a Python wrapper over IXN native Python API.
 Available for IXN versions that	support python.
 4. Any IxnCustomerApi as long as it supports the same API as all above APIs support (define ABC).
 

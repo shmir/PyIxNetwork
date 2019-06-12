@@ -5,7 +5,7 @@ Base class for all IXN package tests.
 """
 
 from os import path
-import pytest
+import time
 
 from trafficgenerator.test.test_tgn import TestTgnBase
 
@@ -19,7 +19,7 @@ class TestIxnBase(TestTgnBase):
     def setup(self):
         super(TestIxnBase, self).setup()
         self.ixn = init_ixn(self.api, self.logger, self.config.get('IXN', 'install_dir'))
-        self.ixn.connect(self.server_ip, self.server_port)
+        self.ixn.connect(self.server_ip, self.server_port, self.auth)
 
     def teardown(self):
         for port in self.ixn.root.get_objects_or_children_by_type('vport'):
@@ -35,8 +35,7 @@ class TestIxnBase(TestTgnBase):
     #
 
     def _load_config(self, config_name):
-        version = self.config.get('IXN', 'config_version')
-        config_file = path.join(path.dirname(__file__), 'configs/{}_{}.ixncfg'.format(config_name, version))
+        config_file = path.join(path.dirname(__file__), 'configs/{}_{}.ixncfg'.format(config_name, self.config_version))
         self.ixn.new_config()
         self.ixn.load_config(config_file)
         self.ixn.commit()

@@ -66,8 +66,8 @@ class IxnApp(TgnApp):
 
         IxnObject.str_2_class = TYPE_2_OBJECT
 
-    def connect(self, tcl_server='localhost', tcl_port=8009):
-        self.api.connect(tcl_server, tcl_port)
+    def connect(self, api_server='localhost', api_port=11009, auth=None):
+        self.api.connect(api_server, api_port, auth)
         self.root = IxnRoot(objRef=self.api.getRoot(), objType='root', parent=None)
         self.root.logger = self.logger
         self.root.api = self.api

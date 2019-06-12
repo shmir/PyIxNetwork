@@ -42,13 +42,14 @@ class TestIxnOffline(TestIxnBase):
         print('Port 1 some attributes: ', port1_obj.get_attributes('state', 'name'))
         print('Port 1 state: ' + port1_obj.get_attribute('state'))
 
-        for ixn_port in root.get_objects_by_type('vport'):
-            for ixn_int in ixn_port.get_children('interface'):
-                print(ixn_int.obj_name(), ' = ', ixn_int.obj_ref())
-                ixn_ipv4 = ixn_int.get_child('ipv4')
-                print(ixn_ipv4.obj_name(), ' = ', ixn_ipv4.obj_ref())
-                ixn_ipv6 = ixn_int.get_child('ipv6')
-                assert(ixn_ipv6 is None)
+        if self.config_version < 850:
+            for ixn_port in root.get_objects_by_type('vport'):
+                for ixn_int in ixn_port.get_children('interface'):
+                    print(ixn_int.obj_name(), ' = ', ixn_int.obj_ref())
+                    ixn_ipv4 = ixn_int.get_child('ipv4')
+                    print(ixn_ipv4.obj_name(), ' = ', ixn_ipv4.obj_ref())
+                    ixn_ipv6 = ixn_int.get_child('ipv6')
+                    assert(ixn_ipv6 is None)
 
         for ixn_port in root.get_objects_by_type('vport'):
             for ixn_obj in ixn_port.get_children():
@@ -61,32 +62,33 @@ class TestIxnOffline(TestIxnBase):
         with pytest.raises(Exception):
             self._load_config(path.join(path.dirname(__file__), 'configs/invalid.ixncfg'))
 
-    def testChildren(self, api):
+    def test_children(self, api):
         """ Test specific get children methods. """
-        self.logger.info(TestIxnOffline.testChildren.__doc__)
+        self.logger.info(TestIxnOffline.test_children.__doc__)
 
         self._load_config('test_config')
 
         ports = self.ixn.root.get_ports()
         assert(len(ports) == 2)
-        for port in ports.values():
-            assert(len(port.get_interfaces()) == 1)
 
         tis = self.ixn.root.get_traffic_items()
         assert(len(tis) == 2)
         for ti in tis.values():
             assert(len(ti.get_flow_groups()) == 2)
 
-        self._load_config('ngpf_config')
+        if self.config_version < 850:
+            for port in ports.values():
+                assert(len(port.get_interfaces()) == 1)
 
-        topologies = self.ixn.root.get_topologies()
-        assert(len(topologies) == 2)
-        for topology in topologies.values():
-            assert(len(topology.get_device_groups()) == 1)
+            self._load_config('ngpf_config')
+            topologies = self.ixn.root.get_topologies()
+            assert(len(topologies) == 2)
+            for topology in topologies.values():
+                assert(len(topology.get_device_groups()) == 1)
 
-    def testBasicConfig(self, api):
+    def test_basic_config(self, api):
         """ Test configuration build with basic objects - ports, interfaces, traffic items... """
-        self.logger.info(TestIxnOffline.testBasicConfig.__doc__)
+        self.logger.info(TestIxnOffline.test_basic_config.__doc__)
 
         num_ports = 2
         num_ints = 2
@@ -161,9 +163,9 @@ class TestIxnOffline(TestIxnBase):
 
         self._save_config()
 
-    def testTopologies(self, api):
+    def test_topologies(self, api):
         """ Test configuration build with topologies """
-        self.logger.info(TestIxnOffline.testTopologies.__doc__)
+        self.logger.info(TestIxnOffline.test_topologies.__doc__)
 
         num_ports = 2
         num_ints = 0
@@ -184,7 +186,10 @@ class TestIxnOffline(TestIxnBase):
             ixn_eth.get_attribute('mac')
             IxnNgpfIpv4(parent=ixn_eth)
 
-    def testBackdoor(self, api):
+    def test_backdoor(self, api):
+        """ Test cdirect access to REST objects """
+        self.logger.info(TestIxnOffline.test_backdoor.__doc__)
+
         if self.api != ApiType.rest:
             pytest.skip("backdoor supported only for rest API")
         print('session = {}'.format(self.ixn.api.session))
