@@ -26,7 +26,7 @@ class IxnRestWrapper(object):
         self.logger = logger
         self.api_key = None
 
-    def waitForComplete(self, response, timeout=90):
+    def waitForComplete(self, request, response, timeout=90):
         if 'errors' in response.json():
             raise TgnError(response.json()['errors'][0])
         if response.json()['state'].lower() == 'error':
@@ -34,8 +34,10 @@ class IxnRestWrapper(object):
             raise TgnError('wait for post {} failed - {}'.format(response.url, result))
         if response.json()['state'].lower() == 'success':
             return
-        # progress_url = requests.get(self.root_url, verify=False)
         progress_url = json.loads(response.content)[u'url']
+        if 'http' not in progress_url:
+            # sometimes the progress url is relative, for example in version 8.50 linux loadconfig
+            progress_url = self.server_url + progress_url
         for _ in range(timeout):
             response = self.get(progress_url)
             if type(response.json()) == dict:
@@ -65,13 +67,14 @@ class IxnRestWrapper(object):
             response = command(url, verify=False, headers=headers, data=data, **kwargs)
         self.logger.debug('{}'.format(response))
         if response.status_code >= 400:
+            error = None
             if response.text:
                 error = json.loads(response.text).get('error', None)
                 if not error:
                     error = json.loads(response.text).get('errors', None)
                 if not error:
                     error = json.loads(response.text).get('Message', None)
-            raise TgnError('failed to {} {} {} - status code {}\nerror - {}'.
+            raise TgnError('failed to {} {} {}\nstatus code - {}\nerror - {}'.
                            format(command.__name__, url, kwargs_to_print, response.status_code, error))
         return response
 
@@ -81,7 +84,7 @@ class IxnRestWrapper(object):
     def post(self, url, data={}):
         response = self.request(requests.post, url, data=data)
         if response.status_code != 201 and 'id' in response.json():
-            self.waitForComplete(response)
+            self.waitForComplete(url, response)
         return response
 
     def options(self, url):
@@ -121,17 +124,11 @@ class IxnRestWrapper(object):
 
         if self.api_key:
             self.post(self.root_url + 'operations/start')
-            return
+        else:
+            self._wait_for(self.server_url + self.session + 'ixnetwork', 80)
 
-        for _ in range(80):
-            try:
-                self.get(self.server_url + self.session + 'ixnetwork')
-                return
-            except TgnError as _:
-                pass
-            time.sleep(1)
-        raise TgnError('failed to connect - {}'.
-                       format(self.get(self.server_url + self.session + 'ixnetwork').json()['errors']))
+        self.version = self.getVersion()
+        self.patch(self.root_url + 'ixnetwork/globals/licensing', {'licensingServers': ['192.168.42.61']})
 
     def disconnect(self):
         if self.session.split('/')[-2] != '1':
@@ -157,10 +154,10 @@ class IxnRestWrapper(object):
         return response.json()['result']
 
     def getVersion(self):
-        return self.execute('getVersion')
+        return self.get(self.root_url + 'ixnetwork/globals/').json()['buildNumber']
 
     def newConfig(self):
-        new_config_url = self.root_url + 'ixnetwork/operations/' + ('newconfig' if self.api_key else 'newConfig')
+        new_config_url = self.root_url + 'ixnetwork/operations/' + ('newconfig' if self.new_version else 'newConfig')
         self.post(new_config_url, data=None)
 
     def loadConfig(self, config_file_name):
@@ -179,31 +176,11 @@ class IxnRestWrapper(object):
         response = self.request(requests.post, upload_url, data=configContent, headers=upload_headers,
                                 params=upload_params)
         if 'id' in response.json():
-            self.waitForComplete(response)
+            self.waitForComplete(upload_url, response)
 
         load_config_data = {'arg1': basename}
-        load_config_url = self.root_url + 'ixnetwork/operations/' + ('loadconfig' if self.api_key else 'loadConfig')
+        load_config_url = self.root_url + 'ixnetwork/operations/' + ('loadconfig' if self.new_version else 'loadConfig')
         self.post(load_config_url, data=load_config_data)
-
-        for _ in range(80):
-            try:
-                self.get(self.server_url + self.session + 'ixnetwork/globals')
-                return
-            except TgnError as _:
-                pass
-            time.sleep(1)
-        raise TgnError('failed to connect - {}'.
-                       format(self.get(self.server_url + self.session + 'ixnetwork/globals').json()['errors']))
-
-        for _ in range(8):
-            try:
-                response = self.get(self.server_url + self.session + 'ixnetwork/vport')
-                return
-            except TgnError as _:
-                pass
-            time.sleep(1)
-        raise TgnError('failed to connect - {}'.
-                       format(self.get(self.server_url + self.session + 'ixnetwork/vport').json()['errors']))
 
     def saveConfig(self, config_file_name):
         basename = path.basename(config_file_name)
@@ -263,14 +240,17 @@ class IxnRestWrapper(object):
         response = self.post(self.server_url + parent.ref + '/' + obj_type, attributes)
         return self._get_href(response.json())
 
-    def setAttributes(self, objRef, **attributes):
-        self.patch(self.server_url + objRef, attributes)
+    def setAttributes(self, obj_ref, **attributes):
+        self.patch(self.server_url + obj_ref, attributes)
 
     def remapIds(self, objRef):
         return objRef
 
-    def regenerate(self, traffic, *traffic_items):
-        self.execute('generateifrequired', traffic.ref, traffic.ref)
+    def regenerate(self, _, traffic_items):
+        if traffic_items:
+            rep_ti = traffic_items[0]
+            non_quick_tis = [ti.ref for ti in traffic_items if ti.get_attributes()['trafficItemType'] != 'quick']
+            rep_ti.execute('generate', non_quick_tis)
 
     def startStatelessTraffic(self, traffic, traffic_items):
         self.execute('startstatelesstraffic', traffic.ref, [ti.ref for ti in traffic_items])
@@ -280,3 +260,16 @@ class IxnRestWrapper(object):
 
     def _get_href(self, response_entry):
         return response_entry['links'][0]['href']
+
+    @property
+    def new_version(self):
+        return not self.version < '8.51'
+
+    def _wait_for(self, url, timeout):
+        for _ in range(timeout):
+            try:
+                self.get(url)
+                return
+            except TgnError as _:
+                time.sleep(1)
+        raise TgnError('failed to connect - {}'.format(self.get(url).json()['errors']))

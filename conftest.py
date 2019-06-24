@@ -6,18 +6,20 @@ from trafficgenerator.tgn_utils import ApiType
 
 api_ = 'tcl'
 api_ = 'rest'
-config_version = 850
+config_version = 840
+
+server = '192.168.65.34'
+server = '192.168.65.35'
+server_os = 'linux'
+auth = ('admin', 'admin')
+chassis = '192.168.65.53'
 
 server = 'localhost'
 server_os = 'windows'
 auth = None
+chassis = '192.168.42.61'
+chassis = '192.168.65.53'
 chassis = '192.168.42.207'
-chassis = '192.168.65.53'
-
-server = '192.168.65.34'
-server_os = 'linux'
-auth = ('admin', 'admin')
-chassis = '192.168.65.53'
 
 if server_os == 'linux':
     server += ':443'

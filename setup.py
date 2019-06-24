@@ -42,10 +42,14 @@ setup(
     test_suite='ixnetwork.test',
     classifiers=[
         'Programming Language :: Python',
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Natural Language :: English',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Software Development :: Testing :: Traffic Generation'],
+    keywords='ixnetwork l2l3 test tool ixia automation',
 )

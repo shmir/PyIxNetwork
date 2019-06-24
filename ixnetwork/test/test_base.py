@@ -5,7 +5,6 @@ Base class for all IXN package tests.
 """
 
 from os import path
-import time
 
 from trafficgenerator.test.test_tgn import TestTgnBase
 

@@ -21,7 +21,7 @@ class TestIxnOnline(TestIxnBase):
 
     ports = []
 
-    def test_reserve_Ports(self, api):
+    def test_reserve_ports(self, api):
         self._reserve_ports('test_config', wait_for_up=False)
 
     def test_ports_online(self, api):
@@ -71,7 +71,8 @@ class TestIxnOnline(TestIxnBase):
 
     def test_gui_traffic(self, api):
         # Sometimes ARP fails on IxVM? To be sure, send automatic ARP (seems more stable...)
-        self._reserve_ports('test_config_arp_on_link_up')
+        self._reserve_ports('test_config')
+        self.ixn.protocols_start()
         self.ixn.regenerate()
         self.ixn.traffic_apply()
         self.ixn.l23_traffic_start()
