@@ -5,6 +5,7 @@ Base class for all IXN package tests.
 """
 
 from os import path
+import inspect
 
 from trafficgenerator.test.test_tgn import TestTgnBase
 
@@ -38,3 +39,7 @@ class TestIxnBase(TestTgnBase):
         self.ixn.new_config()
         self.ixn.load_config(config_file)
         self.ixn.commit()
+
+    def _save_config(self):
+        test_name = inspect.stack()[1][3]
+        self.ixn.save_config(path.join(path.dirname(__file__), 'configs', test_name + '.ixncfg'))

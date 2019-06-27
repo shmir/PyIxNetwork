@@ -5,7 +5,6 @@ IxNetwork package tests that can run in offline mode.
 """
 
 from os import path
-import inspect
 from collections import OrderedDict
 import pytest
 
@@ -25,6 +24,7 @@ class TestIxnOffline(TestIxnBase):
         self.logger.info(TestIxnOffline.test_load_config.__doc__)
 
         self._load_config('test_config')
+        self._save_config()
 
     def test_analyze_config(self, api):
         """ Test configuration analysis. """
@@ -234,7 +234,3 @@ class TestIxnOffline(TestIxnBase):
             ixn_ports[ixn_port] = ixn_port.get_children('interface')
 
         return ixn_ports
-
-    def _save_config(self):
-        test_name = inspect.stack()[1][3]
-        self.ixn.save_config(path.join(path.dirname(__file__), 'configs', test_name + '.ixncfg'))

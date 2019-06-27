@@ -26,7 +26,7 @@ class IxnRestWrapper(object):
         self.logger = logger
         self.api_key = None
 
-    def waitForComplete(self, request, response, timeout=90):
+    def waitForComplete(self, request, response, timeout=128):
         if 'errors' in response.json():
             raise TgnError(response.json()['errors'][0])
         if response.json()['state'].lower() == 'error':
@@ -110,10 +110,10 @@ class IxnRestWrapper(object):
 
         # Perform get to determine whether http is supported or we should use https.
         try:
-            self.server_url = 'http://{}:{}'.format(ip, port)
-            self.get(self.server_url + '/api/v1/sessions')
-        except Exception as _:
             self.server_url = 'https://{}:{}'.format(ip, port)
+            self.get(self.server_url + '/api/v1/sessions', timeout=4)
+        except Exception as _:
+            self.server_url = 'http://{}:{}'.format(ip, port)
 
         response = self.post(self.server_url + '/api/v1/sessions', data={'applicationType': 'ixnrest'})
         if 'id' in response.json():
@@ -157,7 +157,7 @@ class IxnRestWrapper(object):
         return self.get(self.root_url + 'ixnetwork/globals/').json()['buildNumber']
 
     def newConfig(self):
-        new_config_url = self.root_url + 'ixnetwork/operations/' + ('newconfig' if self.new_version else 'newConfig')
+        new_config_url = self.root_url + 'ixnetwork/operations/newconfig'
         self.post(new_config_url, data=None)
 
     def loadConfig(self, config_file_name):
@@ -166,12 +166,8 @@ class IxnRestWrapper(object):
             configContent = f.read()
 
         upload_headers = {'content-type': 'application/octet-stream'}
-        if self.api_key:
-            upload_url = self.root_url + 'ixnetwork/files'
-            upload_params = {'filename': basename}
-        else:
-            upload_url = self.root_url + 'ixnetwork/files/' + basename
-            upload_params = None
+        upload_url = self.root_url + 'ixnetwork/files'
+        upload_params = {'filename': basename}
         # todo: use self.port
         response = self.request(requests.post, upload_url, data=configContent, headers=upload_headers,
                                 params=upload_params)
@@ -179,21 +175,22 @@ class IxnRestWrapper(object):
             self.waitForComplete(upload_url, response)
 
         load_config_data = {'arg1': basename}
-        load_config_url = self.root_url + 'ixnetwork/operations/' + ('loadconfig' if self.new_version else 'loadConfig')
+        load_config_url = self.root_url + 'ixnetwork/operations/loadconfig'
         self.post(load_config_url, data=load_config_data)
 
     def saveConfig(self, config_file_name):
         basename = path.basename(config_file_name)
 
         data = {'arg1': basename}
-        self.post(self.root_url + 'ixnetwork/operations/saveConfig', data)
+        self.post(self.root_url + 'ixnetwork/operations/saveconfig', data)
 
-        urlHeadersData = {'content-type': 'application/octet-stream'}
-        uploadUrl = self.root_url + 'ixnetwork/files/' + basename
-        r = self.request(requests.get, uploadUrl, headers=urlHeadersData)
+        download_headers = {'content-type': 'application/octet-stream'}
+        download_url = self.root_url + 'ixnetwork/files'
+        download_params = {'filename': basename}
+        res = self.request(requests.get, download_url, headers=download_headers, params=download_params)
 
         with open(config_file_name, mode='wb') as f:
-            f.write(r.content)
+            f.write(res.content)
 
     def getList(self, obj_ref, childList):
         response = self.get(self.server_url + obj_ref + '/' + childList)
@@ -247,16 +244,20 @@ class IxnRestWrapper(object):
         return objRef
 
     def regenerate(self, _, traffic_items):
+        non_quick_tis = [ti for ti in traffic_items if ti.get_attributes()['trafficItemType'] != 'quick']
+        self.traffic_items_operation('generate', non_quick_tis)
+
+    def startStatelessTraffic(self, _, traffic_items):
+        self.traffic_items_operation('startstatelesstraffic', traffic_items)
+
+    def stopStatelessTraffic(self, _, traffic_items):
+        self.traffic_items_operation('stopstatelesstraffic', traffic_items)
+
+    def traffic_items_operation(self, operation, traffic_items):
         if traffic_items:
             rep_ti = traffic_items[0]
-            non_quick_tis = [ti.ref for ti in traffic_items if ti.get_attributes()['trafficItemType'] != 'quick']
-            rep_ti.execute('generate', non_quick_tis)
-
-    def startStatelessTraffic(self, traffic, traffic_items):
-        self.execute('startstatelesstraffic', traffic.ref, [ti.ref for ti in traffic_items])
-
-    def stopStatelessTraffic(self, traffic, traffic_items):
-        self.execute('stopstatelesstraffic', traffic.ref, [ti.ref for ti in traffic_items])
+            non_quick_tis = [ti.ref for ti in traffic_items]
+            rep_ti.execute(operation, non_quick_tis)
 
     def _get_href(self, response_entry):
         return response_entry['links'][0]['href']

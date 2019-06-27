@@ -4,41 +4,53 @@ import pytest
 from trafficgenerator.tgn_utils import ApiType
 
 
-api_ = 'tcl'
+api_ = 'tcl_'
 api_ = 'rest'
-config_version = 840
 
-server = '192.168.65.34'
-server = '192.168.65.35'
-server_os = 'linux'
-auth = ('admin', 'admin')
-chassis = '192.168.65.53'
+auth_ = ('admin', 'admin')
 
-server = 'localhost'
-server_os = 'windows'
-auth = None
-chassis = '192.168.42.61'
-chassis = '192.168.65.53'
-chassis = '192.168.42.207'
+chassis_01 = '192.168.42.61'
+chassis_40 = '192.168.42.207'
+chassis_50 = '192.168.65.53'
 
-if server_os == 'linux':
-    server += ':443'
-else:
-    if api_ == 'rest':
-        server += ':11009'
-    else:
-        server += ':8009'
+localhost = 'localhost:11009'
 
+linux_40 = '192.168.65.49:443'
+linux_50 = '192.168.65.73:443'
+linux_52 = '192.168.65.47:443'
+
+windows_40 = '192.168.65.46:11009'
+windows_50_http = 'localhost:11009'
+windows_50_https = '192.168.65.94:11009'
+windows_52_https = '192.168.65.81:11009'
+
+linux_servers = ['linux_40', 'linux_50', 'linux_52']
+windows_servers = ['windows_40', 'windows_50_http', 'windows_50_https', 'windows_52_https']
+
+server_properties = {linux_40: {'chassis': chassis_40, 'auth': ('admin', 'admin'), 'config_version': 'ngpf'},
+                     linux_50: {'chassis': chassis_50, 'auth': ('admin', 'admin'), 'config_version': 'ngpf'},
+                     linux_52: {'chassis': None, 'auth': ('admin', 'admin'), 'config_version': 'ngpf'},
+                     windows_40: {'chassis': chassis_40, 'auth': None, 'config_version': 'classic'},
+                     windows_50_http: {'chassis': chassis_50, 'auth': None, 'config_version': 'classic'},
+                     windows_50_https: {'chassis': chassis_50, 'auth': None, 'config_version': 'classic'},
+                     windows_52_https: {'chassis': None, 'auth': None, 'config_version': 'classic'}}
+
+server_ = 'all'
+chassis_ = None
+config_version_ = None
 
 def pytest_addoption(parser):
     parser.addoption('--api', action='store', default=api_, help='api options: rest or tcl')
-    parser.addoption('--server', action='store', default=server, help='REST server in format ip:port')
-    parser.addoption('--chassis', action='store', default=chassis, help='chassis IP address')
+    parser.addoption('--server', action='store', default=server_, help='REST server in format ip:port')
+    parser.addoption('--chassis', action='store', default=chassis_, help='chassis IP address')
     parser.addoption('--port1', action='store', default='1/1', help='module1/port1')
     parser.addoption('--port2', action='store', default='1/2', help='module2/port2')
-    parser.addoption('--auth', action='store', default=auth, nargs=2, type=list,
-                     help='username,password for Linux API server')
-    parser.addoption('--config-version', action='store', default=config_version, help='configuration version')
+    parser.addoption('--config-version', action='store', default=config_version_, help='configuration version')
+
+
+@pytest.fixture
+def server(request):
+    yield globals().get(request.param, request.param)
 
 
 @pytest.fixture
@@ -47,15 +59,20 @@ def api(request):
 
 
 @pytest.fixture(autouse=True)
-def config(request):
-    server_ip = request.config.getoption('--server')  # @UndefinedVariable
-    request.cls.server_ip = server_ip.split(':')[0]
-    request.cls.server_port = server_ip.split(':')[1] if len(server_ip.split(':')) == 2 else 8009
-    chassis = request.config.getoption('--chassis')  # @UndefinedVariable
+def config(request, server):
+    request.cls.server_ip = server.split(':')[0]
+    request.cls.server_port = server.split(':')[1] if len(server.split(':')) == 2 else 8009
+    if request.config.getoption('--chassis'):
+        chassis = request.config.getoption('--chassis')
+    else:
+        chassis = server_properties[server]['chassis']
     request.cls.port1 = '{}/{}'.format(chassis, request.config.getoption('--port1'))  # @UndefinedVariable
     request.cls.port2 = '{}/{}'.format(chassis, request.config.getoption('--port2'))  # @UndefinedVariable
-    request.cls.auth = request.config.getoption('--auth')  # @UndefinedVariable
-    request.cls.config_version = request.config.getoption('--config-version')
+    request.cls.auth = server_properties[server]['auth']
+    if request.config.getoption('--config-version'):
+        request.cls.config_version = request.config.getoption('--config-version')
+    else:
+        request.cls.config_version = server_properties[server]['config_version']
 
 
 def pytest_generate_tests(metafunc):
@@ -64,3 +81,12 @@ def pytest_generate_tests(metafunc):
     else:
         apis = [metafunc.config.getoption('--api')]
     metafunc.parametrize('api', apis, indirect=True)
+    if metafunc.config.getoption('--server') == 'linux':
+        servers = linux_servers
+    elif metafunc.config.getoption('--server') == 'windows':
+        servers = windows_servers
+    elif metafunc.config.getoption('--server') == 'all':
+        servers = linux_servers + windows_servers
+    else:
+        servers = [metafunc.config.getoption('--server')]
+    metafunc.parametrize('server', servers, indirect=True)
