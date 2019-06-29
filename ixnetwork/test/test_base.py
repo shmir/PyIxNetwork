@@ -20,6 +20,7 @@ class TestIxnBase(TestTgnBase):
         super(TestIxnBase, self).setup()
         self.ixn = init_ixn(self.api, self.logger, self.config.get('IXN', 'install_dir'))
         self.ixn.connect(self.server_ip, self.server_port, self.auth)
+        self.ixn.api.set_licensing(licensingServers=self.license_server)
 
     def teardown(self):
         for port in self.ixn.root.get_objects_or_children_by_type('vport'):

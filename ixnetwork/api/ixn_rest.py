@@ -26,6 +26,47 @@ class IxnRestWrapper(object):
         self.logger = logger
         self.api_key = None
 
+    def connect(self, ip, port, auth=None):
+        if auth:
+            url = 'https://{}:{}/api/v1/auth/session'.format(ip, port)
+            data = {'username': auth[0], 'password': auth[1]}
+            headers = {'content-type': 'application/json'}
+            response = requests.request('POST', url, json=data, headers=headers, verify=False)
+            self.api_key = json.loads(response.text)['apiKey']
+            self.payload = {'applicationType': 'ixnrest'}
+            self.headers = {'content-type': 'application/json'}
+
+        # Perform get to determine whether http is supported or we should use https.
+        try:
+            self.server_url = 'https://{}:{}'.format(ip, port)
+            self.get(self.server_url + '/api/v1/sessions', timeout=4)
+        except Exception as _:
+            self.server_url = 'http://{}:{}'.format(ip, port)
+
+        response = self.post(self.server_url + '/api/v1/sessions', data={'applicationType': 'ixnrest'})
+        if 'id' in response.json():
+            self.session = '/api/v1/sessions/{}/'.format(response.json()['id'])
+        else:
+            self.session = response.json()['links'][0]['href'] + '/'
+        self.root_url = self.server_url + self.session
+
+        if self.api_key:
+            self.post(self.root_url + 'operations/start')
+        else:
+            self._wait_for(self.server_url + self.session + 'ixnetwork', 80)
+
+        self.version = self.getVersion()
+
+    def disconnect(self):
+        if self.session.split('/')[-2] != '1':
+            if self.api_key:
+                self.post(self.root_url + 'operations/stop')
+            self.delete(self.root_url)
+
+    #
+    # IxNetwork REST commands
+    #
+
     def waitForComplete(self, request, response, timeout=128):
         if 'errors' in response.json():
             raise TgnError(response.json()['errors'][0])
@@ -98,43 +139,9 @@ class IxnRestWrapper(object):
     def delete(self, url):
         return self.request(requests.delete, url)
 
-    def connect(self, ip, port, auth=None):
-        if auth:
-            url = 'https://{}:{}/api/v1/auth/session'.format(ip, port)
-            data = {'username': auth[0], 'password': auth[1]}
-            headers = {'content-type': 'application/json'}
-            response = requests.request('POST', url, json=data, headers=headers, verify=False)
-            self.api_key = json.loads(response.text)['apiKey']
-            self.payload = {'applicationType': 'ixnrest'}
-            self.headers = {'content-type': 'application/json'}
-
-        # Perform get to determine whether http is supported or we should use https.
-        try:
-            self.server_url = 'https://{}:{}'.format(ip, port)
-            self.get(self.server_url + '/api/v1/sessions', timeout=4)
-        except Exception as _:
-            self.server_url = 'http://{}:{}'.format(ip, port)
-
-        response = self.post(self.server_url + '/api/v1/sessions', data={'applicationType': 'ixnrest'})
-        if 'id' in response.json():
-            self.session = '/api/v1/sessions/{}/'.format(response.json()['id'])
-        else:
-            self.session = response.json()['links'][0]['href'] + '/'
-        self.root_url = self.server_url + self.session
-
-        if self.api_key:
-            self.post(self.root_url + 'operations/start')
-        else:
-            self._wait_for(self.server_url + self.session + 'ixnetwork', 80)
-
-        self.version = self.getVersion()
-        self.patch(self.root_url + 'ixnetwork/globals/licensing', {'licensingServers': ['192.168.42.61']})
-
-    def disconnect(self):
-        if self.session.split('/')[-2] != '1':
-            if self.api_key:
-                self.post(self.root_url + 'operations/stop')
-            self.delete(self.root_url)
+    #
+    # IxNetwork atomic API commands.
+    #
 
     def getRoot(self):
         return self.session + 'ixnetwork'
@@ -243,6 +250,15 @@ class IxnRestWrapper(object):
     def remapIds(self, objRef):
         return objRef
 
+    #
+    # IxNetwork object commands.
+    #
+
+    def set_licensing(self, licensingServers=['localhost'], mode='mixed', tier='tier3'):
+        self.patch(self.root_url + 'ixnetwork/globals/licensing', {'licensingServers': licensingServers,
+                                                                   'mode': mode,
+                                                                   'tier': tier})
+
     def regenerate(self, _, traffic_items):
         non_quick_tis = [ti for ti in traffic_items if ti.get_attributes()['trafficItemType'] != 'quick']
         self.traffic_items_operation('generate', non_quick_tis)
@@ -259,12 +275,12 @@ class IxnRestWrapper(object):
             non_quick_tis = [ti.ref for ti in traffic_items]
             rep_ti.execute(operation, non_quick_tis)
 
+    #
+    # Helpers and properties.
+    #
+
     def _get_href(self, response_entry):
         return response_entry['links'][0]['href']
-
-    @property
-    def new_version(self):
-        return not self.version < '8.51'
 
     def _wait_for(self, url, timeout):
         for _ in range(timeout):

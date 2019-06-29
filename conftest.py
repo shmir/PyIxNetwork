@@ -4,6 +4,8 @@ import pytest
 from trafficgenerator.tgn_utils import ApiType
 
 
+license_server_ = '192.168.42.61'
+
 api_ = 'tcl_'
 api_ = 'rest'
 
@@ -45,7 +47,8 @@ def pytest_addoption(parser):
     parser.addoption('--chassis', action='store', default=chassis_, help='chassis IP address')
     parser.addoption('--port1', action='store', default='1/1', help='module1/port1')
     parser.addoption('--port2', action='store', default='1/2', help='module2/port2')
-    parser.addoption('--config-version', action='store', default=config_version_, help='configuration version')
+    parser.addoption('--config-version', action='store', default=config_version_, help='configuration version',)
+    parser.addoption('--license-server', action='store', default=license_server_, help='license server IP address',)
 
 
 @pytest.fixture
@@ -73,6 +76,7 @@ def config(request, server):
         request.cls.config_version = request.config.getoption('--config-version')
     else:
         request.cls.config_version = server_properties[server]['config_version']
+    request.cls.license_server = [request.config.getoption('--license-server')]
 
 
 def pytest_generate_tests(metafunc):
