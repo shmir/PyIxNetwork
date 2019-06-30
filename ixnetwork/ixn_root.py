@@ -54,21 +54,21 @@ class IxnRoot(IxnObject):
     def l23_traffic_start(self, traffic_items, blocking=False):
         traffic = self.get_child_static('traffic')
         self.api.startStatelessTraffic(traffic, traffic_items)
-        self.wait_traffic_state("started", timeout=16)
+        self._wait_traffic_states(16, 'started')
         if blocking:
-            self.wait_traffic_state('stopped', timeout=int(2.628e+6))
+            self._wait_traffic_states(int(2.628e+6), 'stopped')
         else:
             time.sleep(2)
 
     def l23_traffic_stop(self, *traffic_items):
         traffic = self.get_child_static('traffic')
         self.api.stopStatelessTraffic(traffic, *traffic_items)
-        self.wait_traffic_state("stopped", timeout=8)
+        self._wait_traffic_states(16, 'stopped', 'unapplied')
 
-    def wait_traffic_state(self, state, timeout):
+    def _wait_traffic_states(self, timeout, *states):
         for _ in range(timeout):
-            if self.get_child_static('traffic').get_attribute('state') == state:
+            if self.get_child_static('traffic').get_attribute('state') in states:
                 return
             time.sleep(1)
-        raise TgnError('Traffic failed, traffic is {} after {} seconds'.
-                       format(self.get_child_static('traffic').get_attribute('isTrafficRunning'), timeout))
+        raise TgnError('Traffic failed to reach {} state, traffic is {} after {} seconds'.
+                       format(states, self.get_child_static('traffic').get_attribute('state'), timeout))
