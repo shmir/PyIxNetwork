@@ -42,7 +42,7 @@ class TestIxnOffline(TestIxnBase):
         print('Port 1 some attributes: ', port1_obj.get_attributes('state', 'name'))
         print('Port 1 state: ' + port1_obj.get_attribute('state'))
 
-        if self.config_version < 850:
+        if self.config_version == 'classic':
             for ixn_port in root.get_objects_by_type('vport'):
                 for ixn_int in ixn_port.get_children('interface'):
                     print(ixn_int.obj_name(), ' = ', ixn_int.obj_ref())
@@ -76,7 +76,7 @@ class TestIxnOffline(TestIxnBase):
         for ti in tis.values():
             assert(len(ti.get_flow_groups()) == 2)
 
-        if self.config_version < 850:
+        if self.config_version == 'classic':
             for port in ports.values():
                 assert(len(port.get_interfaces()) == 1)
 

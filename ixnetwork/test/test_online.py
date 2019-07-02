@@ -10,8 +10,8 @@ Two IXN ports connected back to back.
 """
 
 import json
-
 import time
+import pytest
 
 from ixnetwork.test.test_base import TestIxnBase
 from ixnetwork.ixn_statistics_view import IxnPortStatistics, IxnTrafficItemStatistics, IxnFlowStatistics
@@ -21,17 +21,27 @@ class TestIxnOnline(TestIxnBase):
 
     ports = []
 
+    def setup(self):
+        if not self.locations:
+            pytest.skip('no chassis for online test')
+        super(self.__class__, self).setup()
+
     def test_reserve_ports(self, api):
         self._reserve_ports('test_config', wait_for_up=False)
+        for port in self.ports:
+            assert port.get_attribute('state').lower() != 'unassigned'
+
+    def test_release_ports(self, api):
+        self._reserve_ports('test_config')
+        for port in self.ports:
+            port.release()
+        for port in self.ports:
+            assert port.get_attribute('state').lower() == 'unassigned'
 
     def test_ports_online(self, api):
         self._reserve_ports('test_config')
-
         for port in self.ports:
             assert(port.is_online())
-
-        for port in self.ports:
-            port.release()
 
     def test_reload(self, api):
 
@@ -40,15 +50,10 @@ class TestIxnOnline(TestIxnBase):
         for port in self.ports:
             port.release()
 
-        self.ixn.root.get_object_by_name('Port 2').reserve(self.port1)
-        self.ixn.root.get_object_by_name('Port 1').reserve(self.port2)
+        # swap order or ports
+        self.locations[0], self.locations[1] = self.locations[1], self.locations[0]
 
         self._reserve_ports('test_config')
-
-    def test_release_ports(self, api):
-        self._reserve_ports('test_config')
-        for port in self.ports:
-            port.release()
 
     def test_interfaces(self, api):
         self._reserve_ports('test_config')
@@ -97,32 +102,17 @@ class TestIxnOnline(TestIxnBase):
         assert(int(flow_stats.get_stat('Port 2/Port 1/Traffic Item 1', 'Tx Frames')) == 800)
         self._save_config()
 
-    def test_ngpf(self, api):
-        self._reserve_ports('ngpf_config')
-        topologies = self.ixn.root.get_children('topology')
-        self.ixn.protocols_start()
-        time.sleep(16)
-        assert(topologies[0].get_attribute('status') == 'started')
-        self.ixn.protocols_stop()
-        time.sleep(2)
-        assert(topologies[0].get_attribute('status') == 'notStarted')
-        # No need to test since protocol start/stop methods will raise exception if the operation failed.
-        topologies[0].start()
-        topologies[1].start()
-        topologies[0].stop()
-        topologies[1].stop()
-        device_group = topologies[0].get_child('deviceGroup')
-        device_group.start()
-        device_group.stop()
-        ethernet = device_group.get_child('ethernet')
-        ethernet.start()
-        ethernet.stop()
+    def test_quick_test(self, api):
+        self._reserve_ports('quick_test')
+        self.ixn.quick_test_apply('QuickTest1')
+        self.ixn.quick_test_start('QuickTest1', blocking=True)
+        self.ixn.quick_test_stop('QuickTest1')
 
     def _reserve_ports(self, config_file, wait_for_up=True):
         self._load_config(config_file)
         self.ports = self.ixn.root.get_children('vport')
-        self.ixn.root.get_object_by_name('Port 1').reserve(self.port1, wait_for_up=False)
-        self.ixn.root.get_object_by_name('Port 2').reserve(self.port2, wait_for_up=False)
+        self.ixn.root.get_object_by_name('Port 1').reserve(self.locations[0], wait_for_up=False)
+        self.ixn.root.get_object_by_name('Port 2').reserve(self.locations[1], wait_for_up=False)
         if wait_for_up:
             for port in self.ports:
-                port.wait_for_up(60)
+                port.wait_for_up(80)

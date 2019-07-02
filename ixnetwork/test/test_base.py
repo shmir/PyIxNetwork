@@ -6,7 +6,9 @@ Base class for all IXN package tests.
 
 from os import path
 import inspect
+import pytest
 
+from trafficgenerator.tgn_utils import ApiType
 from trafficgenerator.test.test_tgn import TestTgnBase
 
 from ixnetwork.ixn_app import init_ixn
@@ -16,11 +18,23 @@ class TestIxnBase(TestTgnBase):
 
     TestTgnBase.config_file = path.join(path.dirname(__file__), 'IxNetwork.ini')
 
+    server_ip = None
+    server_port = None
+    locations = None
+    auth = None
+    config_version = None
+    license_server = None
+
     def setup(self):
+
+        if self.api == ApiType.tcl and self.server_port == 443:
+            pytest.skip('REST server do not support Tcl')
+
         super(TestIxnBase, self).setup()
-        self.ixn = init_ixn(self.api, self.logger, self.config.get('IXN', 'install_dir'))
+        self.ixn = init_ixn(self.api, self.logger, self.install_dir)
         self.ixn.connect(self.server_ip, self.server_port, self.auth)
-        self.ixn.api.set_licensing(licensingServers=self.license_server)
+        if self.api == ApiType.rest:
+            self.ixn.api.set_licensing(licensingServers=self.license_server)
 
     def teardown(self):
         for port in self.ixn.root.get_objects_or_children_by_type('vport'):

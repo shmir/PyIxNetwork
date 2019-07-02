@@ -49,6 +49,12 @@ class IxnPort(IxnObject):
         if wait_for_up:
             self.wait_for_up(timeout)
 
+    def release(self):
+        if self.get_attribute('connectedTo') != self.api.null:
+            self.set_attributes(commit=True, connectedTo=self.api.null)
+        self.execute('releasePort', [self.ref])
+        self.wait_for_states(4, 'unassigned')
+
     def wait_for_up(self, timeout=40):
         """ Wait until port is up and running, including all parameters (admin state, oper state, license etc.).
 
@@ -83,11 +89,6 @@ class IxnPort(IxnObject):
         """
 
         return self.get_attribute('state').lower() == 'up'
-
-    def release(self):
-        if self.get_attribute('connectedTo') != self.api.null:
-            self.set_attributes(commit=True, connectedTo=self.api.null)
-        self.execute('releasePort', [self.ref])
 
     def get_interfaces(self):
         """
