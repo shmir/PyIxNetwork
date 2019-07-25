@@ -29,7 +29,7 @@ class IxnProtocol(IxnObject):
         return list(p for p in cls.get_objects_of_class() if ixn_int in p.ixn_ints.values())
 
     @classmethod
-    def get_protocols_with_port(cls, i, l3, vlan=None):
+    def get_protocols_with_port(cls, ixn_port, l3, vlan=None):
         ixn_ints = ixn_port.get_objects_with_object('interface', l3)
         if vlan is not None:
             ixn_ints = filter_ints_based_on_vlan(ixn_ints, vlan)

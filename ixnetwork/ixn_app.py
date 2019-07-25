@@ -6,7 +6,6 @@ Classes and utilities to manage IXN application.
 
 from os import path
 import time
-from builtins import range
 from collections import OrderedDict
 
 from trafficgenerator.tgn_utils import TgnError, is_true, ApiType

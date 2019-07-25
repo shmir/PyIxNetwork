@@ -27,9 +27,12 @@ class IxnRestWrapper(object):
         self.api_key = None
 
     def connect(self, ip, port, auth=None):
-        if auth:
+        if port == 443:
             url = 'https://{}:{}/api/v1/auth/session'.format(ip, port)
-            data = {'username': auth[0], 'password': auth[1]}
+            if auth:
+                data = {'username': auth[0], 'password': auth[1]}
+            else:
+                data = None
             headers = {'content-type': 'application/json'}
             response = requests.request('POST', url, json=data, headers=headers, verify=False)
             self.api_key = json.loads(response.text)['apiKey']
@@ -50,7 +53,7 @@ class IxnRestWrapper(object):
             self.session = response.json()['links'][0]['href'] + '/'
         self.root_url = self.server_url + self.session
 
-        if self.api_key:
+        if self.api_key and self.api_key != '00000000000000000000000000000000':
             self.post(self.root_url + 'operations/start')
         else:
             self._wait_for(self.server_url + self.session + 'ixnetwork', 80)
@@ -59,7 +62,7 @@ class IxnRestWrapper(object):
 
     def disconnect(self):
         if self.session.split('/')[-2] != '1':
-            if self.api_key:
+            if self.api_key and self.api_key != '00000000000000000000000000000000':
                 self.post(self.root_url + 'operations/stop')
             self.delete(self.root_url)
 

@@ -4,10 +4,9 @@ import pytest
 from trafficgenerator.tgn_utils import ApiType
 import ixnetwork.test.test_config
 
-api_ = 'all'
+api_ = 'rest'
 license_server_ = '192.168.42.61'
-auth_ = ('admin', 'admin')
-server_ = 'all'
+server_ = ixnetwork.test.test_config.cm_50
 chassis_ = None
 config_version_ = None
 
@@ -62,10 +61,14 @@ def pytest_generate_tests(metafunc):
     metafunc.parametrize('api', apis, indirect=True)
     if metafunc.config.getoption('--server') == 'linux':
         servers = ixnetwork.test.test_config.linux_servers
+    elif metafunc.config.getoption('--server') == 'cms':
+        servers = ixnetwork.test.test_config.cm_servers
     elif metafunc.config.getoption('--server') == 'windows':
         servers = ixnetwork.test.test_config.windows_servers
+    elif metafunc.config.getoption('--server') == 'subset':
+        servers = ixnetwork.test.test_config.subset_servers
     elif metafunc.config.getoption('--server') == 'all':
-        servers = ixnetwork.test.test_config.linux_servers + ixnetwork.test.test_config.windows_servers
+        servers = ixnetwork.test.test_config.linux_servers + ixnetwork.test.test_config.cm_servers + ixnetwork.test.test_config.windows_servers
     else:
         servers = [metafunc.config.getoption('--server')]
     metafunc.parametrize('server', servers, indirect=True)
