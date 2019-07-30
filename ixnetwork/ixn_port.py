@@ -50,8 +50,9 @@ class IxnPort(IxnObject):
             self.wait_for_up(timeout)
 
     def release(self):
-        if self.get_attribute('connectedTo') != self.api.null:
-            self.set_attributes(commit=True, connectedTo=self.api.null)
+        #set force connectedTo to Null anyway because sometimes got answer null even it not
+        #if self.get_attribute('connectedTo') != self.api.null:
+        self.set_attributes(commit=True, connectedTo=self.api.null)
         self.execute('releasePort', [self.ref])
         self.wait_for_states(4, 'unassigned')
 
