@@ -6,7 +6,7 @@ import ixnetwork.test.test_config
 
 api_ = 'rest'
 license_server_ = '192.168.42.61'
-server_ = ixnetwork.test.test_config.cm_50
+server_ = ixnetwork.test.test_config.windows_90_http
 chassis_ = None
 config_version_ = None
 

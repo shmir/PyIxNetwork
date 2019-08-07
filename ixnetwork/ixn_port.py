@@ -60,12 +60,7 @@ class IxnPort(IxnObject):
 
         :param timeout: max time to wait for port up.
         """
-
         self.wait_for_states(timeout, 'up')
-        connectionStatus = self.get_attribute('connectionStatus').strip()
-        if connectionStatus.split(':')[0] != self.get_attribute('assignedTo').split(':')[0]:
-            raise TgnError('Failed to reach up state, port connection status is {} after {} seconds'.
-                           format(connectionStatus, timeout))
 
     def wait_for_states(self, timeout=40, *states):
         """ Wait until port reaches one of the requested states.
@@ -79,7 +74,10 @@ class IxnPort(IxnObject):
                 return
             time.sleep(1)
             state = self.get_attribute('state')
-        raise TgnError('Failed to reach states {}, port state is {} after {} seconds'.format(states, state, timeout))
+        connectionState = self.get_attribute('connectionState')
+        stateDetail = self.get_attribute('stateDetail')
+        raise TgnError('Failed to reach states {}, port state is {} after {} seconds - connection state is {}'.
+                       format(states, stateDetail, timeout, connectionState))
 
     def is_online(self):
         """
@@ -98,8 +96,8 @@ class IxnPort(IxnObject):
         return {o.obj_name(): o for o in self.get_objects_or_children_by_type('interface')}
 
     def send_arp_ns(self):
-        self.execute('sendArp', self.ref)
-        self.execute('sendNs', self.ref)
+        self.api.execute('sendArp', None, False, self.ref)
+        self.api.execute('sendNs', None, False, self.ref)
 
     def send_rs(self):
-        self.execute('sendRs', self.ref)
+        self.api.execute('sendRs', None, False, self.ref)

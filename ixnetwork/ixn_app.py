@@ -125,21 +125,11 @@ class IxnApp(TgnApp):
             port.reserve(location, False, wait_for_up, timeout)
 
     def send_arp_ns(self):
-        try:
-            self.api.execute('sendArpAll')
-            self.api.execute('sendNsAll')
-        except Exception as e:
-            # Not supported on Linux servers.
-            if 'is not a valid operation' not in repr(e):
-                raise e
+        self.api.execute('sendArpAll', valid_on_linux=False)
+        self.api.execute('sendNsAll', valid_on_linux=False)
 
     def send_rs(self):
-        try:
-            self.api.execute('sendRsAll')
-        except Exception as e:
-            # Not supported on Linux servers.
-            if 'is not a valid operation' not in repr(e):
-                raise e
+        self.api.execute('sendRsAll', valid_on_linux=False)
 
     def protocols_start(self):
         """ Start all protocols.

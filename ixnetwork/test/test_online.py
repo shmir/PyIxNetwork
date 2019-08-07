@@ -13,8 +13,8 @@ import json
 import time
 import pytest
 
-from ixnetwork.test.test_base import TestIxnBase
 from ixnetwork.ixn_statistics_view import IxnPortStatistics, IxnTrafficItemStatistics, IxnFlowStatistics
+from ixnetwork.test.test_base import TestIxnBase
 
 
 class TestIxnOnline(TestIxnBase):
@@ -56,6 +56,8 @@ class TestIxnOnline(TestIxnBase):
         self._reserve_ports('test_config')
 
     def test_interfaces(self, api):
+        if self._is_linux_server():
+            pytest.skip('server does not support classical protocols')
         self._reserve_ports('test_config')
         for port in self.ports:
             port.send_arp_ns()
@@ -64,6 +66,8 @@ class TestIxnOnline(TestIxnBase):
                 interface.ping(gateway)
 
     def test_protocols_actions(self, api):
+        if self._is_linux_server():
+            pytest.skip('server does not support classical protocols')
         self._reserve_ports('test_config')
         self.ixn.send_arp_ns()
         self.ixn.protocols_start()

@@ -42,9 +42,10 @@ class IxnRestWrapper(object):
         # Perform get to determine whether http is supported or we should use https.
         try:
             self.server_url = 'https://{}:{}'.format(ip, port)
-            self.get(self.server_url + '/api/v1/sessions', timeout=4)
+            a = self.get(self.server_url + '/api/v1/sessions', timeout=4)
         except Exception as _:
-            self.server_url = 'http://{}:{}'.format(ip, port)
+            b = self.server_url = 'http://{}:{}'.format(ip, port)
+            print(b)
 
         response = self.post(self.server_url + '/api/v1/sessions', data={'applicationType': 'ixnrest'})
         if 'id' in response.json():
@@ -152,7 +153,7 @@ class IxnRestWrapper(object):
     def commit(self):
         pass
 
-    def execute(self, command, obj_ref=None, *arguments):
+    def execute(self, command, obj_ref=None, valid_on_linux=True, *arguments):
         data = {}
         if obj_ref:
             operations_url = '{}/operations/'.format(re.sub(r'\/[0-9]+', '', obj_ref.replace(self.session, '')))
@@ -160,8 +161,13 @@ class IxnRestWrapper(object):
             operations_url = 'ixnetwork/operations/'
         for argument in arguments:
             data['arg' + str(len(data) + 1)] = argument
-        response = self.post(self.root_url + operations_url + command, data)
-        return response.json()['result']
+        try:
+            response = self.post(self.root_url + operations_url + command, data)
+            return response.json()['result']
+        except Exception as e:
+            # Not supported on Linux servers.
+            if valid_on_linux or 'is not a valid operation' not in repr(e):
+                raise e
 
     def getVersion(self):
         return self.get(self.root_url + 'ixnetwork/globals/').json()['buildNumber']
@@ -209,8 +215,8 @@ class IxnRestWrapper(object):
         else:
             return [self._get_href(response.json())]
 
-    def getAttribute(self, objRef, attribute):
-        response = self.get(self.server_url + objRef)
+    def getAttribute(self, obj_ref, attribute):
+        response = self.get(self.server_url + obj_ref)
         return response.json().get(attribute, '::ixNet::OK')
 
     def getAttributes(self, objRef):

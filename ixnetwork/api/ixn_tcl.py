@@ -49,7 +49,7 @@ class IxnTclWrapper(TgnTclWrapper):
     def disconnect(self):
         pass
 
-    def execute(self, command, objRef=None, *arguments):
+    def execute(self, command, obj_ref=None, valid_on_linux=True, *arguments):
         flatten_arguments = []
         for argument in arguments:
             flatten_arguments.append(' '.join(argument) if type(argument) in [list, tuple] else argument)
@@ -91,10 +91,10 @@ class IxnTclWrapper(TgnTclWrapper):
         return self.ixnCommand('getVersion')
 
     def loadConfig(self, config_file_name):
-        self.execute('loadConfig', None, self.ixnCommand('readFrom', tcl_file_name(config_file_name)))
+        self.execute('loadConfig', None, True, self.ixnCommand('readFrom', tcl_file_name(config_file_name)))
 
     def saveConfig(self, config_file_name):
-        self.execute('saveConfig', None, self.ixnCommand('writeTo', tcl_file_name(config_file_name)))
+        self.execute('saveConfig', None, True, self.ixnCommand('writeTo', tcl_file_name(config_file_name)))
 
     def newConfig(self):
         self.execute('newConfig')
@@ -127,10 +127,10 @@ class IxnTclWrapper(TgnTclWrapper):
 
     def regenerate(self, traffic, *traffic_items):
         if traffic_items:
-            self.execute('generate', None, tcl_str(build_obj_ref_list(*traffic_items)))
+            self.execute('generate', None, True, tcl_str(build_obj_ref_list(*traffic_items)))
 
     def startStatelessTraffic(self, traffic, *traffic_items):
-        self.execute('startStatelessTraffic', None, tcl_str(build_obj_ref_list(*traffic_items)))
+        self.execute('startStatelessTraffic', None, True, tcl_str(build_obj_ref_list(*traffic_items)))
 
     def stopStatelessTraffic(self, traffic, *traffic_items):
-        self.execute('stopStatelessTraffic', None, tcl_str(build_obj_ref_list(*traffic_items)))
+        self.execute('stopStatelessTraffic', None, True, tcl_str(build_obj_ref_list(*traffic_items)))

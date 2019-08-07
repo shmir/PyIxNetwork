@@ -74,7 +74,7 @@ class IxnObject(TgnObject):
         :return: attribute value.
         :raise TgnError: if invalid attribute.
         """
-        value = self.api.getAttribute(self.obj_ref(), attribute)
+        value = self.api.getAttribute(self.ref, attribute)
         # IXN returns '::ixNet::OK' for invalid attributes. We want error.
         if value == '::ixNet::OK':
             raise TgnError(self.ref + ' does not have attribute ' + attribute)
@@ -141,7 +141,7 @@ class IxnObject(TgnObject):
         self.set_attributes(enabled=enabled)
 
     def execute(self, command, *arguments):
-        return self.api.execute(command, self.ref, *arguments)
+        return self.api.execute(command, self.ref, True, *arguments)
 
     def help(self, objRef):
         return self.api.help(self.obj_ref())

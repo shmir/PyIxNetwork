@@ -10,8 +10,8 @@ import pytest
 
 from trafficgenerator.tgn_utils import ApiType
 from trafficgenerator.test.test_tgn import TestTgnBase
-
 from ixnetwork.ixn_app import init_ixn
+from ixnetwork.test.test_config import linux_servers
 
 
 class TestIxnBase(TestTgnBase):
@@ -27,7 +27,7 @@ class TestIxnBase(TestTgnBase):
 
     def setup(self):
 
-        if self.api == ApiType.tcl and self.server_port == 443:
+        if self.api == ApiType.tcl and self._is_linux_server():
             pytest.skip('REST server do not support Tcl')
 
         super(TestIxnBase, self).setup()
@@ -48,6 +48,9 @@ class TestIxnBase(TestTgnBase):
     #
     # Auxiliary functions, no testing inside.
     #
+
+    def _is_linux_server(self):
+        return self.server_ip in [s.split(':')[0] for s in linux_servers]
 
     def _load_config(self, config_name):
         config_file = path.join(path.dirname(__file__), 'configs/{}_{}.ixncfg'.format(config_name, self.config_version))

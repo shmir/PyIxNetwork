@@ -87,7 +87,7 @@ class IxnL23QuickFlowGroup(IxnFlowGroup):
     """ L23 quick flow group """
 
     def generate(self):
-        self.api.execute('generate', os.path.dirname(self.obj_ref()))
+        self.api.execute('generate', os.path.dirname(self.ref))
 
 
 type_2_obj = {'l2L3': IxnL23TrafficItem,
