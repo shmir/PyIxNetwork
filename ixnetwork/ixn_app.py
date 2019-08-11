@@ -16,6 +16,8 @@ from ixnetwork.api.ixn_python import IxnPythonWrapper
 from ixnetwork.api.ixn_rest import IxnRestWrapper
 from ixnetwork.ixn_object import IxnObject
 from ixnetwork.ixn_port import IxnPort
+from ixnetwork.ixn_statistics_view import IxnPortStatistics, IxnTrafficItemStatistics, IxnGlobalProtocolStatistics, \
+    StatsTypeToObj
 from ixnetwork.ixn_traffic import IxnTrafficItem
 from ixnetwork.ixn_protocol import (IxnBgpRouter, IxnOspfRouter, IxnOspfV3Router, IxnBgpRouteRange, IxnOspfRouteRange,
                                     IxnPimsmRouter, IxnIgmpHost, IxnIgmpQuerier, IxnPimsmSource, IxnStpBridge,
@@ -79,6 +81,9 @@ class IxnApp(TgnApp):
             self.api.disconnect()
         self.root = None
 
+    @property
+    def connected(self):
+        return True if hasattr(self,'root') else False
     #
     # IxNetwork operation commands.
     #
@@ -104,10 +109,33 @@ class IxnApp(TgnApp):
         self.commit()
         self.api.saveConfig(path.abspath(config_file_name))
 
+    def reserve_loaded_ports(self, ports_info, force=False, clear=True):
+        """ Reserve ports and reset factory defaults.
+
+        :param ports_info: list of ports port_name:ports_location <ip, card, port> to reserve
+        :param force: True - take forcefully, False - fail if port is reserved by other user
+        :param clear: True - clear port configuration and statistics, False - leave port as is
+        :return: ports dictionary (port uri, port object)
+        """
+        ixn_ports = self.root.get_children('vport')
+        p_list = {}
+        res = {}
+        for p_info in ports_info:
+            port_name, port_location = p_info.split(':')
+            prt = [port for port in ixn_ports if port.name == port_name][0]
+            p_list.update({prt:port_location})
+            res[port_name] = prt
+        self.reserve(p_list, force)
+        return res
+
+    def read_stats(self, stats_type):
+        obj_stats = StatsTypeToObj[stats_type](self.root)
+        obj_stats.read_stats()
+        return obj_stats.get_all_stats()
+
     #
     # IxNetwork GUI commands.
     #
-
     def reserve(self, ports, force=False, wait_for_up=True, timeout=80):
         """ Reserve port and optionally wait for port to come up.
 
@@ -260,3 +288,5 @@ TYPE_2_OBJECT = {'availableHardware': IxnHw,
                  'vlan': IxnNgpfVlan,
                  'vport': IxnPort,
                  }
+
+

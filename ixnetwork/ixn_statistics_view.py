@@ -8,6 +8,7 @@ from trafficgenerator.tgn_utils import is_false, TgnError
 
 from ixnetwork.api.ixn_rest import IxnRestWrapper
 
+from enum import Enum
 
 class IxnStatisticsView(object):
     """ Base class for all statistics view.
@@ -17,6 +18,8 @@ class IxnStatisticsView(object):
 
     def __init__(self, root, name):
         self.root = root
+        if isinstance(name,IxnStatsTypes):
+            name = name.value
         self.name_caption = view_2_caption.get(name, 'Port Name')
         statistics = self.root.get_child_static('statistics')
         if type(self.root.api) is IxnRestWrapper:
@@ -32,8 +35,9 @@ class IxnStatisticsView(object):
         """ Reads the statistics view from IXN and saves it in statistics dictionary. """
 
         captions, rows = self._get_pages()
-        name_caption_index = captions.index(self.name_caption)
-        captions.pop(name_caption_index)
+        if self.name_caption:
+            name_caption_index = captions.index(self.name_caption)
+            captions.pop(name_caption_index)
         self.captions = captions
         self.statistics = OrderedDict()
         for row in rows:
@@ -117,6 +121,18 @@ class IxnTrafficItemStatistics(IxnStatisticsView):
         super(self.__class__, self).__init__(root, 'Traffic Item Statistics')
 
 
+class IxnGlobalProtocolStatistics(IxnStatisticsView):
+
+    def __init__(self, root):
+        super(self.__class__, self).__init__(root, IxnStatsTypes.GlobalProtocol)
+
+
+class IxnFlowView(IxnStatisticsView):
+
+    def __init__(self, root):
+        super(self.__class__, self).__init__(root, IxnStatsTypes.FlowView)
+
+
 class IxnFlowStatistics(IxnStatisticsView):
 
     def __init__(self, root):
@@ -144,6 +160,23 @@ class IxnFlowStatistics(IxnStatisticsView):
 
 
 view_2_caption = {'Flow Statistics': None,
+                  'Flow View': 'RxPortPath',
                   'Port Statistics': 'Port Name',
                   'Traffic Item Statistics': 'Traffic Item'
                   }
+
+
+class IxnStatsTypes(Enum):
+    Port = 'Port Name'
+    TrafficItem = 'Traffic Item'
+    GlobalProtocol = 'Global Protocol Statistics'
+    Flow = 'Flow'
+    FlowView = 'Flow View'
+
+
+StatsTypeToObj = {
+    IxnStatsTypes.Port: IxnPortStatistics,
+    IxnStatsTypes.TrafficItem:IxnTrafficItemStatistics,
+    IxnStatsTypes.GlobalProtocol:IxnGlobalProtocolStatistics,
+    IxnStatsTypes.FlowView:IxnFlowView
+}
