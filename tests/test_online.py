@@ -14,7 +14,7 @@ import time
 import pytest
 
 from ixnetwork.ixn_statistics_view import IxnPortStatistics, IxnTrafficItemStatistics, IxnFlowStatistics
-from ixnetwork.test.test_base import TestIxnBase
+from .test_base import TestIxnBase
 
 
 class TestIxnOnline(TestIxnBase):

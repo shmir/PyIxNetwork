@@ -36,7 +36,7 @@ setup(
     author_email='yoram@ignissoft.com',
     description='Python OO API package to automate Ixia IxNetwork traffic generator',
     long_description=long_description,
-    packages=['ixnetwork', 'ixnetwork.test', 'ixnetwork.api'],
+    packages=['ixnetwork', 'ixnetwork.api'],
     include_package_data=True,
     platforms='any',
     test_suite='ixnetwork.test',

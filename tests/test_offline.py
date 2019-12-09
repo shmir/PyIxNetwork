@@ -9,12 +9,12 @@ from collections import OrderedDict
 import pytest
 
 from trafficgenerator.tgn_utils import ApiType
-from ixnetwork.test.test_base import TestIxnBase
 from ixnetwork.ixn_object import IxnObject
 from ixnetwork.ixn_port import IxnPort
 from ixnetwork.ixn_interface import IxnInterface
 from ixnetwork.ixn_traffic import IxnL23TrafficItem
 from ixnetwork.ixn_topology import IxnTopology, IxnDeviceGroup, IxnNgpfEthernet, IxnNgpfIpv4
+from .test_base import TestIxnBase
 
 
 class TestIxnOffline(TestIxnBase):
@@ -79,15 +79,21 @@ class TestIxnOffline(TestIxnBase):
         if self.config_version == 'classic':
             for port in ports.values():
                 assert(len(port.get_interfaces()) == 1)
-
-            self._load_config('ngpf_config')
+        else:
             topologies = self.ixn.root.get_topologies()
             assert(len(topologies) == 2)
             for topology in topologies.values():
                 assert(len(topology.get_device_groups()) == 1)
 
     def test_basic_config(self, api):
-        """ Test configuration build with basic objects - ports, interfaces, traffic items... """
+        """ Test configuration build with basic objects - ports, interfaces, traffic items...
+
+        todo: refactor with NGPF
+        """
+
+        if self._is_linux_server():
+            pytest.skip('server does not support classical protocols')
+
         self.logger.info(TestIxnOffline.test_basic_config.__doc__)
 
         num_ports = 2
@@ -117,8 +123,13 @@ class TestIxnOffline(TestIxnBase):
         self._save_config()
 
     def test_flow_groups(self, api):
-        """ Test configuration build with various flow group types. """
-        self.logger.info(TestIxnOffline.test_flow_groups.__doc__)
+        """ Test configuration build with various flow group types.
+
+        todo: refactor with NGPF
+        """
+
+        if self._is_linux_server():
+            pytest.skip('server does not support classical protocols')
 
         num_ports = 2
         num_ints = 2
@@ -164,7 +175,14 @@ class TestIxnOffline(TestIxnBase):
         self._save_config()
 
     def test_topologies(self, api):
-        """ Test configuration build with topologies """
+        """ Test configuration build with topologies.
+
+        todo: refactor with NGPF
+        """
+
+        if self._is_linux_server():
+            pytest.skip('server does not support classical protocols')
+
         self.logger.info(TestIxnOffline.test_topologies.__doc__)
 
         num_ports = 2
