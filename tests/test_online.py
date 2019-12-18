@@ -32,7 +32,7 @@ class TestIxnOnline(TestIxnBase):
             assert port.get_attribute('state').lower() != 'unassigned'
 
     def test_release_ports(self, api):
-        self._reserve_ports('test_config')
+        self._load_config('test_config')
         for port in self.ports:
             port.release()
         for port in self.ports:
@@ -115,8 +115,8 @@ class TestIxnOnline(TestIxnBase):
     def _reserve_ports(self, config_file, wait_for_up=True):
         self._load_config(config_file)
         self.ports = self.ixn.root.get_children('vport')
-        self.ixn.root.get_object_by_name('Port 1').reserve(self.locations[0], wait_for_up=False)
-        self.ixn.root.get_object_by_name('Port 2').reserve(self.locations[1], wait_for_up=False)
+        self.ixn.root.get_object_by_name('Port 1').reserve(self.locations[0], force=False, wait_for_up=False)
+        self.ixn.root.get_object_by_name('Port 2').reserve(self.locations[1], force=False, wait_for_up=False)
         if wait_for_up:
             for port in self.ports:
                 port.wait_for_up(80)

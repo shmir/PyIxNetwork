@@ -8,6 +8,7 @@ from os import path
 import inspect
 import pytest
 
+
 from trafficgenerator.tgn_utils import ApiType
 from trafficgenerator.test.test_tgn import TestTgnBase
 from ixnetwork.ixn_app import init_ixn

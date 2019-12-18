@@ -216,11 +216,13 @@ class IxnRestWrapper(object):
             return [self._get_href(response.json())]
 
     def getAttribute(self, obj_ref, attribute):
-        response = self.get(self.server_url + obj_ref)
-        return response.json().get(attribute, '::ixNet::OK')
+        response = self.getAttributes(obj_ref)
+        return response.get(attribute, '::ixNet::OK')
 
     def getAttributes(self, objRef):
-        return self.get(self.server_url + objRef).json()
+        attributes = self.get(self.server_url + objRef).json()
+        self.logger.debug(json.dumps(attributes, indent=2))
+        return attributes
 
     def getListAttribute(self, objRef, attribute):
         value = self.getAttribute(objRef, attribute)
@@ -264,9 +266,10 @@ class IxnRestWrapper(object):
     #
 
     def set_licensing(self, licensingServers=['localhost'], mode='mixed', tier='tier3'):
-        self.patch(self.root_url + 'ixnetwork/globals/licensing', {'licensingServers': licensingServers,
-                                                                   'mode': mode,
-                                                                   'tier': tier})
+        licensing_url = self.root_url + 'ixnetwork/globals/licensing'
+        licensing = self.get(licensing_url).json()
+        if licensing['licensingServers'] != licensingServers or licensing['mode'] != mode or licensing['tier'] != tier:
+            self.patch(licensing_url, {'licensingServers': licensingServers, 'mode': mode, 'tier': tier})
 
     def regenerate(self, _, traffic_items):
         non_quick_tis = [ti for ti in traffic_items if ti.get_attributes()['trafficItemType'] != 'quick']

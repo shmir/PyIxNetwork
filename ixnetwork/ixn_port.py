@@ -74,10 +74,11 @@ class IxnPort(IxnObject):
                 return
             time.sleep(1)
             state = self.get_attribute('state')
-        connectionState = self.get_attribute('connectionState')
         stateDetail = self.get_attribute('stateDetail')
-        raise TgnError('Failed to reach states {}, port state is {} after {} seconds - connection state is {}'.
-                       format(states, stateDetail, timeout, connectionState))
+        connectionState = self.get_attribute('connectionState')
+        raise TgnError('Failed to reach states {}, port state is {} after {} seconds\n'
+                       'stateDetail is {} connectionState is {}, '.
+                       format(states, state, timeout, stateDetail, connectionState))
 
     def is_online(self):
         """
