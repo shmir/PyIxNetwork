@@ -7,4 +7,4 @@ requests
 pytest
 tox
 
-pytrafficgen==1.5.5
+pytrafficgen==1.6.0
