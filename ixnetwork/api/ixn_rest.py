@@ -228,7 +228,7 @@ class IxnRestWrapper(object):
         value = self.getAttribute(objRef, attribute)
         if type(value) is dict:
             return [v[0] for v in value.values()]
-        elif type(value[0]) is list:
+        elif len(value) > 0 and type(value[0]) is list:
             return [v[0] for v in value]
         else:
             return value

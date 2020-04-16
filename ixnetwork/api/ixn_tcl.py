@@ -64,9 +64,7 @@ class IxnTclWrapper(TgnTclWrapper):
         return self.ixnCommand('getAttribute', tcl_str(objRef), '-' + attribute)
 
     def getListAttribute(self, objRef, attribute):
-        value = tcl_list_2_py_list(self.getAttribute(objRef, attribute))
-        # Is there better way to determine that we have list of lists?
-        return value if value[0][0] != '{' else [tcl_list_2_py_list(v[1:-1]) for v in value]
+        return tcl_list_2_py_list(self.getAttribute(objRef, attribute))
 
     def help(self, objRef):
         output = self.ixnCommand('help', objRef)

@@ -84,10 +84,12 @@ class IxnObject(TgnObject):
         """
         :return: attribute value as Python list.
         """
-        list_attribute = self.api.getListAttribute(self.obj_ref(), attribute)
+        list_attribute = self.api.getListAttribute(self.ref, attribute)
         # IXN returns '::ixNet::OK' for invalid attributes. We want error.
         if list_attribute == ['::ixNet::OK']:
             raise TgnError(self.ref + ' does not have attribute ' + attribute)
+        if type(list_attribute) is not list:
+            list_attribute = [list_attribute,]
         return list_attribute
 
     def get_children(self, *types):
@@ -156,7 +158,7 @@ class IxnObject(TgnObject):
 
     def get_objects_from_attribute(self, attribute):
         objects = []
-        for handle in self.get_attribute(attribute).split():
+        for handle in self.get_list_attribute(attribute):
             obj = self.root.get_object_by_ref(handle)
             if not obj:
                 obj = IxnObject(objRef=handle, parent=self)
