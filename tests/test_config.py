@@ -2,11 +2,11 @@
 chassis_801 = '192.168.42.61'
 chassis_840 = '192.168.42.207'
 chassis_850 = '192.168.65.30'
-chassis_900 = '192.168.65.32'
+chassis_900 = '192.168.65.22'
 
 linux_840 = '192.168.65.27:443'
 linux_850 = '192.168.65.73:443'
-linux_900 = '192.168.65.55:443'
+linux_900 = '192.168.65.23:443'
 
 windows_801 = '192.168.65.39:11009'
 windows_840 = '192.168.65.68:11009'
@@ -42,5 +42,5 @@ server_properties = {linux_840: {'port1': '{}/1/1'.format(chassis_840), 'port2':
                               'install_dir': 'E:/Program Files (x86)/Ixia/IxNetwork/9.00.1915.16'}}
 
 api = ['rest']
-server = [linux_850]
+server = [windows_900_http]
 license_server = ['192.168.42.61']

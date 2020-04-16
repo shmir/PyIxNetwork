@@ -10,7 +10,7 @@ import pytest
 
 
 from trafficgenerator.tgn_utils import ApiType
-from trafficgenerator.test.test_tgn import TestTgnBase
+from trafficgenerator.test_tgn import TestTgnBase
 from ixnetwork.ixn_app import init_ixn
 
 
@@ -60,4 +60,4 @@ class TestIxnBase(TestTgnBase):
 
     def _save_config(self):
         test_name = inspect.stack()[1][3]
-        self.ixn.save_config(path.join(path.dirname(__file__), 'configs', test_name + '.ixncfg'))
+        self.ixn.save_config(path.join(path.dirname(__file__), 'configs/temp', test_name + '.ixncfg'))

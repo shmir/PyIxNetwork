@@ -7,12 +7,13 @@ Classes and utilities to manage IXN application.
 from os import path
 import time
 from collections import OrderedDict
+from typing import Type, Optional
+from logging import Logger
 
 from trafficgenerator.tgn_utils import TgnError, is_true, ApiType
 from trafficgenerator.tgn_app import TgnApp
 
 from ixnetwork.api.ixn_tcl import IxnTclWrapper
-from ixnetwork.api.ixn_python import IxnPythonWrapper
 from ixnetwork.api.ixn_rest import IxnRestWrapper
 from ixnetwork.ixn_object import IxnObject
 from ixnetwork.ixn_port import IxnPort
@@ -30,7 +31,7 @@ from ixnetwork.ixn_protocol_stack import IxnRange
 from ixnetwork.ixn_hw import IxnHw, IxnChassis, IxnCard, IxnPhyPort
 
 
-def init_ixn(api, logger, install_dir=None):
+def init_ixn(api: TgnApp, logger: Type[Logger], install_dir: Optional[str] = None):
     """ Create IXN object.
 
     :param api: tcl/python/rest
@@ -42,12 +43,10 @@ def init_ixn(api, logger, install_dir=None):
 
     if api == ApiType.tcl:
         api_wrapper = IxnTclWrapper(logger, install_dir)
-    elif api == ApiType.python:
-        api_wrapper = IxnPythonWrapper(logger, install_dir)
     elif api == ApiType.rest:
         api_wrapper = IxnRestWrapper(logger)
     else:
-        raise TgnError('{} API not supported - use Tcl, python or REST'.format(api))
+        raise TgnError(f'{api} API not supported - use {ApiType.tcl} or {ApiType.rest}')
     return IxnApp(logger, api_wrapper)
 
 

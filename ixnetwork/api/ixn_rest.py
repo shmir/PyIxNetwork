@@ -4,7 +4,6 @@
 
 from os import path
 import requests
-import ast
 import time
 import re
 import copy
@@ -75,8 +74,8 @@ class IxnRestWrapper(object):
         if 'errors' in response.json():
             raise TgnError(response.json()['errors'][0])
         if response.json()['state'].lower() == 'error':
-            result = ast.literal_eval(response.content.replace('null', '""'))['result'].strip()
-            raise TgnError('wait for post {} failed - {}'.format(response.url, result))
+            result = json.loads(response.content)['result'].strip()
+            raise TgnError(f'wait for post {response.url} failed - {result}')
         if response.json()['state'].lower() == 'success':
             return
         progress_url = json.loads(response.content)[u'url']

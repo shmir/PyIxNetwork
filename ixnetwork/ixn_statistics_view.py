@@ -26,7 +26,7 @@ class IxnStatisticsView(object):
                     self.ixn_view = view
                     break
         else:
-            self.ixn_view = statistics.get_child_static('view:"{}"'.format(name))
+            self.ixn_view = statistics.get_child_static(f'view:"{name}"')
 
     def read_stats(self):
         """ Reads the statistics view from IXN and saves it in statistics dictionary. """

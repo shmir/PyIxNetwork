@@ -5,6 +5,7 @@ Classes and utilities to manage IXN port (vport) objects.
 """
 
 import time
+from typing import Optional
 
 from trafficgenerator.tgn_utils import is_local_host
 from trafficgenerator.tgn_utils import TgnError
@@ -62,7 +63,7 @@ class IxnPort(IxnObject):
         """
         self.wait_for_states(timeout, 'up')
 
-    def wait_for_states(self, timeout=40, *states):
+    def wait_for_states(self, timeout: Optional[int] = 40, *states):
         """ Wait until port reaches one of the requested states.
 
         :param timeout: max time to wait for requested port states.
@@ -76,9 +77,8 @@ class IxnPort(IxnObject):
             state = self.get_attribute('state')
         stateDetail = self.get_attribute('stateDetail')
         connectionState = self.get_attribute('connectionState')
-        raise TgnError('Failed to reach states {}, port state is {} after {} seconds\n'
-                       'stateDetail is {} connectionState is {}, '.
-                       format(states, state, timeout, stateDetail, connectionState))
+        raise TgnError(f'Failed to reach states {states}, port state is {state} after {timeout} seconds\n'
+                       'stateDetail is {stateDetail} connectionState is {connectionState}, ')
 
     def is_online(self):
         """

@@ -2,12 +2,15 @@
 @author yoram@ignissoft.com
 """
 
-import sys
 import time
+from typing import Dict
 
 from trafficgenerator.tgn_utils import TgnError
 
 from ixnetwork.ixn_object import IxnObject
+from ixnetwork.ixn_port import IxnPort
+from ixnetwork.ixn_topology import IxnTopology
+from ixnetwork.ixn_traffic import IxnTrafficItem
 
 
 class IxnRoot(IxnObject):
@@ -15,27 +18,21 @@ class IxnRoot(IxnObject):
     def __init__(self, **data):
         super(IxnRoot, self).__init__(**data)
 
-    def get_ports(self):
-        """
-        :return: dictionary {name: object} of all vport.
-        """
+    def get_ports(self) -> Dict[str, IxnPort]:
+        """ Returns all vports. """
+        return {o.name: o for o in self.get_objects_or_children_by_type('vport')}
+    ports = property(get_ports)
 
-        return {o.obj_name(): o for o in self.get_objects_or_children_by_type('vport')}
+    def get_topologies(self) -> Dict[str, IxnTopology]:
+        """ Returns all topologies. """
+        return {o.name: o for o in self.get_objects_or_children_by_type('topology')}
+    topologies = property(get_topologies)
 
-    def get_topologies(self):
-        """
-        :return: dictionary {name: object} of all topologies.
-        """
-
-        return {o.obj_name(): o for o in self.get_objects_or_children_by_type('topology')}
-
-    def get_traffic_items(self):
-        """
-        :return: dictionary {name: object} of all traffic items.
-        """
-
+    def get_traffic_items(self) -> Dict[str, IxnTrafficItem]:
+        """ Returns all traffic items. """
         traffic = self.get_child_static('traffic')
-        return {o.obj_name(): o for o in traffic.get_objects_or_children_by_type('trafficItem')}
+        return {o.name: o for o in traffic.get_objects_or_children_by_type('trafficItem')}
+    traffic_items = property(get_traffic_items)
 
     def get_quick_tests(self, *types):
         """

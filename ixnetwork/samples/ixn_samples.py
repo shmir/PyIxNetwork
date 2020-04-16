@@ -9,7 +9,6 @@ Two IXN ports connected back to back.
 
 import sys
 from os import path
-import unittest
 import logging
 import time
 
@@ -18,32 +17,34 @@ from ixnetwork.ixn_statistics_view import IxnPortStatistics, IxnTrafficItemStati
 from trafficgenerator.tgn_utils import ApiType
 
 
-# API type = tcl, python or rest. The default is tcl with DEBUG log messages for best visibility.
-api = ApiType.tcl
-tcl_port = 8009
+# API type = tcl, or rest. The default is tcl with DEBUG log messages for best visibility.
+api = ApiType.rest
+api_server = 'localhost'
+api_port = 11009
+auth = ('admin', 'admin')
 log_level = logging.DEBUG
 
-install_dir = 'C:/Program Files (x86)/Ixia/IxNetwork/8.01-GA'
+install_dir = 'C:/Program Files (x86)/Ixia/IxNetwork/9.00.1915.16'
 
-port1_location = '192.168.42.61/2/1'
-port2_location = '192.168.42.61/2/2'
+port1_location = '192.168.65.22/1/1'
+port2_location = '192.168.65.22/1/2'
 
-ixn_config_file = path.join(path.dirname(__file__), 'configs/test_config.ixncfg')
+ixn_config_file = path.join(path.dirname(__file__), 'sample_ngpf.ixncfg')
 
 
-class IxnSamples(unittest.TestCase):
+class IxnSamples():
 
     def setUp(self):
-        super(IxnSamples, self).setUp()
         logger = logging.getLogger('log')
         logger.setLevel(log_level)
         logger.addHandler(logging.StreamHandler(sys.stdout))
         self.ixn = init_ixn(api, logger, install_dir)
-        self.ixn.connect(tcl_port=tcl_port)
+        self.ixn.connect(api_server, api_port, auth)
 
     def tearDown(self):
+        for port in self.ixn.root.ports.values():
+            port.release()
         self.ixn.disconnect()
-        super(IxnSamples, self).tearDown()
 
     def load_config(self):
         self.ixn.new_config()
@@ -105,8 +106,7 @@ class IxnSamples(unittest.TestCase):
     def reserve_ports(self):
         self.load_config()
         self.ports = self.ixn.root.get_children('vport')
-        self.ixn.reserve({self.ixn.root.get_object_by_name('Port 1'): port1_location,
-                          self.ixn.root.get_object_by_name('Port 2'): port2_location}, force=True)
+        self.ixn.reserve({self.ports[0]: port1_location, self.ports[1]: port2_location}, force=True, timeout=40)
 
     def protocols(self):
         self.reserve_ports()
@@ -115,6 +115,7 @@ class IxnSamples(unittest.TestCase):
 
     def traffic(self):
         self.reserve_ports()
+        self.ixn.protocols_start()
         self.ixn.traffic_apply()
         self.ixn.l23_traffic_start()
         time.sleep(8)
@@ -124,9 +125,9 @@ class IxnSamples(unittest.TestCase):
         port_stats.read_stats()
         ti_stats = IxnTrafficItemStatistics(self.ixn.root)
         ti_stats.read_stats()
-        print(port_stats.get_object_stats('Port 1'))
+        print(port_stats.get_object_stats(list(self.ixn.root.ports.keys())[0]))
         print(port_stats.get_counters('Frames Tx.'))
-        assert(ti_stats.get_counter('Traffic Item 1', 'Rx Frames') == 1600)
+        print(ti_stats.get_counter(list(self.ixn.root.traffic_items.keys())[0], 'Rx Frames'))
 
     def quick_test(self):
         global ixn_config_file
@@ -147,3 +148,10 @@ class IxnSamples(unittest.TestCase):
             print('Card ' + str(module_name))
             for port_name in module.ports:
                 print('Port ' + str(port_name))
+
+
+if __name__ == '__main__':
+    ixn = IxnSamples()
+    ixn.setUp()
+    ixn.traffic()
+    ixn.tearDown()
