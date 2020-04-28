@@ -3,9 +3,10 @@ Base classes and utilities to manage IxNetwork (IXN).
 
 :author: yoram@ignissoft.com
 """
-
+from __future__ import annotations
 import re
 from collections import OrderedDict
+from typing import Type
 
 from trafficgenerator.tgn_utils import is_true, TgnError
 from trafficgenerator.tgn_object import TgnObject
@@ -25,25 +26,24 @@ class IxnObject(TgnObject):
     # Class level variables
     str_2_class = {}
 
-    def get_obj_class(self, obj_type):
+    def get_obj_class(self, obj_type: str) -> Type[IxnObject]:
         """ Returns the object class based on parent and object types.
 
-        In most cases the object class can be derived from object type alone but sometimes the
-        same object type name is used for different object types so the parent (or even
-        grandparent) type is required in order to determine the exact object type.
-        For example, interface object type can be child of vport or router (ospf etc.). In the
-        first case the required class is IxnInterface while in the later case it is IxnObject.
+        In most cases the object class can be derived from object type alone but sometimes the same object type name is
+        used for different object types so the parent (or even grandparent) type is required in order to determine the
+        exact object type.
+        For example, interface object type can be child of vport or router (ospf etc.). In the first case the required
+        class is IxnInterface while in the later case it is IxnObject.
 
         :param obj_type: IXN object type.
         :return: object class if specific class else IxnObject.
         """
-
         if obj_type in IxnObject.str_2_class:
             if type(IxnObject.str_2_class[obj_type]) is dict:
-                if self.obj_type() in IxnObject.str_2_class[obj_type]:
-                    return IxnObject.str_2_class[obj_type][self.obj_type()]
-                elif self.obj_parent().obj_type() in IxnObject.str_2_class[obj_type]:
-                    return IxnObject.str_2_class[obj_type][self.obj_parent().obj_type()]
+                if self.type in IxnObject.str_2_class[obj_type]:
+                    return IxnObject.str_2_class[obj_type][self.type]
+                elif self.parent.type in IxnObject.str_2_class[obj_type]:
+                    return IxnObject.str_2_class[obj_type][self.parent.type]
             else:
                 return IxnObject.str_2_class[obj_type]
         return IxnObject
@@ -117,7 +117,7 @@ class IxnObject(TgnObject):
         Ideally we would prefer to never use this function and always read the child dynamically but this has huge
         impact on performance so we use the static approach wherever possible.
         """
-        child_obj_ref = self.obj_ref() + '/' + objType
+        child_obj_ref = self.ref + '/' + objType
         if seq_number:
             child_obj_ref += ':' + str(seq_number)
         child_obj = self.get_object_by_ref(child_obj_ref)
@@ -135,7 +135,7 @@ class IxnObject(TgnObject):
         return is_true(enabled) if enabled != '::ixNet::OK' else True
 
     def set_attributes(self, commit=False, **attributes):
-        self.api.setAttributes(self.obj_ref(), **attributes)
+        self.api.setAttributes(self.ref, **attributes)
         if commit:
             self.api.commit()
 

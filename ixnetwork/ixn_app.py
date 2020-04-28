@@ -7,7 +7,7 @@ Classes and utilities to manage IXN application.
 from os import path
 import time
 from collections import OrderedDict
-from typing import Type, Optional
+from typing import Type, Optional, Union, Dict
 from logging import Logger
 
 from trafficgenerator.tgn_utils import TgnError, is_true, ApiType
@@ -16,28 +16,16 @@ from trafficgenerator.tgn_app import TgnApp
 from ixnetwork.api.ixn_tcl import IxnTclWrapper
 from ixnetwork.api.ixn_rest import IxnRestWrapper
 from ixnetwork.ixn_object import IxnObject
-from ixnetwork.ixn_port import IxnPort
-from ixnetwork.ixn_traffic import IxnTrafficItem
-from ixnetwork.ixn_protocol import (IxnBgpRouter, IxnOspfRouter, IxnOspfV3Router, IxnBgpRouteRange, IxnOspfRouteRange,
-                                    IxnPimsmRouter, IxnIgmpHost, IxnIgmpQuerier, IxnPimsmSource, IxnStpBridge,
-                                    IxnOpenFlowDevice, IxnLacp, IxnIsisRouter, IxnIsisRouteRange, IxnLdpRouter,
-                                    IxnLdpRouteRange, IxnRsvpNeighborPair, IxnStaticIp, IxnBfdfRouter,
-                                    IxnOspfv3RouteRange)
-from ixnetwork.ixn_interface import IxnInterface, IxnInterfaceL3
-from ixnetwork.ixn_topology import (IxnTopology, IxnNgpfEthernet, IxnNgpfVlan, IxnNgpfIpv4, IxnNgpfIpv6,
-                                    IxnDeviceGroup, IxnNetworkGroup)
 from ixnetwork.ixn_root import IxnRoot
-from ixnetwork.ixn_protocol_stack import IxnRange
-from ixnetwork.ixn_hw import IxnHw, IxnChassis, IxnCard, IxnPhyPort
+from ixnetwork import TYPE_2_OBJECT
 
 
-def init_ixn(api: TgnApp, logger: Type[Logger], install_dir: Optional[str] = None):
+def init_ixn(api: TgnApp, logger: Type[Logger], install_dir: Optional[str] = None) -> 'IxnApp':
     """ Create IXN object.
 
-    :param api: tcl/python/rest
-    :type api: trafficgenerator.tgn_utils.ApiType
-    :param logger: logger object
-    :param install_dir: IXN installation directory
+    :param TgnApp api: tcl/rest
+    :param Logger logger: logger object
+    :param str install_dir: IXN installation directory, applicable for Tcl only
     :return: IXN object
     """
 
@@ -53,18 +41,21 @@ def init_ixn(api: TgnApp, logger: Type[Logger], install_dir: Optional[str] = Non
 class IxnApp(TgnApp):
     """ IxNetwork driver. Equivalent to IxNetwork Application. """
 
-    def __init__(self, logger, api_wrapper):
+    def __init__(self, logger: Type[Logger], api_wrapper: Union[IxnTclWrapper, IxnRestWrapper]) -> None:
         """ Set all kinds of application level objects - logger, api, etc.
 
         :param logger: python logger (e.g. logging.getLogger('log'))
-        :param api_wrapper: api wrapper object inheriting and implementing IxnApi base class.
+        :param api_wrapper: api wrapper object inheriting
         """
-
         super(self.__class__, self).__init__(logger, api_wrapper)
-
         IxnObject.str_2_class = TYPE_2_OBJECT
 
+        self.root = None
+
     def connect(self, api_server='localhost', api_port=11009, auth=None):
+        """
+
+        """
         self.api.connect(api_server, api_port, auth)
         self.root = IxnRoot(objRef=self.api.getRoot(), objType='root', parent=None)
         self.root.logger = self.logger
@@ -107,7 +98,7 @@ class IxnApp(TgnApp):
     # IxNetwork GUI commands.
     #
 
-    def reserve(self, ports, force=False, wait_for_up=True, timeout=80):
+    def reserve(self, ports: Dict[str, str], force=False, wait_for_up=True, timeout=80):
         """ Reserve port and optionally wait for port to come up.
 
         :param ports: dict of <port, ip/module/port'>.
@@ -197,65 +188,10 @@ class IxnApp(TgnApp):
                                format(action, port.obj_name(), protocol))
 
     def quick_test_apply(self, name):
-        quick_test = self.root.get_quick_tests()[name]
-        quick_test.execute('apply', quick_test.ref)
+        self.root.quick_tests[name].apply()
 
     def quick_test_start(self, name, blocking=False, timeout=3600):
-        quick_test = self.root.get_quick_tests()[name]
-        quick_test.execute('start', quick_test.ref)
-        if blocking:
-            return self.wait_quick_test_status(name, False, timeout)
+        self.root.quick_tests[name].start(blocking, timeout)
 
     def quick_test_stop(self, name):
-        quick_test = self.root.get_quick_tests()[name]
-        quick_test.execute('stop', quick_test.ref)
-
-    def wait_quick_test_status(self, name, status=False, timeout=3600):
-        quick_test = self.root.get_quick_tests()[name]
-        results = quick_test.get_child_static('results')
-        for _ in range(timeout):
-            if is_true(results.get_attribute('isRunning')) == status:
-                return results.get_attribute('result')
-            time.sleep(1)
-        raise TgnError('Quick test failed, quick test running state is {} after {} seconds'.
-                       format(results.get_attribute('isRunning'), timeout))
-
-
-TYPE_2_OBJECT = {'availableHardware': IxnHw,
-                 'bridge': IxnStpBridge,
-                 'card': IxnCard,
-                 'chassis': IxnChassis,
-                 'device': IxnOpenFlowDevice,
-                 'deviceGroup': IxnDeviceGroup,
-                 'ethernet': IxnNgpfEthernet,
-                 'host': IxnIgmpHost,
-                 'interface': {'vport': IxnInterface},
-                 'ip': IxnStaticIp,
-                 'ipv4': {'interface': IxnInterfaceL3,
-                          'etherenet': IxnNgpfIpv4},
-                 'ipv6': {'interface': IxnInterfaceL3,
-                          'etherenet': IxnNgpfIpv6},
-                 'lacp': IxnLacp,
-                 'neighborPair': IxnRsvpNeighborPair,
-                 'neighborRange': IxnBgpRouter,
-                 'networkGroup': IxnNetworkGroup,
-                 'port': IxnPhyPort,
-                 'querier': IxnIgmpQuerier,
-                 'range': IxnRange,
-                 'router': {'bfd': IxnBfdfRouter,
-                            'isis': IxnIsisRouter,
-                            'ldp': IxnLdpRouter,
-                            'ospf': IxnOspfRouter,
-                            'ospfV3': IxnOspfV3Router,
-                            'pimsm': IxnPimsmRouter},
-                 'routeRange': {'bgp': IxnBgpRouteRange,
-                                'ospf': IxnOspfRouteRange,
-                                'ospfV3': IxnOspfv3RouteRange,
-                                'isis': IxnIsisRouteRange,
-                                'ldp': IxnLdpRouteRange},
-                 'source': {'interface': IxnPimsmSource},
-                 'topology': IxnTopology,
-                 'trafficItem': IxnTrafficItem,
-                 'vlan': IxnNgpfVlan,
-                 'vport': IxnPort,
-                 }
+        self.root.quick_tests[name].stop()

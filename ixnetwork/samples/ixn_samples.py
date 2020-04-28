@@ -18,9 +18,11 @@ from trafficgenerator.tgn_utils import ApiType
 
 
 # API type = tcl, or rest. The default is tcl with DEBUG log messages for best visibility.
-api = ApiType.rest
+api = ApiType.tcl
+api_server = '192.168.65.23'
+api_port = 443
 api_server = 'localhost'
-api_port = 11009
+api_port = 8009
 auth = ('admin', 'admin')
 log_level = logging.DEBUG
 
@@ -29,7 +31,9 @@ install_dir = 'C:/Program Files (x86)/Ixia/IxNetwork/9.00.1915.16'
 port1_location = '192.168.65.22/1/1'
 port2_location = '192.168.65.22/1/2'
 
-ixn_config_file = path.join(path.dirname(__file__), 'sample_ngpf.ixncfg')
+license_server = ['192.168.42.61']
+
+ixn_config_file = path.join(path.dirname(__file__), 'rfc_2544.ixncfg')
 
 
 class IxnSamples():
@@ -40,6 +44,8 @@ class IxnSamples():
         logger.addHandler(logging.StreamHandler(sys.stdout))
         self.ixn = init_ixn(api, logger, install_dir)
         self.ixn.connect(api_server, api_port, auth)
+        if api == ApiType.rest:
+            self.ixn.api.set_licensing(licensingServers=license_server)
 
     def tearDown(self):
         for port in self.ixn.root.ports.values():
@@ -69,8 +75,8 @@ class IxnSamples():
         for port in ports:
             print('{}\t{}\t{}'.format(port.obj_name(), port.obj_ref(), port))
 
-        # But... frequently used objects (like ports...) can be accessed specifically:
-        ports = self.ixn.root.get_ports()
+        # But, frequently used objects (like ports, protocols, etc.) can be accessed specifically:
+        ports = self.ixn.root.ports
         assert(len(ports) == 2)
 
         # Now we can iterate and print all objects:
@@ -130,12 +136,14 @@ class IxnSamples():
         print(ti_stats.get_counter(list(self.ixn.root.traffic_items.keys())[0], 'Rx Frames'))
 
     def quick_test(self):
-        global ixn_config_file
-        ixn_config_file = path.join(path.dirname(__file__), 'configs/quick_tests.ixncfg')
         self.reserve_ports()
-        print(self.ixn.root.get_quick_tests())
-        self.ixn.quick_test_apply('QuickTest3')
-        print(self.ixn.quick_test_start('QuickTest3', blocking=True))
+        self.ixn.protocols_start()
+        time.sleep(4)
+        self.ixn.quick_test_apply('Test1')
+        self.ixn.quick_test_start('Test1', blocking=True)
+        self.ixn.quick_test_stop('Test1')
+        report_path = path.join(path.dirname(__file__), 'quick_test_report.pdf')
+        self.ixn.root.quick_tests['Test1'].get_report(report_path)
 
     def inventory(self):
 
@@ -153,5 +161,7 @@ class IxnSamples():
 if __name__ == '__main__':
     ixn = IxnSamples()
     ixn.setUp()
-    ixn.traffic()
-    ixn.tearDown()
+    try:
+        ixn.quick_test()
+    finally:
+        ixn.tearDown()

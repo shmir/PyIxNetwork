@@ -115,3 +115,6 @@ ixnetwork/test/Sample_IPv4_Traffic_With_CloudShell.py
 ixnetwork/test/sandbox.py
 
 tests/configs/temp
+
+ixnetwork/samples/quick_test_report.pdf
+

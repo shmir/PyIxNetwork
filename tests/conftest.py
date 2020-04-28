@@ -31,12 +31,12 @@ def server(request):
 
 @pytest.fixture
 def api(request):
-    yield request.param
+    yield ApiType[request.param]
 
 
 @pytest.fixture(autouse=True)
 def config(request, server, api):
-    request.cls.api = ApiType[api]
+    request.cls.api = api
     request.cls.server_ip = server.split(':')[0]
     request.cls.server_port = int(server.split(':')[1]) if len(server.split(':')) == 2 else 11009
     if api == ApiType.tcl and request.cls.server_port == 11009:

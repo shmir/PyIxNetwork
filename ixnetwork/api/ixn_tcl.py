@@ -21,7 +21,7 @@ class IxnTclWrapper(TgnTclWrapper):
     null = '::ixNet::OBJ-null'
 
     def __init__(self, logger, ixn_install_dir, tcl_interp=None):
-        super(IxnTclWrapper, self).__init__(logger, tcl_interp)
+        super().__init__(logger, tcl_interp)
         self.source(path.join(ixn_install_dir, pkgIndex_tail))
         self.eval('package require IxTclNetwork')
 
@@ -106,17 +106,17 @@ class IxnTclWrapper(TgnTclWrapper):
     def add(self, parent, obj_type, **attributes):
         """ IXN API add command
 
-        @param parent: object parent - object will be created under this parent.
-        @param object_type: object type.
-        @param attributes: additional attributes.
-        @return: IXN object reference.
+        :param parent: object parent - object will be created under this parent.
+        :param object_type: object type.
+        :param attributes: additional attributes.
+        :return: IXN object reference.
         """
         return self.ixnCommand('add', parent.obj_ref(), obj_type, get_args_pairs(attributes))
 
     def remove(self, objRef):
         """ IXN API remove command
 
-        @param objRef: object reference to remove.
+        :param objRef: object reference to remove.
         """
         self.ixnCommand('remove', objRef)
 

@@ -4,6 +4,7 @@
 
 import os
 from enum import Enum
+from typing import Dict
 
 from ixnetwork.ixn_object import IxnObject
 
@@ -46,12 +47,10 @@ class IxnTrafficItem(IxnObject):
         self.api.commit()
         return self.api.remapIds(obj_ref)
 
-    def get_flow_groups(self):
-        """
-        :return: dictionary {name: object} of all flow groups.
-        """
-
-        return {o.obj_name(): o for o in self.get_objects_or_children_by_type('highLevelStream')}
+    def get_flow_groups(self) -> Dict[str, IxnObject]:
+        """ Returns all flow groups of the traffic item. """
+        return {o.name: o for o in self.get_objects_or_children_by_type('highLevelStream')}
+    flow_groups = property(get_flow_groups)
 
     def generate(self):
         self.execute('generate')

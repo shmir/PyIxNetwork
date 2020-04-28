@@ -24,23 +24,23 @@ server_properties = {linux_840: {'port1': '{}/1/1'.format(chassis_840), 'port2':
                                  'auth': ('admin', 'admin'), 'config-version': 'ngpf'},
                      windows_801: {'port1': '{}/1/1'.format(chassis_801), 'port2': '{}/1/2'.format(chassis_801),
                                    'auth': None, 'config-version': 'classic',
-                                   'install_dir': 'E:/Program Files (x86)/Ixia/IxNetwork/8.01-GA'},
+                                   'install_dir': 'C:/Program Files (x86)/Ixia/IxNetwork/8.01-GA'},
                      windows_840: {'port1': '{}/1/1'.format(chassis_840), 'port2': '{}/1/2'.format(chassis_840),
                                    'auth': None, 'config-version': 'classic',
-                                   'install_dir': 'E:/Program Files (x86)/Ixia/IxNetwork/8.40-EA'},
+                                   'install_dir': 'C:/Program Files (x86)/Ixia/IxNetwork/8.40-EA'},
                      windows_850: {'port1': '{}/1/1'.format(chassis_850), 'port2': '{}/1/2'.format(chassis_850),
                                    'auth': None, 'config-version': 'classic',
-                                   'install_dir': 'E:/Program Files (x86)/Ixia/IxNetwork/8.50-EA'},
+                                   'install_dir': 'C:/Program Files (x86)/Ixia/IxNetwork/8.50-EA'},
                      windows_900_http: {'port1': '{}/1/1'.format(chassis_900), 'port2': '{}/1/2'.format(chassis_900),
                                         'auth': None, 'config-version': 'classic',
-                                        'install_dir': 'E:/Program Files (x86)/Ixia/IxNetwork/9.00.1915.16'},
+                                        'install_dir': 'C:/Program Files (x86)/Ixia/IxNetwork/9.00.1915.16'},
                      windows_900_https: {'port1': '{}/1/1'.format(chassis_900), 'port2': '{}/1/2'.format(chassis_900),
                                          'auth': None, 'config-version': 'classic',
-                                         'install_dir': 'E:/Program Files (x86)/Ixia/IxNetwork/9.00.1915.16'},
+                                         'install_dir': 'C:/Program Files (x86)/Ixia/IxNetwork/9.00.1915.16'},
                      cm_900: {'port1': '{}/1/1'.format(chassis_900), 'port2': '{}/1/2'.format(chassis_900),
                               'auth': None, 'config-version': 'classic',
-                              'install_dir': 'E:/Program Files (x86)/Ixia/IxNetwork/9.00.1915.16'}}
+                              'install_dir': 'C:/Program Files (x86)/Ixia/IxNetwork/9.00.1915.16'}}
 
-api = ['rest']
+api = ['tcl']
 server = [windows_900_http]
 license_server = ['192.168.42.61']

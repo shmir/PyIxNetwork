@@ -2,15 +2,18 @@
 @author yoram@ignissoft.com
 """
 
-import time
-from typing import Dict
+from __future__ import annotations
 
-from trafficgenerator.tgn_utils import TgnError
+import time
+from typing import Dict, Optional
+
+from trafficgenerator.tgn_utils import TgnError, is_true
 
 from ixnetwork.ixn_object import IxnObject
 from ixnetwork.ixn_port import IxnPort
 from ixnetwork.ixn_topology import IxnTopology
 from ixnetwork.ixn_traffic import IxnTrafficItem
+from ixnetwork.api.ixn_rest import IxnRestWrapper
 
 
 class IxnRoot(IxnObject):
@@ -34,15 +37,12 @@ class IxnRoot(IxnObject):
         return {o.name: o for o in traffic.get_objects_or_children_by_type('trafficItem')}
     traffic_items = property(get_traffic_items)
 
-    def get_quick_tests(self, *types):
-        """
-        :param types: list of requested types, empty list will return all quick tests.
-        :return: dictionary {name: object} of requested quick tests.
-        """
-
+    def get_quick_tests(self) -> Dict[str, IxnQuickTest]:
+        """ Returns list of quick tests. """
         quickTest = self.get_child_static('quickTest')
-        return {o.obj_name(): o for o in quickTest.get_objects_or_children_by_type(*types) if
-                o.obj_name() != '::ixNet::OBJ-/quickTest/globals'}
+        return {o.name: o for o in quickTest.get_objects_or_children_by_type() if
+                o.name != '::ixNet::OBJ-/quickTest/globals'}
+    quick_tests = property(get_quick_tests)
 
     def regenerate(self, *traffic_items):
         traffic = self.get_child_static('traffic')
@@ -69,3 +69,54 @@ class IxnRoot(IxnObject):
             time.sleep(1)
         raise TgnError('Traffic failed to reach {} state, traffic is {} after {} seconds'.
                        format(states, self.get_child_static('traffic').get_attribute('state'), timeout))
+
+
+class IxnQuickTest(IxnObject):
+
+    def __init__(self, **data) -> None:
+        data['objType'] = 'quickTest'
+        super(self.__class__, self).__init__(**data)
+
+    def apply(self) -> None:
+        """ Apply QuickTest. """
+        self.execute('apply', self.ref)
+
+    def start(self, blocking: Optional[bool] = False, timeout: Optional[int] = 3600) -> None:
+        """ Start QuickTest.
+
+        :param blocking: start test and wait for test to finish if True else start test and return immediately
+        :param timeout: if blocking is True, how long to wait for test finish
+        """
+        self.execute('start', self.ref)
+        if blocking:
+            return self.wait_quick_test_status(False, timeout)
+
+    def stop(self) -> None:
+        """ Apply QuickTest. """
+        self.execute('stop', self.ref)
+
+    def wait_quick_test_status(self, status: Optional[bool] = False, timeout: int = 3600) -> None:
+        """ Wait for QuickTest isRunning status to reach state - True or False.
+
+        :param status: required status True or False
+        :param timeout: how long to wait for test status
+        """
+        results = self.get_child_static('results')
+        for _ in range(timeout):
+            isRunning = results.get_attribute('isRunning')
+            if is_true(isRunning) == status:
+                return isRunning
+            time.sleep(1)
+        raise TgnError(f'Quick test failed, quick test running state is {isRunning} after {timeout} seconds')
+
+    def get_report(self, report_path: str) -> None:
+        """ Get QuickTest report from server to local machine.
+
+        :param report_path: full path to destination local path.
+        """
+        if type(self.api) is IxnRestWrapper:
+            report_url = self.execute('generateReport', self.ref)
+            self.api.getFile(report_url, report_path)
+        else:
+            self.set_attributes(commit=True, outputPath=report_path)
+            self.execute('generateReport', self.ref)

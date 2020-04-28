@@ -11,8 +11,10 @@ import json
 
 from trafficgenerator.tgn_utils import TgnError
 
+requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
 
-class IxnRestWrapper(object):
+
+class IxnRestWrapper:
 
     null = 'null'
 
@@ -41,10 +43,9 @@ class IxnRestWrapper(object):
         # Perform get to determine whether http is supported or we should use https.
         try:
             self.server_url = 'https://{}:{}'.format(ip, port)
-            a = self.get(self.server_url + '/api/v1/sessions', timeout=4)
+            self.get(self.server_url + '/api/v1/sessions', timeout=4)
         except Exception as _:
-            b = self.server_url = 'http://{}:{}'.format(ip, port)
-            print(b)
+            self.server_url = 'http://{}:{}'.format(ip, port)
 
         response = self.post(self.server_url + '/api/v1/sessions', data={'applicationType': 'ixnrest'})
         if 'id' in response.json():
@@ -118,8 +119,9 @@ class IxnRestWrapper(object):
                     error = json.loads(response.text).get('errors', None)
                 if not error:
                     error = json.loads(response.text).get('Message', None)
-            raise TgnError('failed to {} {} {}\nstatus code - {}\nerror - {}'.
-                           format(command.__name__, url, kwargs_to_print, response.status_code, error))
+            raise TgnError(f'failed to {command.__name__} {url} {kwargs_to_print}\n'
+                           f'status code - {response.status_code}\n'
+                           f'error - {error}')
         return response
 
     def get(self, url, **kwargs):
@@ -195,16 +197,20 @@ class IxnRestWrapper(object):
 
     def saveConfig(self, config_file_name):
         basename = path.basename(config_file_name)
-
-        data = {'arg1': basename}
+        data = {'arg1': path.basename(config_file_name)}
         self.post(self.root_url + 'ixnetwork/operations/saveconfig', data)
+        self.getFile(basename, config_file_name)
+
+    def getFile(self, remote_file_path, local_file_path):
 
         download_headers = {'content-type': 'application/octet-stream'}
         download_url = self.root_url + 'ixnetwork/files'
-        download_params = {'filename': basename}
+        download_params = {'filename': path.basename(remote_file_path)}
+        if path.dirname(remote_file_path):
+            download_params['absolute'] = path.dirname(remote_file_path)
         res = self.request(requests.get, download_url, headers=download_headers, params=download_params)
 
-        with open(config_file_name, mode='wb') as f:
+        with open(local_file_path, mode='wb') as f:
             f.write(res.content)
 
     def getList(self, obj_ref, childList):
@@ -245,10 +251,10 @@ class IxnRestWrapper(object):
     def add(self, parent, obj_type, **attributes):
         """ IXN API add command
 
-        @param parent: object parent - object will be created under this parent.
-        @param object_type: object type.
-        @param attributes: additional attributes.
-        @return: STC object reference.
+        :param parent: object parent - object will be created under this parent.
+        :param object_type: object type.
+        :param attributes: additional attributes.
+        @return: IXN object reference.
         """
 
         response = self.post(self.server_url + parent.ref + '/' + obj_type, attributes)

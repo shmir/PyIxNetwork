@@ -41,7 +41,7 @@ class IxnPort(IxnObject):
         try:
             phy_port = chassis.get_card(int(card)).get_port(int(port))
         except KeyError as _:
-            raise TgnError('Physical port {} unreachable'.format(location))
+            raise TgnError(f'Physical port {location} unreachable')
         self.set_attributes(commit=True, connectedTo=phy_port.ref)
 
         while self.get_attribute('connectedTo') == '::ixNet::OBJ-null':
@@ -78,7 +78,7 @@ class IxnPort(IxnObject):
         stateDetail = self.get_attribute('stateDetail')
         connectionState = self.get_attribute('connectionState')
         raise TgnError(f'Failed to reach states {states}, port state is {state} after {timeout} seconds\n'
-                       'stateDetail is {stateDetail} connectionState is {connectionState}, ')
+                       f'stateDetail is {stateDetail} connectionState is {connectionState}, ')
 
     def is_online(self):
         """

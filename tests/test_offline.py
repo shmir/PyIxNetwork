@@ -74,7 +74,7 @@ class TestIxnOffline(TestIxnBase):
         tis = self.ixn.root.get_traffic_items()
         assert(len(tis) == 2)
         for ti in tis.values():
-            assert(len(ti.get_flow_groups()) == 2)
+            assert(len(ti.flow_groups) == 2)
 
         if self.config_version == 'classic':
             for port in ports.values():

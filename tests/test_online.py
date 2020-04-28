@@ -79,7 +79,7 @@ class TestIxnOnline(TestIxnBase):
         self.ixn.protocol_stop('ospf')
 
     def test_gui_traffic(self, api):
-        # Sometimes ARP fails on IxVM? To be sure, send automatic ARP (seems more stable...)
+        # Sometimes ARP fails on IxVM? To be sure, send automatic ARP (seems more stable)
         self._reserve_ports('test_config')
         self.ixn.protocols_start()
         time.sleep(4)
@@ -108,6 +108,8 @@ class TestIxnOnline(TestIxnBase):
 
     def test_quick_test(self, api):
         self._reserve_ports('quick_test')
+        self.ixn.protocols_start()
+        time.sleep(4)
         self.ixn.quick_test_apply('QuickTest1')
         self.ixn.quick_test_start('QuickTest1', blocking=True)
         self.ixn.quick_test_stop('QuickTest1')
