@@ -1,7 +1,5 @@
 """
 IxNetwork package tests that can run in offline mode.
-
-@author yoram@ignissoft.com
 """
 
 from os import path

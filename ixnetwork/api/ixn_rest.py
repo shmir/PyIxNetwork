@@ -44,7 +44,7 @@ class IxnRestWrapper:
         try:
             self.server_url = 'https://{}:{}'.format(ip, port)
             self.get(self.server_url + '/api/v1/sessions', timeout=4)
-        except Exception as _:
+        except Exception as e:
             self.server_url = 'http://{}:{}'.format(ip, port)
 
         response = self.post(self.server_url + '/api/v1/sessions', data={'applicationType': 'ixnrest'})

@@ -1,7 +1,5 @@
-
 future
-configparser
 IPy
 requests
 
-pytrafficgen==1.6.2
+pytrafficgen==3.0.0

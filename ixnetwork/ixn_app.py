@@ -1,23 +1,23 @@
 """
 Classes and utilities to manage IXN application.
-
-@author yoram@ignissoft.com
 """
 
 from os import path
 import time
 from collections import OrderedDict
-from typing import Type, Optional, Union, Dict
 from logging import Logger
+
+from typing import Type, Optional, Union, Dict, List
 
 from trafficgenerator.tgn_utils import TgnError, is_true, ApiType
 from trafficgenerator.tgn_app import TgnApp
 
+from ixnetwork import TYPE_2_OBJECT
 from ixnetwork.api.ixn_tcl import IxnTclWrapper
 from ixnetwork.api.ixn_rest import IxnRestWrapper
 from ixnetwork.ixn_object import IxnObject
 from ixnetwork.ixn_root import IxnRoot
-from ixnetwork import TYPE_2_OBJECT
+from ixnetwork.ixn_port import IxnPort
 
 
 def init_ixn(api: TgnApp, logger: Type[Logger], install_dir: Optional[str] = None) -> 'IxnApp':
@@ -52,9 +52,13 @@ class IxnApp(TgnApp):
 
         self.root = None
 
-    def connect(self, api_server='localhost', api_port=11009, auth=None):
-        """
+    def connect(self, api_server: str = 'localhost', api_port: Optional[int] = 11009,
+                auth: Optional[List[str, str]] = None) -> None:
+        """ Connect to API server.
 
+        :param api_server: API server IP address
+        :param api_port: API server TCP port
+        :param auth: list of (username, password)
         """
         self.api.connect(api_server, api_port, auth)
         self.root = IxnRoot(objRef=self.api.getRoot(), objType='root', parent=None)
@@ -63,8 +67,8 @@ class IxnApp(TgnApp):
         IxnObject.root = self.root
         self.root.hw = self.root.get_child_static('availableHardware')
 
-    def disconnect(self):
-        """ Disconnect from chassis and server. """
+    def disconnect(self) -> None:
+        """ Disconnect from API server. """
         if self.root.ref is not None:
             self.api.disconnect()
         self.root = None
@@ -98,7 +102,7 @@ class IxnApp(TgnApp):
     # IxNetwork GUI commands.
     #
 
-    def reserve(self, ports: Dict[str, str], force=False, wait_for_up=True, timeout=80):
+    def reserve(self, ports: Dict[IxnPort, str], force=False, wait_for_up=True, timeout=80):
         """ Reserve port and optionally wait for port to come up.
 
         :param ports: dict of <port, ip/module/port'>.

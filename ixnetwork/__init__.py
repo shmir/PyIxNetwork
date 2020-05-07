@@ -1,22 +1,16 @@
-"""
-@author yoram@ignissoft.com
-"""
 
-from ixnetwork.ixn_port import IxnPort
-from ixnetwork.ixn_traffic import IxnTrafficItem
-from ixnetwork.ixn_protocol import (IxnBgpRouter, IxnOspfRouter, IxnOspfV3Router, IxnBgpRouteRange, IxnOspfRouteRange,
-                                    IxnPimsmRouter, IxnIgmpHost, IxnIgmpQuerier, IxnPimsmSource, IxnStpBridge,
-                                    IxnOpenFlowDevice, IxnLacp, IxnIsisRouter, IxnIsisRouteRange, IxnLdpRouter,
-                                    IxnLdpRouteRange, IxnRsvpNeighborPair, IxnStaticIp, IxnBfdfRouter,
-                                    IxnOspfv3RouteRange)
-from ixnetwork.ixn_interface import IxnInterface, IxnInterfaceL3
-from ixnetwork.ixn_topology import (IxnTopology, IxnNgpfEthernet, IxnNgpfVlan, IxnNgpfIpv4, IxnNgpfIpv6,
-                                    IxnDeviceGroup, IxnNetworkGroup)
-from ixnetwork.ixn_root import IxnRoot, IxnQuickTest
-from ixnetwork.ixn_protocol_stack import IxnRange
-from ixnetwork.ixn_hw import IxnHw, IxnChassis, IxnCard, IxnPhyPort
-
-__version__ = '3.0.0'
+from .ixn_port import IxnPort
+from .ixn_traffic import IxnTrafficItem
+from .ixn_protocol import (IxnBgpRouter, IxnOspfRouter, IxnOspfV3Router, IxnBgpRouteRange, IxnOspfRouteRange,
+                           IxnPimsmRouter, IxnIgmpHost, IxnIgmpQuerier, IxnPimsmSource, IxnStpBridge, IxnOpenFlowDevice,
+                           IxnLacp, IxnIsisRouter, IxnIsisRouteRange, IxnLdpRouter, IxnLdpRouteRange,
+                           IxnRsvpNeighborPair, IxnStaticIp, IxnBfdfRouter, IxnOspfv3RouteRange)
+from .ixn_interface import IxnInterface, IxnInterfaceL3
+from .ixn_topology import (IxnTopology, IxnNgpfEthernet, IxnNgpfVlan, IxnNgpfIpv4, IxnNgpfIpv6, IxnDeviceGroup,
+                           IxnNetworkGroup)
+from .ixn_root import IxnRoot, IxnQuickTest
+from .ixn_protocol_stack import IxnRange
+from .ixn_hw import IxnHw, IxnChassis, IxnCard, IxnPhyPort
 
 
 TYPE_2_OBJECT = {'availableHardware': IxnHw,
@@ -58,65 +52,62 @@ TYPE_2_OBJECT = {'availableHardware': IxnHw,
                  'vlan': IxnNgpfVlan,
                  'vport': IxnPort,
 
+                 'asymmetricFrameLoss': IxnQuickTest,
+                 'asymmetricThroughput': IxnQuickTest,
+                 'cloudPerf': IxnQuickTest,
+                 'customContDuration': IxnQuickTest,
+                 'customFixedDuration': IxnQuickTest,
+                 'customStep': IxnQuickTest,
+                 'customThroughput': IxnQuickTest,
+                 'dhcpRate': IxnQuickTest,
+                 'dhcpRateCpf': IxnQuickTest,
+                 'dhcpv6Rate': IxnQuickTest,
+                 'dhcpv6RateCpf': IxnQuickTest,
+                 'dot1xCapacity': IxnQuickTest,
+                 'dot1xRate': IxnQuickTest,
+                 'eventScheduler': IxnQuickTest,
+                 'fcoeMaxNoDropThroughput': IxnQuickTest,
+                 'fcoeMaxNoPauseThroughput': IxnQuickTest,
+                 'iptvChannelZapping': IxnQuickTest,
+                 'l2tpCapacity': IxnQuickTest,
+                 'l2tpRate': IxnQuickTest,
+                 'l2tpRateCpf': IxnQuickTest,
+                 'lnsCpfCapacity': IxnQuickTest,
+                 'openFlowFailoverPerformance': IxnQuickTest,
+                 'openFlowLayer2LearningRate': IxnQuickTest,
+                 'openFlowLayer3LearningRate': IxnQuickTest,
+                 'openFlowTableCapacity': IxnQuickTest,
+                 'pppoxRateCpf': IxnQuickTest,
+                 'pppoxRateCpfServerCapacity': IxnQuickTest,
+                 'pppServerCapacity': IxnQuickTest,
+                 'pppSessionRate': IxnQuickTest,
+                 'ptpBestMasterSelection': IxnQuickTest,
+                 'ptpCorrectionFactorError': IxnQuickTest,
+                 'ptpSlaveScalability': IxnQuickTest,
                  'rfc2544back2back': IxnQuickTest,
+                 'rfc2544frameLoss': IxnQuickTest,
+                 'rfc2544throughput': IxnQuickTest,
+                 'rfc2889addressCache': IxnQuickTest,
+                 'rfc2889addressRate': IxnQuickTest,
+                 'rfc2889broadcastRate': IxnQuickTest,
+                 'rfc2889congestionControl': IxnQuickTest,
+                 'rfc2889frameErrorFiltering': IxnQuickTest,
+                 'rfc2889fullyMeshed': IxnQuickTest,
+                 'rfc2889manyToOne': IxnQuickTest,
+                 'rfc2889oneToMany': IxnQuickTest,
+                 'rfc2889partiallyMeshed': IxnQuickTest,
+                 'rfc3918aggregated': IxnQuickTest,
+                 'rfc3918burdenedJoinDelay': IxnQuickTest,
+                 'rfc3918burdenedLatency': IxnQuickTest,
+                 'rfc3918groupCapacity': IxnQuickTest,
+                 'rfc3918groupPatternVerification': IxnQuickTest,
+                 'rfc3918ipmcMinMaxLat': IxnQuickTest,
+                 'rfc3918joinLeaveDelay': IxnQuickTest,
+                 'rfc3918joinRate': IxnQuickTest,
+                 'rfc3918mixedClassThroughput': IxnQuickTest,
+                 'rfc3918scaleGroup': IxnQuickTest,
+                 'rfc7747failover': IxnQuickTest,
+                 'rfc7747ribIn': IxnQuickTest,
                  'trafficTest': IxnQuickTest,
+                 'y1564': IxnQuickTest,
                  }
-
-# asymmetricFrameLoss
-# asymmetricThroughput
-# cloudPerf
-# customContDuration
-# customFixedDuration
-# customStep
-# customThroughput
-# dhcpRate
-# dhcpRateCpf
-# dhcpv6Rate
-# dhcpv6RateCpf
-# dot1xCapacity
-# dot1xRate
-# eventScheduler
-# fcoeMaxNoDropThroughput
-# fcoeMaxNoPauseThroughput
-# iptvChannelZapping
-# l2tpCapacity
-# l2tpRate
-# l2tpRateCpf
-# lnsCpfCapacity
-# openFlowFailoverPerformance
-# openFlowLayer2LearningRate
-# openFlowLayer3LearningRate
-# openFlowTableCapacity
-# pppoxRateCpf
-# pppoxRateCpfServerCapacity
-# pppServerCapacity
-# pppSessionRate
-# ptpBestMasterSelection
-# ptpCorrectionFactorError
-# ptpSlaveScalability
-# rfc2544back2back
-# rfc2544frameLoss
-# rfc2544throughput
-# rfc2889addressCache
-# rfc2889addressRate
-# rfc2889broadcastRate
-# rfc2889congestionControl
-# rfc2889frameErrorFiltering
-# rfc2889fullyMeshed
-# rfc2889manyToOne
-# rfc2889oneToMany
-# rfc2889partiallyMeshed
-# rfc3918aggregated
-# rfc3918burdenedJoinDelay
-# rfc3918burdenedLatency
-# rfc3918groupCapacity
-# rfc3918groupPatternVerification
-# rfc3918ipmcMinMaxLat
-# rfc3918joinLeaveDelay
-# rfc3918joinRate
-# rfc3918mixedClassThroughput
-# rfc3918scaleGroup
-# rfc7747failover
-# rfc7747ribIn
-# trafficTest
-# y1564

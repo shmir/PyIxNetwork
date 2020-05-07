@@ -1,22 +1,19 @@
 """
 Base class for all IXN package tests.
 
-@author yoram@ignissoft.com
+todo: move to conftest?
 """
 
 from os import path
 import inspect
+
 import pytest
 
-
 from trafficgenerator.tgn_utils import ApiType
-from trafficgenerator.test_tgn import TestTgnBase
 from ixnetwork.ixn_app import init_ixn
 
 
-class TestIxnBase(TestTgnBase):
-
-    TestTgnBase.config_file = path.join(path.dirname(__file__), 'IxNetwork.ini')
+class TestIxnBase:
 
     server_ip = None
     server_port = None
@@ -30,7 +27,6 @@ class TestIxnBase(TestTgnBase):
         if self.api == ApiType.tcl and self._is_linux_server():
             pytest.skip('REST server do not support Tcl')
 
-        super(TestIxnBase, self).setup()
         self.ixn = init_ixn(self.api, self.logger, self.install_dir)
         self.ixn.connect(self.server_ip, self.server_port, self.auth)
         if self.api == ApiType.rest:
@@ -40,7 +36,6 @@ class TestIxnBase(TestTgnBase):
         for port in self.ixn.root.get_objects_or_children_by_type('vport'):
             port.release()
         self.ixn.disconnect()
-        super(TestIxnBase, self).teardown()
 
     def test_hello_world(self, api):
         pass

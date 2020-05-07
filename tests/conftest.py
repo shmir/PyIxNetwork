@@ -1,4 +1,7 @@
 
+import sys
+import logging
+
 import pytest
 
 from trafficgenerator.tgn_utils import ApiType
@@ -24,6 +27,14 @@ def pytest_addoption(parser):
     parser.addoption('--license-server', action='store', default=license_server_, help='license server IP address')
 
 
+@pytest.fixture(scope='session')
+def logger():
+    logger = logging.getLogger('tgn')
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(logging.StreamHandler(sys.stdout))
+    yield logger
+
+
 @pytest.fixture
 def server(request):
     yield request.param
@@ -35,7 +46,8 @@ def api(request):
 
 
 @pytest.fixture(autouse=True)
-def config(request, server, api):
+def config(request, logger, server, api):
+    request.cls.logger = logger
     request.cls.api = api
     request.cls.server_ip = server.split(':')[0]
     request.cls.server_port = int(server.split(':')[1]) if len(server.split(':')) == 2 else 11009
