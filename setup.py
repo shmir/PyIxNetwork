@@ -24,7 +24,7 @@ long_description = read('README.txt')
 
 setup(
     name='pyixnetwork',
-    version='3.0.0',
+    version='3.0.1',
     url='https://github.com/shmir/PyIxNetwork/',
     license='Apache Software License',
     author='Yoram Shamir',

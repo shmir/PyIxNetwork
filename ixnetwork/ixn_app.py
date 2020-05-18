@@ -20,7 +20,7 @@ from ixnetwork.ixn_root import IxnRoot
 from ixnetwork.ixn_port import IxnPort
 
 
-def init_ixn(api: TgnApp, logger: Type[Logger], install_dir: Optional[str] = None) -> 'IxnApp':
+def init_ixn(api: ApiType, logger: Type[Logger], install_dir: Optional[str] = None) -> 'IxnApp':
     """ Create IXN object.
 
     :param TgnApp api: tcl/rest
@@ -53,7 +53,7 @@ class IxnApp(TgnApp):
         self.root = None
 
     def connect(self, api_server: str = 'localhost', api_port: Optional[int] = 11009,
-                auth: Optional[List[str, str]] = None) -> None:
+                auth: Optional[List[str]] = None) -> None:
         """ Connect to API server.
 
         :param api_server: API server IP address
@@ -77,10 +77,15 @@ class IxnApp(TgnApp):
     # IxNetwork operation commands.
     #
 
-    def commit(self):
+    def commit(self) -> None:
+        """ Perform ixNet commit command, NA (pass) for rest API. """
         self.api.commit()
 
-    def load_config(self, config_file_name):
+    def load_config(self, config_file_name: str) -> None:
+        """ Load ixncgf configuration file.
+
+        :param config_file_name: full path to ixncfg configuration file
+        """
         self.root.objects = OrderedDict()
         prefs = self.root.get_child_static('globals').get_child_static('preferences')
         prefs.set_attributes(connectPortsOnLoadConfig=False)
@@ -89,12 +94,17 @@ class IxnApp(TgnApp):
         self.root.get_children('vport')
         self.root.hw = self.root.get_child_static('availableHardware')
 
-    def new_config(self):
+    def new_config(self) -> None:
+        """ Clean existing configuration and creates empty one. """
         self.root.objects = OrderedDict()
         self.api.newConfig()
         self.commit()
 
-    def save_config(self, config_file_name):
+    def save_config(self, config_file_name: str) -> None:
+        """ Save ixncgf configuration file.
+
+        :param config_file_name: full path to ixncfg configuration file
+        """
         self.commit()
         self.api.saveConfig(path.abspath(config_file_name))
 
@@ -102,7 +112,7 @@ class IxnApp(TgnApp):
     # IxNetwork GUI commands.
     #
 
-    def reserve(self, ports: Dict[IxnPort, str], force=False, wait_for_up=True, timeout=80):
+    def reserve(self, ports: Dict[IxnPort, str], force=False, wait_for_up=True, timeout=80) -> None:
         """ Reserve port and optionally wait for port to come up.
 
         :param ports: dict of <port, ip/module/port'>.
@@ -118,21 +128,19 @@ class IxnApp(TgnApp):
         for port, location in ports.items():
             port.reserve(location, False, wait_for_up, timeout)
 
-    def send_arp_ns(self):
+    def send_arp_ns(self) -> None:
+        """ Perform ixNet sendArpAll/sendNsAll Tcl commands. NA (pass) for rest API. """
         self.api.execute('sendArpAll', valid_on_linux=False)
         self.api.execute('sendNsAll', valid_on_linux=False)
 
-    def send_rs(self):
-        self.api.execute('sendRsAll', valid_on_linux=False)
-
-    def protocols_start(self):
+    def protocols_start(self) -> None:
         """ Start all protocols.
 
         It is the calling function responsibility to wait for all protocols to start.
         """
         self.api.execute('startAllProtocols')
 
-    def protocols_stop(self):
+    def protocols_stop(self) -> None:
         """ Stop all protocols.
 
         It is the calling function responsibility to wait for all protocols to stop.
@@ -195,7 +203,7 @@ class IxnApp(TgnApp):
         self.root.quick_tests[name].apply()
 
     def quick_test_start(self, name, blocking=False, timeout=3600):
-        self.root.quick_tests[name].start(blocking, timeout)
+        return self.root.quick_tests[name].start(blocking, timeout)
 
     def quick_test_stop(self, name):
-        self.root.quick_tests[name].stop()
+        return self.root.quick_tests[name].stop()

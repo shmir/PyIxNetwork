@@ -5,7 +5,9 @@
 from __future__ import annotations
 
 import time
-from typing import Dict, Optional
+from io import BytesIO
+
+from typing import Dict, Optional, Union
 
 from trafficgenerator.tgn_utils import TgnError, is_true
 
@@ -40,8 +42,7 @@ class IxnRoot(IxnObject):
     def get_quick_tests(self) -> Dict[str, IxnQuickTest]:
         """ Returns list of quick tests. """
         quickTest = self.get_child_static('quickTest')
-        return {o.name: o for o in quickTest.get_objects_or_children_by_type() if
-                o.name != '::ixNet::OBJ-/quickTest/globals'}
+        return {o.name: o for o in quickTest.get_objects_or_children_by_type() if type(o) == IxnQuickTest}
     quick_tests = property(get_quick_tests)
 
     def regenerate(self, *traffic_items):
@@ -109,7 +110,7 @@ class IxnQuickTest(IxnObject):
             time.sleep(1)
         raise TgnError(f'Quick test failed, quick test running state is {isRunning} after {timeout} seconds')
 
-    def get_report(self, report_path: str) -> None:
+    def get_report(self, report_path: Union[str, BytesIO]) -> None:
         """ Get QuickTest report from server to local machine.
 
         :param report_path: full path to destination local path.

@@ -8,6 +8,9 @@ import time
 import re
 import copy
 import json
+from io import BytesIO
+
+from typing import Union
 
 from trafficgenerator.tgn_utils import TgnError
 
@@ -78,7 +81,7 @@ class IxnRestWrapper:
             result = json.loads(response.content)['result'].strip()
             raise TgnError(f'wait for post {response.url} failed - {result}')
         if response.json()['state'].lower() == 'success':
-            return
+            return response
         progress_url = json.loads(response.content)[u'url']
         if 'http' not in progress_url:
             # sometimes the progress url is relative, for example in version 8.50 linux loadconfig
@@ -90,7 +93,7 @@ class IxnRestWrapper:
             else:
                 state = response.json()[0]['state']
             if state.lower() not in ['in_progress', 'down']:
-                return
+                return response
             time.sleep(1)
         raise TgnError('{} operation failed, state is {} after {} seconds'.
                        format(self.session, response.json()['state'], timeout))
@@ -130,7 +133,7 @@ class IxnRestWrapper:
     def post(self, url, data={}):
         response = self.request(requests.post, url, data=data)
         if response.status_code != 201 and 'id' in response.json():
-            self.waitForComplete(url, response)
+            return self.waitForComplete(url, response)
         return response
 
     def options(self, url):
@@ -201,7 +204,7 @@ class IxnRestWrapper:
         self.post(self.root_url + 'ixnetwork/operations/saveconfig', data)
         self.getFile(basename, config_file_name)
 
-    def getFile(self, remote_file_path, local_file_path):
+    def getFile(self, remote_file_path, local_file_path: Union[str, BytesIO]):
 
         download_headers = {'content-type': 'application/octet-stream'}
         download_url = self.root_url + 'ixnetwork/files'
@@ -210,8 +213,11 @@ class IxnRestWrapper:
             download_params['absolute'] = path.dirname(remote_file_path)
         res = self.request(requests.get, download_url, headers=download_headers, params=download_params)
 
-        with open(local_file_path, mode='wb') as f:
-            f.write(res.content)
+        if type(local_file_path) is str:
+            with open(local_file_path, mode='wb') as f:
+                f.write(res.content)
+        else:
+            local_file_path.write(res.content)
 
     def getList(self, obj_ref, childList):
         response = self.get(self.server_url + obj_ref + '/' + childList)

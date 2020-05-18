@@ -18,11 +18,11 @@ from trafficgenerator.tgn_utils import ApiType
 
 
 # API type = tcl, or rest. The default is tcl with DEBUG log messages for best visibility.
-api = ApiType.tcl
+api = ApiType.rest
 api_server = '192.168.65.23'
 api_port = 443
 api_server = 'localhost'
-api_port = 8009
+api_port = 11009
 auth = ('admin', 'admin')
 log_level = logging.DEBUG
 
@@ -144,6 +144,7 @@ class IxnSamples():
         self.ixn.quick_test_stop('Test1')
         report_path = path.join(path.dirname(__file__), 'quick_test_report.pdf')
         self.ixn.root.quick_tests['Test1'].get_report(report_path)
+        print(report_path)
 
     def inventory(self):
 
