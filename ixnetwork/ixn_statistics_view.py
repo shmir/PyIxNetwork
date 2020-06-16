@@ -1,12 +1,16 @@
 """
-@author yoram@ignissoft.com
 """
+
+import time
 
 from collections import OrderedDict
 
 from trafficgenerator.tgn_utils import is_false, TgnError
+from trafficgenerator.tgn_tcl import tcl_list_2_py_list, tcl_str, py_list_to_tcl_list
 
+from ixnetwork.ixn_object import IxnObject
 from ixnetwork.api.ixn_rest import IxnRestWrapper
+from ixnetwork.api.ixn_tcl import IxnTclWrapper
 
 
 class IxnStatisticsView(object):
@@ -37,6 +41,8 @@ class IxnStatisticsView(object):
         self.captions = captions
         self.statistics = OrderedDict()
         for row in rows:
+            if type(self.ixn_view.api) == IxnTclWrapper:
+                row = tcl_list_2_py_list(row[1:-1])
             name = row.pop(name_caption_index)
             self.statistics[name] = row
 
@@ -95,7 +101,7 @@ class IxnStatisticsView(object):
     def _get_pages(self):
         page = self.ixn_view.get_child_static('page')
         if is_false(page.get_attribute('isReady')):
-            raise TgnError('"{}" not ready'.format(self.obj_type()))
+            raise TgnError('"{}" not ready'.format(page.obj))
         caption = page.get_list_attribute('columnCaptions')
         rows = []
         page.set_attributes(pageSize=50)
@@ -115,6 +121,12 @@ class IxnTrafficItemStatistics(IxnStatisticsView):
 
     def __init__(self, root):
         super(self.__class__, self).__init__(root, 'Traffic Item Statistics')
+
+
+class IxnUserDefinedStatistics(IxnStatisticsView):
+
+    def __init__(self, root):
+        super(self.__class__, self).__init__(root, 'User Defined Statistics')
 
 
 class IxnFlowStatistics(IxnStatisticsView):
@@ -143,7 +155,42 @@ class IxnFlowStatistics(IxnStatisticsView):
             self.statistics[name] = row
 
 
+class IxnDrillDownStatistics(IxnStatisticsView):
+
+    def __init__(self, root, type):
+        self.root = root
+        self.root.execute('removeAllTclViews')
+        self.root.api.commit()
+        statistics = self.root.get_child_static('statistics')
+        self.ixn_view = IxnObject(parent=statistics, objType='view')
+        self.ixn_view.set_attributes(caption='Yoram')
+        self.ixn_view.set_attributes(commit=True, type=type)
+        self.ixn_view._data['objRef'] = self.ixn_view.api.remapIds(self.ixn_view.ref)
+
+        availableTrafficItemFilter = self.ixn_view.get_children('availableTrafficItemFilter')
+
+        filter = self.ixn_view.get_child_static('layer23TrafficItemFilter')
+        filter.set_attributes(trafficItemFilterIds=py_list_to_tcl_list([r.ref for r in availableTrafficItemFilter]))
+        for statistic in self.ixn_view.get_children('statistic'):
+            statistic.set_attributes(enabled=True)
+        self.ixn_view.set_attributes(commit=True, visible=True, enabled=True)
+
+    def set_udf(self, option):
+        ti_stats = IxnTrafficItemStatistics(self.root)
+        dd = ti_stats.ixn_view.get_child_static('drillDown')
+        dd.set_attributes(commit=True, targetRowIndex=0)
+        dd.get_attribute('availableDrillDownOptions')
+        dd.set_attributes(commit=True, targetDrillDownOption=option)
+        dd.get_attribute('targetRowIndex')
+        dd.get_attribute('targetRow')
+        dd.get_attribute('targetDrillDownOption')
+        self.root.api.commit()
+        dd.execute('doDrillDown', tcl_str(dd.ref))
+        time.sleep(10)
+
+
 view_2_caption = {'Flow Statistics': None,
                   'Port Statistics': 'Port Name',
-                  'Traffic Item Statistics': 'Traffic Item'
+                  'Traffic Item Statistics': 'Traffic Item',
+                  'User Defined Statistics': 'IPv4 :Source Address',
                   }

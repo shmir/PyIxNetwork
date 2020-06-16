@@ -68,16 +68,16 @@ class IxnTclWrapper(TgnTclWrapper):
 
     def help(self, objRef):
         output = self.ixnCommand('help', objRef)
-        children = None
+        children_list = None
         if 'Child Lists:' in output:
             children = output.split('Child Lists:')[1].split('Attributes:')[0].split('Execs:')[0]
             children_list = [c.strip().split()[0] for c in children.strip().split('\n')]
-        attributes = None
+        attributes_list = None
         if 'Attributes:' in output:
             attributes = output.split('Attributes:')[1].split('Execs:')[0]
             attributes_list = [a.strip().split()[0][1:] for a in attributes.strip().split('\n')]
-        execs = None
-        if 'Execs:':
+        execs_list = None
+        if 'Execs:' in output:
             execs = output.split('Execs:')[1]
             execs_list = [e.strip().split()[0] for e in execs.strip().split('\n')]
         return children_list, attributes_list, execs_list

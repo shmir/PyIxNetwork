@@ -3,8 +3,6 @@ Stand alone samples for IXN package functionality.
 
 Setup:
 Two IXN ports connected back to back.
-
-@author yoram@ignissoft.com
 """
 
 import sys
@@ -13,27 +11,29 @@ import logging
 import time
 
 from ixnetwork.ixn_app import init_ixn
-from ixnetwork.ixn_statistics_view import IxnPortStatistics, IxnTrafficItemStatistics
+from ixnetwork.ixn_statistics_view import IxnPortStatistics, IxnTrafficItemStatistics, IxnDrillDownStatistics, IxnUserDefinedStatistics
 from trafficgenerator.tgn_utils import ApiType
 
 
 # API type = tcl, or rest. The default is tcl with DEBUG log messages for best visibility.
-api = ApiType.rest
+api = ApiType.tcl
 api_server = '192.168.65.23'
-api_port = 443
 api_server = 'localhost'
-api_port = 11009
+if api == ApiType.rest:
+    api_port = 11009 if api_server == 'localhost' else 443
+else:
+    api_port = 8009
 auth = ('admin', 'admin')
 log_level = logging.DEBUG
 
 install_dir = 'C:/Program Files (x86)/Ixia/IxNetwork/9.00.1915.16'
 
-port1_location = '192.168.65.22/1/1'
-port2_location = '192.168.65.22/1/2'
+port1_location = '192.168.65.88/1/1'
+port2_location = '192.168.65.88/1/2'
 
 license_server = ['192.168.42.61']
 
-ixn_config_file = path.join(path.dirname(__file__), 'rfc_2544.ixncfg')
+ixn_config_file = path.join(path.dirname(__file__), 'sample_ngpf.ixncfg')
 
 
 class IxnSamples():
@@ -134,6 +134,11 @@ class IxnSamples():
         print(port_stats.get_object_stats(list(self.ixn.root.ports.keys())[0]))
         print(port_stats.get_counters('Frames Tx.'))
         print(ti_stats.get_counter(list(self.ixn.root.traffic_items.keys())[0], 'Rx Frames'))
+        dd_stats = IxnDrillDownStatistics(self.ixn.root, 'layer23TrafficItem')
+        dd_stats.set_udf('Drill down per IPv4 :Source Address')
+        udf_stats = IxnUserDefinedStatistics(self.ixn.root)
+        udf_stats.read_stats()
+        print(udf_stats.statistics)
 
     def quick_test(self):
         self.reserve_ports()
@@ -145,6 +150,10 @@ class IxnSamples():
         report_path = path.join(path.dirname(__file__), 'quick_test_report.pdf')
         self.ixn.root.quick_tests['Test1'].get_report(report_path)
         print(report_path)
+
+    def dd_stats(self):
+        self.load_config()
+        self.dd_stats = IxnDrillDownStatistics(self.ixn.root, 'layer23TrafficItem')
 
     def inventory(self):
 
@@ -163,6 +172,6 @@ if __name__ == '__main__':
     ixn = IxnSamples()
     ixn.setUp()
     try:
-        ixn.quick_test()
+        ixn.traffic()
     finally:
         ixn.tearDown()

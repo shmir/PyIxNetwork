@@ -48,21 +48,23 @@ class IxnObject(TgnObject):
                 return IxnObject.str_2_class[obj_type]
         return IxnObject
 
-    def _create(self, **attributes):
+    def _create(self, **attributes) -> str:
         """ Create new object on IxNetwork.
 
         :return: IXN object reference.
         """
 
         if 'name' in self._data:
-            attributes['name'] = self.obj_name()
-        obj_ref = self.api.add(self.obj_parent(), self.obj_type(), **attributes)
+            attributes['name'] = self.name
+        obj_ref = self.api.add(self.parent, self.type, **attributes)
+        if 'view' in obj_ref:
+            return obj_ref
         self.api.commit()
         return self.api.remapIds(obj_ref)
 
     def get_attributes(self, *attributes):
         if not attributes:
-            return self.get_all_attributes(self.obj_ref())
+            return self.get_all_attributes()
         attributes_values = {}
         for attribute in attributes:
             attributes_values[attribute] = self.get_attribute(attribute)
@@ -103,7 +105,7 @@ class IxnObject(TgnObject):
 
         children_objs = OrderedDict()
         if not types:
-            types = self.get_all_child_types(self.obj_ref())
+            types = self.get_all_child_types()
         for child_type in types:
             children_list = self.api.getList(self.ref, child_type)
             children_objs.update(self._build_children_objs(child_type, children_list))
@@ -145,15 +147,15 @@ class IxnObject(TgnObject):
     def execute(self, command, *arguments):
         return self.api.execute(command, self.ref, True, *arguments)
 
-    def help(self, objRef):
-        return self.api.help(self.obj_ref())
+    def help(self):
+        return self.api.help(self.ref)
 
-    def get_all_attributes(self, objRef):
-        _, attributes, _ = self.help(objRef)
+    def get_all_attributes(self):
+        _, attributes, _ = self.help()
         return {a: self.get_attribute(a) for a in attributes}
 
-    def get_all_child_types(self, objRef):
-        children, _, _ = self.help(objRef)
+    def get_all_child_types(self):
+        children, _, _ = self.help()
         return children
 
     def get_objects_from_attribute(self, attribute):
