@@ -2,3 +2,7 @@
 
 pytest
 tox
+
+setuptools
+setuptools-scm
+wheel

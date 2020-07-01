@@ -20,7 +20,7 @@ from ixnetwork.ixn_root import IxnRoot
 from ixnetwork.ixn_port import IxnPort
 
 
-def init_ixn(api: ApiType, logger: Type[Logger], install_dir: Optional[str] = None) -> 'IxnApp':
+def init_ixn(api: ApiType, logger: Logger, install_dir: Optional[str] = None) -> 'IxnApp':
     """ Create IXN object.
 
     :param TgnApp api: tcl/rest
