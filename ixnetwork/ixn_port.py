@@ -1,22 +1,22 @@
 """
 Classes and utilities to manage IXN port (vport) objects.
-
-@author yoram@ignissoft.com
 """
 
 import time
-from typing import Optional
+from typing import Optional, Dict
 
 from trafficgenerator.tgn_utils import is_local_host
 from trafficgenerator.tgn_utils import TgnError
 
 from ixnetwork.ixn_object import IxnObject
+from ixnetwork.ixn_interface import IxnInterface
 
 
 class IxnPort(IxnObject):
 
     def __init__(self, **data):
         data['objType'] = 'vport'
+        data['parent'] = self.root
         super(self.__class__, self).__init__(**data)
 
     def reserve(self, location=None, force=False, wait_for_up=True, timeout=80):
@@ -89,16 +89,17 @@ class IxnPort(IxnObject):
 
         return self.get_attribute('state').lower() == 'up'
 
-    def get_interfaces(self):
+    def get_interfaces(self) -> Dict[str, IxnInterface]:
         """
         :return: dictionary {name: object} of all interfaces of the port.
         """
 
         return {o.obj_name(): o for o in self.get_objects_or_children_by_type('interface')}
+    interfaces = property(get_interfaces)
 
-    def send_arp_ns(self):
+    def send_arp_ns(self) -> None:
         self.api.execute('sendArp', None, False, self.ref)
         self.api.execute('sendNs', None, False, self.ref)
 
-    def send_rs(self):
+    def send_rs(self) -> None:
         self.api.execute('sendRs', None, False, self.ref)

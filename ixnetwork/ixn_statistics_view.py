@@ -13,13 +13,16 @@ from ixnetwork.api.ixn_rest import IxnRestWrapper
 from ixnetwork.api.ixn_tcl import IxnTclWrapper
 
 
-class IxnStatisticsView(object):
+class IxnStatisticsView:
     """ Base class for all statistics view.
 
     Note that Flow Statistics are poorly supported in this version as the object name spans over multiple column.
     """
 
     def __init__(self, root, name):
+        """
+        todo: remove root param and use IxnObject.root instead?
+        """
         self.root = root
         self.name_caption = view_2_caption.get(name, 'Port Name')
         statistics = self.root.get_child_static('statistics')
@@ -41,8 +44,8 @@ class IxnStatisticsView(object):
         self.captions = captions
         self.statistics = OrderedDict()
         for row in rows:
-            if type(self.ixn_view.api) == IxnTclWrapper:
-                row = tcl_list_2_py_list(row[1:-1])
+            # if type(self.ixn_view.api) == IxnTclWrapper:
+            #     row = tcl_list_2_py_list(row[1:-1])
             name = row.pop(name_caption_index)
             self.statistics[name] = row
 
@@ -101,7 +104,7 @@ class IxnStatisticsView(object):
     def _get_pages(self):
         page = self.ixn_view.get_child_static('page')
         if is_false(page.get_attribute('isReady')):
-            raise TgnError('"{}" not ready'.format(page.obj))
+            raise TgnError(f'"{page.obj}" not ready')
         caption = page.get_list_attribute('columnCaptions')
         rows = []
         page.set_attributes(pageSize=50)
@@ -114,25 +117,25 @@ class IxnStatisticsView(object):
 class IxnPortStatistics(IxnStatisticsView):
 
     def __init__(self, root):
-        super(self.__class__, self).__init__(root, 'Port Statistics')
+        super().__init__(root, 'Port Statistics')
 
 
 class IxnTrafficItemStatistics(IxnStatisticsView):
 
     def __init__(self, root):
-        super(self.__class__, self).__init__(root, 'Traffic Item Statistics')
+        super().__init__(root, 'Traffic Item Statistics')
 
 
 class IxnUserDefinedStatistics(IxnStatisticsView):
 
     def __init__(self, root):
-        super(self.__class__, self).__init__(root, 'User Defined Statistics')
+        super().__init__(root, 'User Defined Statistics')
 
 
 class IxnFlowStatistics(IxnStatisticsView):
 
     def __init__(self, root):
-        super(self.__class__, self).__init__(root, 'Flow Statistics')
+        super().__init__(root, 'Flow Statistics')
 
     def read_stats(self):
         """ Reads the statistics view from IXN and saves it in statistics dictionary.

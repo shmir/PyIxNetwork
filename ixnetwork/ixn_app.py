@@ -50,7 +50,7 @@ class IxnApp(TgnApp):
         super(self.__class__, self).__init__(logger, api_wrapper)
         IxnObject.str_2_class = TYPE_2_OBJECT
 
-        self.root = None
+        self.root: Optional[IxnRoot] = None
 
     def connect(self, api_server: str = 'localhost', api_port: Optional[int] = 11009,
                 auth: Optional[List[str]] = None) -> None:
@@ -60,6 +60,8 @@ class IxnApp(TgnApp):
         :param api_port: API server TCP port
         :param auth: list of (username, password)
         """
+        self.api_server = api_server
+        self.api_port = api_port
         self.api.connect(api_server, api_port, auth)
         self.root = IxnRoot(objRef=self.api.getRoot(), objType='root', parent=None)
         self.root.logger = self.logger

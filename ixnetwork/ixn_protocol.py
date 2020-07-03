@@ -1,12 +1,10 @@
 """
 Classes and utilities to manage IXN classical protocols objects.
-
-@author yoram@ignissoft.com
 """
 
 from collections import OrderedDict
 from itertools import chain
-from IPy import IP
+from ipaddress import ip_address
 
 from trafficgenerator.tgn_object import TgnL3
 
@@ -17,11 +15,10 @@ from trafficgenerator.tgn_utils import is_ipv4
 
 
 class IxnProtocol(IxnObject):
-    """ Base class for IXN classical protocol objects (e.g. OSPF router, IGMP Querier, MLD Host
-        etc.). """
+    """ Base class for IXN classical protocol objects (e.g. OSPF router, IGMP Querier, MLD Host, etc.). """
 
-    def __init__(self, **data):
-        super(IxnProtocol, self).__init__(**data)
+    def __init__(self, parent, **data):
+        super().__init__(parent, **data)
         self.ixn_ints = OrderedDict()
 
     @classmethod
@@ -39,8 +36,8 @@ class IxnProtocol(IxnObject):
 class IxnProtocolServer(IxnProtocol):
     """ Base class for IXN protocol server (e.g. IGMP Querier, MLD Host etc.). """
 
-    def __init__(self, **data):
-        super(IxnProtocolServer, self).__init__(**data)
+    def __init__(self, parent, **data):
+        super().__init__(parent, **data)
         for int_ref in self.get_attribute('interfaces').split(' '):
             self.ixn_ints[int_ref] = self.root.get_object_by_ref(int_ref)
 
@@ -69,12 +66,10 @@ class IxnProtocolRouter(IxnProtocol):
 class IxnBgpRouter(IxnProtocolServer):
     """ Represents IXN BGP router. """
 
-    def __init__(self, **data):
-        super(IxnBgpRouter, self).__init__(**data)
-        if IP(self.get_attribute('dutIpAddress')).version() == 4:
-            self.__class__ = IxnBgpRouterIpV4
-        else:
-            self.__class__ = IxnBgpRouterIpV6
+    def __init__(self, parent, **data):
+        super().__init__(parent, **data)
+        dutIpAddress = self.get_attribute('dutIpAddress')
+        self.__class__ = IxnBgpRouterIpV4 if ip_address(dutIpAddress).version == 4 else IxnBgpRouterIpV6
 
     def get_endpoints(self, l3=None, end=TrafficEnd.both):
         return self.get_objects_by_type('routeRange')

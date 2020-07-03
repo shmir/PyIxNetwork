@@ -11,7 +11,7 @@ from setuptools import setup, find_packages
 def main():
 
     with open('requirements.txt') as f:
-        install_requires = f.read().splitlines()
+        install_requires = [l for l in f.readlines() if not l.startswith('-') and not l.startswith('#')]
     with open('README.rst') as f:
         long_description = f.read()
 
@@ -38,7 +38,7 @@ def main():
         long_description=long_description,
         long_description_content_type='text/markdown',
 
-        keywords='ixnetwork l2l3 test tool ixia automation',
+        keywords='ixnetwork l2l3 ixload l4l7 test tool ixia automation',
 
         classifiers=[
             'Development Status :: 5 - Production/Stable',

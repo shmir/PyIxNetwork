@@ -1,15 +1,14 @@
 """
 Base classes and utilities to manage IxNetwork (IXN).
-
-:author: yoram@ignissoft.com
 """
 from __future__ import annotations
 import re
 from collections import OrderedDict
-from typing import Type
+from typing import Type, Optional
 
 from trafficgenerator.tgn_utils import is_true, TgnError
 from trafficgenerator.tgn_object import TgnObject
+import ixnetwork
 
 
 def extract_ixn_obj_type_from_obj_ref(obj_ref):
@@ -23,8 +22,9 @@ def extract_ixn_full_obj_type_from_obj_ref(obj_ref):
 class IxnObject(TgnObject):
     """ Base class for all IXN classes. """
 
-    # Class level variables
     str_2_class = {}
+
+    root: Optional[ixnetwork.IxnRoot] = None
 
     def get_obj_class(self, obj_type: str) -> Type[IxnObject]:
         """ Returns the object class based on parent and object types.
@@ -94,7 +94,7 @@ class IxnObject(TgnObject):
             list_attribute = [list_attribute,]
         return list_attribute
 
-    def get_children(self, *types):
+    def get_children(self, *types: str):
         """ Read (getList) children from IXN.
 
         Use this method to align with current IXN configuration.

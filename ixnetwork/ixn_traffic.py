@@ -23,7 +23,7 @@ class TrafficEnd(Enum):
 class IxnTrafficItem(IxnObject):
     """ Base class for all traffic items """
 
-    def __init__(self, **data):
+    def __init__(self, **data: str) -> None:
         """ Create new traffic item object in the API. """
         data['objType'] = 'trafficItem'
         data['parent'] = self.root.get_child_static('traffic')

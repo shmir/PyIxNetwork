@@ -1,58 +1,65 @@
-"""
-Base class for all IXN package tests.
+#
+# Auxiliary functions, no testing inside.
+#
 
-todo: move to conftest?
-"""
-
-from os import path
+from pathlib import Path
+import importlib.util
 import inspect
+from types import ModuleType
+from typing import List, Optional
 
-import pytest
-
-from trafficgenerator.tgn_utils import ApiType
-from ixnetwork.ixn_app import init_ixn
+from ixnetwork.ixn_app import IxnApp
 
 
-class TestIxnBase:
+def get_test_config(test_config_path: str) -> ModuleType:
+    """ Import tests configuration modeule from path.
 
-    server_ip = None
-    server_port = None
-    locations = None
-    auth = None
-    config_version = None
-    license_server = None
+    :param test_config_path: Full path to test configuration module.
+    """
+    spec = importlib.util.spec_from_file_location('test_config', test_config_path)
+    test_config = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(test_config)
+    return test_config
 
-    def setup(self):
 
-        if self.api == ApiType.tcl and self._is_linux_server():
-            pytest.skip('REST server do not support Tcl')
+def load_config(ixnetwork: IxnApp, config_name: str) -> None:
+    """ Load configuration file to IxNetwork.
 
-        self.ixn = init_ixn(self.api, self.logger, self.install_dir)
-        self.ixn.connect(self.server_ip, self.server_port, self.auth)
-        if self.api == ApiType.rest:
-            self.ixn.api.set_licensing(licensingServers=self.license_server)
+    :param ixnetwork: IxNetwork server.
+    :param config_name: path to ixncfg file name. Eitheir full path or shortcut (without ixncfg suffix) to config file
+        under tests/configs sub-directory.
+    """
+    config_file = Path(config_name)
+    if not config_file.exists():
+        config_file = Path(__file__).parent.joinpath(f'configs/{config_name}.ixncfg')
+    ixnetwork.new_config()
+    ixnetwork.load_config(config_file.as_posix())
+    ixnetwork.commit()
 
-    def teardown(self):
-        for port in self.ixn.root.get_objects_or_children_by_type('vport'):
-            port.release()
-        self.ixn.disconnect()
 
-    def test_hello_world(self, api):
-        pass
+def save_config(ixnetwork: IxnApp, config_file: Optional[str] = None) -> None:
+    """ Download and save configuration from IxNetwork.
 
-    #
-    # Auxiliary functions, no testing inside.
-    #
-
-    def _is_linux_server(self):
-        return self.server_port == 443
-
-    def _load_config(self, config_name):
-        config_file = path.join(path.dirname(__file__), 'configs/{}_{}.ixncfg'.format(config_name, self.config_version))
-        self.ixn.new_config()
-        self.ixn.load_config(config_file)
-        self.ixn.commit()
-
-    def _save_config(self):
+    :param ixnetwork: IxNetwork server.
+    :param config_file: Path to ixncfg file name. If empty configuration will be saved as
+        tests/configs/temp/{test_name}.ixncfg.
+    """
+    if not config_file:
         test_name = inspect.stack()[1][3]
-        self.ixn.save_config(path.join(path.dirname(__file__), 'configs/temp', test_name + '.ixncfg'))
+        config_file = Path(__file__).parent.joinpath(f'configs/temp/{test_name}.ixncfg').as_posix()
+    ixnetwork.save_config(Path(config_file))
+
+
+def reserve_ports(ixnetwork: IxnApp, locations: List[str], wait_for_up: bool = True) -> None:
+    """ Reserver ports.
+
+    :param ixnetwork: IxNetwork server.
+    :param locations: Ports locations as chassis/card/port.
+    :param wait_for_up: True - wait for ports to come up (timeout after 80 seconds), False - return immediately.
+    """
+    ports = ixnetwork.root.ports.values()
+    for port, location in list(zip(ports, locations)):
+        port.reserve(location, force=False, wait_for_up=False)
+    if wait_for_up:
+        for port in ports:
+            port.wait_for_up(80)
