@@ -1,3 +1,6 @@
+"""
+Pytest conftest for ixnetwork package testing.
+"""
 
 import sys
 import logging
@@ -9,9 +12,8 @@ from _pytest.config.argparsing import Parser
 from _pytest.python import Metafunc
 from _pytest.fixtures import SubRequest
 
-from trafficgenerator.tgn_utils import ApiType
+from trafficgenerator.tgn_utils import ApiType, get_test_config
 from ixnetwork.ixn_app import init_ixn, IxnApp
-from .test_base import get_test_config
 
 
 ixn_config = Path(__file__).parent.joinpath('test_config.py').as_posix()
@@ -33,7 +35,7 @@ def pytest_addoption(parser: Parser) -> None:
 
 
 def pytest_generate_tests(metafunc: Metafunc) -> None:
-    """ Generate tests for each API, server, and protocls from pytest options. """
+    """ Generate tests for each API and server from pytest options. """
     metafunc.parametrize('api', metafunc.config.getoption('--ixn-api'), indirect=True)
     metafunc.parametrize('server', metafunc.config.getoption('--ixn-server'), indirect=True)
 

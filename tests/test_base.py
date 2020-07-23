@@ -2,24 +2,11 @@
 # Auxiliary functions, no testing inside.
 #
 
-from pathlib import Path
-import importlib.util
 import inspect
-from types import ModuleType
+from pathlib import Path
 from typing import List, Optional
 
 from ixnetwork.ixn_app import IxnApp
-
-
-def get_test_config(test_config_path: str) -> ModuleType:
-    """ Import tests configuration modeule from path.
-
-    :param test_config_path: Full path to test configuration module.
-    """
-    spec = importlib.util.spec_from_file_location('test_config', test_config_path)
-    test_config = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(test_config)
-    return test_config
 
 
 def load_config(ixnetwork: IxnApp, config_name: str) -> None:

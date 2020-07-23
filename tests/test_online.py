@@ -98,7 +98,7 @@ def test_gui_traffic(ixnetwork: IxnApp, locations: List[str]) -> None:
     """
     logger.info(test_gui_traffic.__doc__)
 
-    load_config(ixnetwork, 'test_config_classic')
+    load_config(ixnetwork, 'test_config_ngpf')
     reserve_ports(ixnetwork, locations, wait_for_up=True)
     ixnetwork.protocols_start()
     time.sleep(4)
@@ -109,19 +109,19 @@ def test_gui_traffic(ixnetwork: IxnApp, locations: List[str]) -> None:
     time.sleep(8)
     ixnetwork.l23_traffic_stop()
     time.sleep(4)
-    port_stats = IxnPortStatistics(ixnetwork.root)
+    port_stats = IxnPortStatistics()
     port_stats.read_stats()
     print(json.dumps(port_stats.get_all_stats(), indent=1))
     print(json.dumps(port_stats.get_object_stats('Port 1'), indent=1))
     assert(int(port_stats.get_stat('Port 1', 'Frames Tx.')) >= 1200)
     ixnetwork.l23_traffic_start(blocking=True)
     time.sleep(4)
-    ti_stats = IxnTrafficItemStatistics(ixnetwork.root)
+    ti_stats = IxnTrafficItemStatistics()
     ti_stats.read_stats()
     print(json.dumps(ti_stats.get_all_stats(), indent=1))
     print(json.dumps(ti_stats.get_object_stats('Traffic Item 1'), indent=1))
     assert(int(ti_stats.get_object_stats('Traffic Item 1')['Tx Frames']) == 1600)
-    flow_stats = IxnFlowStatistics(ixnetwork.root)
+    flow_stats = IxnFlowStatistics()
     flow_stats.read_stats()
     assert(int(flow_stats.get_stat('Port 2/Port 1/Traffic Item 1', 'Tx Frames')) == 800)
 
@@ -140,3 +140,38 @@ def test_quick_test(ixnetwork: IxnApp, locations: List[str]) -> None:
     ixnetwork.quick_test_apply('QuickTest1')
     ixnetwork.quick_test_start('QuickTest1', blocking=True)
     ixnetwork.quick_test_stop('QuickTest1')
+
+
+def test_dd_stats(ixnetwork: IxnApp, locations: List[str]) -> None:
+    """ Test traffic operations equivalent to GUI operations.
+
+    Sometimes ARP fails on IxVM? To be sure, send automatic ARP (seems more stable)
+    """
+    logger.info(test_gui_traffic.__doc__)
+
+    load_config(ixnetwork, 'test_dd_ngpf')
+    reserve_ports(ixnetwork, locations, wait_for_up=True)
+    ixnetwork.protocols_start()
+    time.sleep(4)
+
+    ixnetwork.regenerate()
+    ixnetwork.traffic_apply()
+    # ixnetwork.l23_traffic_start()
+    # time.sleep(8)
+    # ixnetwork.l23_traffic_stop()
+    # time.sleep(4)
+    # port_stats = IxnPortStatistics()
+    # port_stats.read_stats()
+    # print(json.dumps(port_stats.get_all_stats(), indent=1))
+    # print(json.dumps(port_stats.get_object_stats('Port 1'), indent=1))
+    # assert(int(port_stats.get_stat('Port 1', 'Frames Tx.')) >= 1200)
+    # ixnetwork.l23_traffic_start(blocking=True)
+    # time.sleep(4)
+    # ti_stats = IxnTrafficItemStatistics()
+    # ti_stats.read_stats()
+    # print(json.dumps(ti_stats.get_all_stats(), indent=1))
+    # print(json.dumps(ti_stats.get_object_stats('Traffic Item 1'), indent=1))
+    # assert(int(ti_stats.get_object_stats('Traffic Item 1')['Tx Frames']) == 1600)
+    # flow_stats = IxnFlowStatistics()
+    # flow_stats.read_stats()
+    # assert(int(flow_stats.get_stat('Port 2/Port 1/Traffic Item 1', 'Tx Frames')) == 800)

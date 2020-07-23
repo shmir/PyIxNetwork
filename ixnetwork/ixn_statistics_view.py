@@ -1,16 +1,19 @@
-"""
-"""
 
 import time
-
 from collections import OrderedDict
+from typing import List, Dict
 
 from trafficgenerator.tgn_utils import is_false, TgnError
-from trafficgenerator.tgn_tcl import tcl_list_2_py_list, tcl_str, py_list_to_tcl_list
+from trafficgenerator.tgn_tcl import tcl_str, py_list_to_tcl_list
 
+from ixnetwork.ixn_app import IxnRoot
 from ixnetwork.ixn_object import IxnObject
 from ixnetwork.api.ixn_rest import IxnRestWrapper
-from ixnetwork.api.ixn_tcl import IxnTclWrapper
+
+
+def remove_all_tcl_views() -> None:
+    IxnRoot.root.execute('removeAllTclViews')
+    IxnRoot.root.api.commit()
 
 
 class IxnStatisticsView:
@@ -19,14 +22,13 @@ class IxnStatisticsView:
     Note that Flow Statistics are poorly supported in this version as the object name spans over multiple column.
     """
 
-    def __init__(self, root, name):
+    def __init__(self, name: str) -> None:
         """
-        todo: remove root param and use IxnObject.root instead?
+        :param name: Statistics view name.
         """
-        self.root = root
         self.name_caption = view_2_caption.get(name, 'Port Name')
-        statistics = self.root.get_child_static('statistics')
-        if type(self.root.api) is IxnRestWrapper:
+        statistics = IxnRoot.root.get_child_static('statistics')
+        if type(IxnRoot.root.api) is IxnRestWrapper:
             views = statistics.get_children('view')
             for view in views:
                 if view.get_attribute('caption') == name:
@@ -35,7 +37,13 @@ class IxnStatisticsView:
         else:
             self.ixn_view = statistics.get_child_static(f'view:"{name}"')
 
-    def read_stats(self):
+        self.captions = []
+        self.statistics = OrderedDict()
+
+    def __repr__(self) -> str:
+        return self.ixn_view
+
+    def read_stats(self) -> None:
         """ Reads the statistics view from IXN and saves it in statistics dictionary. """
 
         captions, rows = self._get_pages()
@@ -44,100 +52,94 @@ class IxnStatisticsView:
         self.captions = captions
         self.statistics = OrderedDict()
         for row in rows:
-            # if type(self.ixn_view.api) == IxnTclWrapper:
-            #     row = tcl_list_2_py_list(row[1:-1])
             name = row.pop(name_caption_index)
             self.statistics[name] = row
 
-    def get_all_stats(self):
-        """
-        :returns: all statistics values for all objects.
-        """
-
+    def get_all_stats(self) -> Dict[str, Dict[str, str]]:
+        """ Table of all statistics values for all objects. """
         all_stats = OrderedDict()
         for obj_name in self.statistics:
-            all_stats[obj_name] = dict(zip(self.captions, self.statistics[obj_name]))
+            all_stats[obj_name] = self.get_object_stats(obj_name)
         return all_stats
 
-    def get_object_stats(self, obj_name):
-        """
-        :param obj_name: requested object name
-        :returns: all statistics values for the requested object.
-        """
+    def get_object_stats(self, obj_name: str) -> Dict[str, str]:
+        """ Returns table of all statistics values for the requested object.
 
+        :param obj_name: requested object name
+        """
         return dict(zip(self.captions, self.statistics[obj_name]))
 
-    def get_stats(self, stat_name):
-        """
-        :param stat_name: requested statistics name.
-        :returns: all values of the requested statistic for all objects.
-        """
+    def get_stats(self, stat_name: str) -> List[str]:
+        """ Returns list of all values of the requested statistic for all objects.
 
+        :param stat_name: requested statistics name.
+        """
         return [self.get_stat(r, stat_name) for r in self.statistics.keys()]
 
-    def get_stat(self, obj_name, stat_name):
-        """
+    def get_stat(self, obj_name: str, stat_name: str) -> str:
+        """ Returns the value of the requested statics for the requested object.
+
         :param obj_name: requested object name.
         :param stat_name: requested statistics name.
-        :return: str, the value of the requested statics for the requested object.
         """
-
         return self.statistics[obj_name][self.captions.index(stat_name)]
 
-    def get_counters(self, counter_name):
-        """
-        :param stat_name: requested counter name.
-        :returns: ints, all values of the requested counter for all objects.
-        """
+    def get_counters(self, counter_name: str) -> List[int]:
+        """ Returns list of all int values of the requested counter for all objects.
 
+        :param counter_name: requested counter name.
+        """
         return [int(c) for c in self.get_stats(counter_name)]
 
-    def get_counter(self, obj_name, counter_name):
-        """
-        :param counter_name: requested counter name.
-        :param stat_name: requested statistics name.
-        :return: int, the value of the requested counter for the requested object.
-        """
+    def get_counter(self, obj_name: str, counter_name: str) -> int:
+        """ Returns the int value of the requested counter for the requested object.
 
+        :param obj_name: requested object name.
+        :param counter_name: requested counter name.
+        """
         return int(self.get_stat(obj_name, counter_name))
 
     def _get_pages(self):
         page = self.ixn_view.get_child_static('page')
         if is_false(page.get_attribute('isReady')):
             raise TgnError(f'"{page.obj}" not ready')
-        caption = page.get_list_attribute('columnCaptions')
+        captions = page.get_list_attribute('columnCaptions')
         rows = []
         page.set_attributes(pageSize=50)
         for page_num in range(1, int(page.get_attribute('totalPages')) + 1):
             page.set_attributes(commit=True, currentPage=page_num)
             rows += page.get_list_attribute('pageValues')
-        return caption, rows
+        return captions, rows
 
 
 class IxnPortStatistics(IxnStatisticsView):
+    """ Port statistics view. """
 
-    def __init__(self, root):
-        super().__init__(root, 'Port Statistics')
+    def __init__(self) -> None:
+        super().__init__('Port Statistics')
 
 
 class IxnTrafficItemStatistics(IxnStatisticsView):
+    """ Traffic items view. """
 
-    def __init__(self, root):
-        super().__init__(root, 'Traffic Item Statistics')
+    def __init__(self) -> None:
+        super().__init__('Traffic Item Statistics')
 
 
 class IxnUserDefinedStatistics(IxnStatisticsView):
+    """ User defined statistics view. """
 
-    def __init__(self, root):
-        super().__init__(root, 'User Defined Statistics')
+    def __init__(self) -> None:
+        super().__init__('User Defined Statistics')
 
 
 class IxnFlowStatistics(IxnStatisticsView):
+    """ Floe statistics view. """
 
-    def __init__(self, root):
-        super().__init__(root, 'Flow Statistics')
+    def __init__(self) -> None:
+        super().__init__('Flow Statistics')
 
-    def read_stats(self):
+    def read_stats(self) -> None:
         """ Reads the statistics view from IXN and saves it in statistics dictionary.
 
         Flow statistics require special implementation as the statistics name is dynamic and changes based on the
@@ -160,11 +162,8 @@ class IxnFlowStatistics(IxnStatisticsView):
 
 class IxnDrillDownStatistics(IxnStatisticsView):
 
-    def __init__(self, root, type):
-        self.root = root
-        self.root.execute('removeAllTclViews')
-        self.root.api.commit()
-        statistics = self.root.get_child_static('statistics')
+    def __init__(self, type):
+        statistics = IxnRoot.root.get_child_static('statistics')
         self.ixn_view = IxnObject(parent=statistics, objType='view')
         self.ixn_view.set_attributes(caption='Yoram')
         self.ixn_view.set_attributes(commit=True, type=type)
@@ -179,7 +178,7 @@ class IxnDrillDownStatistics(IxnStatisticsView):
         self.ixn_view.set_attributes(commit=True, visible=True, enabled=True)
 
     def set_udf(self, option):
-        ti_stats = IxnTrafficItemStatistics(self.root)
+        ti_stats = IxnTrafficItemStatistics()
         dd = ti_stats.ixn_view.get_child_static('drillDown')
         dd.set_attributes(commit=True, targetRowIndex=0)
         dd.get_attribute('availableDrillDownOptions')
@@ -187,9 +186,10 @@ class IxnDrillDownStatistics(IxnStatisticsView):
         dd.get_attribute('targetRowIndex')
         dd.get_attribute('targetRow')
         dd.get_attribute('targetDrillDownOption')
-        self.root.api.commit()
+        IxnRoot.root.api.commit()
         dd.execute('doDrillDown', tcl_str(dd.ref))
         time.sleep(10)
+
 
 
 view_2_caption = {'Flow Statistics': None,

@@ -17,7 +17,7 @@ def main():
 
     setup(
         name='pyixnetwork',
-        description='Python OO API package to automate Ixia IxNetwork traffic generator',
+        description='Python OO API package to manage Ixia IxNetwork traffic generator',
         url='https://github.com/shmir/PyIxNetwork/',
         use_scm_version={
             'root': '.',
@@ -38,7 +38,7 @@ def main():
         long_description=long_description,
         long_description_content_type='text/markdown',
 
-        keywords='ixnetwork l2l3 ixload l4l7 test tool ixia automation',
+        keywords='ixnetwork l2l3 ixload l4l7 test tool ixia automation api',
 
         classifiers=[
             'Development Status :: 5 - Production/Stable',

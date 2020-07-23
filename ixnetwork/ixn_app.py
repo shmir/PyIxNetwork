@@ -6,7 +6,6 @@ from os import path
 import time
 from collections import OrderedDict
 from logging import Logger
-
 from typing import Type, Optional, Union, Dict, List
 
 from trafficgenerator.tgn_utils import TgnError, is_true, ApiType

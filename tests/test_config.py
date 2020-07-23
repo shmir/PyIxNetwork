@@ -27,5 +27,5 @@ server_properties = {'linux_850': {'server': linux_850,
 license_servers = ['192.168.42.61']
 
 # Default for options.
-api = ['tcl', 'rest']
-server = ['windows_900', 'linux_900']
+api = ['tcl']
+server = ['windows_900']
