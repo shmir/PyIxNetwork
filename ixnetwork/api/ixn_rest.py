@@ -75,28 +75,35 @@ class IxnRestWrapper:
     #
 
     def waitForComplete(self, request, response, timeout=128):
-        if 'errors' in response.json():
-            raise TgnError(response.json()['errors'][0])
-        if response.json()['state'].lower() == 'error':
-            result = json.loads(response.content)['result'].strip()
-            raise TgnError(f'wait for post {response.url} failed - {result}')
-        if response.json()['state'].lower() == 'success':
-            return response
         progress_url = json.loads(response.content)[u'url']
+
         if 'http' not in progress_url:
             # sometimes the progress url is relative, for example in version 8.50 linux loadconfig
             progress_url = self.server_url + progress_url
+
         for _ in range(timeout):
-            response = self.get(progress_url)
-            if type(response.json()) == dict:
-                state = response.json()['state']
-            else:
-                state = response.json()[0]['state']
-            if state.lower() not in ['in_progress', 'down']:
+            response_data = response.json()
+            if type(response_data) is not dict:
+                response_data = response_data[0]
+
+            if 'errors' in response_data:
+                raise TgnError(response_data['errors'][0])
+
+            state = response_data.get('state', 'unknown').lower()
+
+            if state == 'error':
+                result = json.loads(response.content)['result'].strip()
+                raise TgnError(f'wait for post {response.url} failed - {result}')
+            elif state == 'success':
                 return response
+            elif state not in ['unknown', 'in_progress', 'down']:
+                return response
+
+            response = self.get(progress_url)
             time.sleep(1)
+
         raise TgnError('{} operation failed, state is {} after {} seconds'.
-                       format(self.session, response.json()['state'], timeout))
+                       format(self.session, state, timeout))
 
     def request(self, command, url, headers={'content-type': 'application/json'}, data=None, **kwargs):
         if self.api_key:
