@@ -3,7 +3,7 @@ Classes and utilities to manage IXN port (vport) objects.
 """
 
 import time
-from typing import Optional, Dict
+from typing import Optional, Dict, Callable
 
 from trafficgenerator.tgn_utils import is_local_host
 from trafficgenerator.tgn_utils import TgnError
@@ -51,34 +51,47 @@ class IxnPort(IxnObject):
             self.wait_for_up(timeout)
 
     def release(self):
-        if self.get_attribute('connectedTo') != self.api.null:
+        def _release_if_connected():
+            if self.get_attribute('connectedTo') == self.api.null:
+                return
             self.set_attributes(commit=True, connectedTo=self.api.null)
-        self.execute('releasePort', [self.ref])
-        self.wait_for_states(4, 'unassigned')
+            self.execute('releasePort', [self.ref])
 
-    def wait_for_up(self, timeout=40):
+        self.wait_for_states(40, 'unassigned', wait_callback=_release_if_connected)
+
+    def wait_for_up(self, timeout: Optional[int] = 40):
         """ Wait until port is up and running, including all parameters (admin state, oper state, license etc.).
 
         :param timeout: max time to wait for port up.
         """
         self.wait_for_states(timeout, 'up')
 
-    def wait_for_states(self, timeout: Optional[int] = 40, *states):
+    def wait_for_states(self, timeout: Optional[int] = 40, *states, wait_callback: Optional[Callable] = type(None)):
         """ Wait until port reaches one of the requested states.
 
         :param timeout: max time to wait for requested port states.
+        :param states: list of states to wait for.
+        :param wait_callback: callback to invoke at the start of each wait cycle.
         """
-
-        state = self.get_attribute('state')
-        for _ in range(timeout):
+        for n in range(1, timeout+1):
+            wait_callback()
+            state = self.get_attribute('state')
             if state in states:
                 return
+            if n == timeout:
+                break
             time.sleep(1)
-            state = self.get_attribute('state')
         stateDetail = self.get_attribute('stateDetail')
-        connectionState = self.get_attribute('connectionState')
+
+        try:
+            connectionStateField = 'connectionState'
+            connectionState = self.get_attribute('connectionState')
+        except TgnError: # older API server does not provide connectionState
+            connectionStateField = 'connectionStatus'
+            connectionState = self.get_attribute('connectionStatus')
+
         raise TgnError(f'Failed to reach states {states}, port state is {state} after {timeout} seconds\n'
-                       f'stateDetail is {stateDetail} connectionState is {connectionState}, ')
+                       f'stateDetail is {stateDetail} {connectionStateField} is {connectionState}, ')
 
     def is_online(self):
         """
