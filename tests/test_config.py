@@ -7,7 +7,7 @@ linux_900 = '192.168.65.23:443'
 
 windows_900 = 'localhost:11009'
 
-cm_900 = '192.168.42.199:443'
+cm_900 = '172.40.0.238:443'
 
 server_properties = {'linux_850': {'server': linux_850,
                                    'locations': [f'{chassis_850}/1/1', f'{chassis_850}/1/2'],
@@ -27,5 +27,5 @@ server_properties = {'linux_850': {'server': linux_850,
 license_servers = ['192.168.42.61']
 
 # Default for options.
-api = ['tcl']
-server = ['windows_900']
+api = ['rest']
+server = ['cm_900']
