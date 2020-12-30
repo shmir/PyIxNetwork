@@ -38,7 +38,7 @@ def ixnetwork(request: SubRequest, logger: logging.Logger, api: ApiType, server_
     auth = server_properties.get('auth', None)
     ixnetwork.connect(server_ip, server_port, auth)
     if api == ApiType.rest:
-        license_servers = get_test_config(request.config.getoption('--ixn-config')).license_servers
+        license_servers = get_test_config(request.config.getoption('--tgn-config')).license_servers
         ixnetwork.api.set_licensing(licensingServers=license_servers)
 
     yield ixnetwork

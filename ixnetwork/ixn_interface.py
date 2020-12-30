@@ -24,11 +24,11 @@ def filter_ints_based_on_vlan(interfaces, vlan, count=1):
 
     filtered_interfaces = []
     for interface in interfaces:
-        if interface.obj_type() == 'interface':
+        if interface.type == 'interface':
             ixn_vlan = interface.get_object_by_type('vlan')
             vlanEnable = is_true(ixn_vlan.get_attribute('vlanEnable'))
             vlanCount = int(ixn_vlan.get_attribute('vlanCount'))
-        elif interface.obj_type() == 'range':
+        elif interface.type == 'range':
             ixn_vlan = interface.get_object_by_type('vlanRange')
             vlanEnable = is_true(ixn_vlan.get_attribute('enabled'))
             vlanCount = len(ixn_vlan.get_objects_by_type('vlanIdInfo'))

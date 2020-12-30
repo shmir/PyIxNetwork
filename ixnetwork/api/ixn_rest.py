@@ -35,23 +35,26 @@ class IxnRestWrapper:
 
     def connect(self, ip, port, auth=None):
         if port == 443:
-            url = 'https://{}:{}/api/v1/auth/session'.format(ip, port)
+            url = f'https://{ip}:{port}/api/v1/auth/session'
             if auth:
                 data = {'username': auth[0], 'password': auth[1]}
             else:
                 data = None
             headers = {'content-type': 'application/json'}
             response = requests.request('POST', url, json=data, headers=headers, verify=False)
-            self.api_key = json.loads(response.text)['apiKey']
+            response_text = json.loads(response.text)
+            if response_text.get('error'):
+                raise TgnError(f'Failed to connect to IxNetwork server {ip}:{port} - {response_text.get("error")}')
+            self.api_key = response_text['apiKey']
             self.payload = {'applicationType': 'ixnrest'}
             self.headers = {'content-type': 'application/json'}
 
         # Perform get to determine whether http is supported or we should use https.
         try:
-            self.server_url = 'https://{}:{}'.format(ip, port)
+            self.server_url = f'https://{ip}:{port}'
             self.get(self.server_url + '/api/v1/sessions', timeout=4)
-        except Exception as e:
-            self.server_url = 'http://{}:{}'.format(ip, port)
+        except Exception as _:
+            self.server_url = f'http://{ip}:{port}'
 
         response = self.post(self.server_url + '/api/v1/sessions', data={'applicationType': 'ixnrest'})
         if 'id' in response.json():

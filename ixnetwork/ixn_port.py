@@ -16,8 +16,8 @@ class IxnPort(IxnObject):
 
     def __init__(self, **data):
         data['objType'] = 'vport'
-        data['parent'] = self.root
-        super(self.__class__, self).__init__(**data)
+        data.pop('parent', None)
+        super().__init__(parent=self.root, **data)
 
     def reserve(self, location=None, force=False, wait_for_up=True, timeout=80):
         """ Reserve port and optionally wait for port to come up.
@@ -60,7 +60,7 @@ class IxnPort(IxnObject):
         self.wait_for_states(40, 'unassigned', wait_callback=_release_if_connected)
 
     def wait_for_up(self, timeout: Optional[int] = 40):
-        """ Wait until port is up and running, including all parameters (admin state, oper state, license etc.).
+        """ Wait until port is up and running, including all parameters (admin state, operating state, license etc.).
 
         :param timeout: max time to wait for port up.
         """
@@ -73,6 +73,7 @@ class IxnPort(IxnObject):
         :param states: list of states to wait for.
         :param wait_callback: callback to invoke at the start of each wait cycle.
         """
+        state = None
         for n in range(1, timeout+1):
             wait_callback()
             state = self.get_attribute('state')
@@ -81,32 +82,27 @@ class IxnPort(IxnObject):
             if n == timeout:
                 break
             time.sleep(1)
-        stateDetail = self.get_attribute('stateDetail')
+        state_detail = self.get_attribute('stateDetail')
 
         try:
-            connectionStateField = 'connectionState'
-            connectionState = self.get_attribute('connectionState')
-        except TgnError: # older API server does not provide connectionState
-            connectionStateField = 'connectionStatus'
-            connectionState = self.get_attribute('connectionStatus')
+            connection_state_field = 'connectionState'
+            connection_state = self.get_attribute(connection_state_field)
+        except TgnError:
+            # older API server does not provide connectionState
+            connection_state_field = 'connectionStatus'
+            connection_state = self.get_attribute(connection_state_field)
 
         raise TgnError(f'Failed to reach states {states}, port state is {state} after {timeout} seconds\n'
-                       f'stateDetail is {stateDetail} {connectionStateField} is {connectionState}, ')
+                       f'stateDetail is {state_detail} {connection_state_field} is {connection_state}, ')
 
-    def is_online(self):
-        """
-        :returns: Port link status.
-                  True - port is up.
-                  False - port is offline.
-        """
-
+    def is_online(self) -> bool:
+        """ Returns True if port state is up, else returns False. """
         return self.get_attribute('state').lower() == 'up'
 
     def get_interfaces(self) -> Dict[str, IxnInterface]:
         """
         :return: dictionary {name: object} of all interfaces of the port.
         """
-
         return {o.obj_name(): o for o in self.get_objects_or_children_by_type('interface')}
     interfaces = property(get_interfaces)
 

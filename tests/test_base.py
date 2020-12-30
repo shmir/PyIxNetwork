@@ -13,7 +13,7 @@ def load_config(ixnetwork: IxnApp, config_name: str) -> None:
     """ Load configuration file to IxNetwork.
 
     :param ixnetwork: IxNetwork server.
-    :param config_name: path to ixncfg file name. Eitheir full path or shortcut (without ixncfg suffix) to config file
+    :param config_name: path to ixncfg file name. Either full path or shortcut (without ixncfg suffix) to config file
         under tests/configs sub-directory.
     """
     config_file = Path(config_name)
@@ -38,7 +38,7 @@ def save_config(ixnetwork: IxnApp, config_file: Optional[str] = None) -> None:
 
 
 def reserve_ports(ixnetwork: IxnApp, locations: List[str], wait_for_up: bool = True) -> None:
-    """ Reserver ports.
+    """ Reserve ports.
 
     :param ixnetwork: IxNetwork server.
     :param locations: Ports locations as chassis/card/port.
