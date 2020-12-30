@@ -3,6 +3,7 @@
 """
 
 from os import path
+from typing import Optional
 import requests
 import time
 import re
@@ -16,6 +17,8 @@ from trafficgenerator.tgn_utils import TgnError
 
 requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
 
+Response = requests.models.Response
+
 
 class IxnRestWrapper:
 
@@ -24,7 +27,7 @@ class IxnRestWrapper:
     def __init__(self, logger):
         """ Init IXN REST package.
 
-        :param looger: application logger, if stream handler and log level is DEBUG -> enable IXN Python debug.
+        :param logger: application logger, if stream handler and log level is DEBUG -> enable IXN Python debug.
         """
 
         self.logger = logger
@@ -74,29 +77,37 @@ class IxnRestWrapper:
     # IxNetwork REST commands
     #
 
-    def waitForComplete(self, request, response, timeout=128):
-        if 'errors' in response.json():
-            raise TgnError(response.json()['errors'][0])
-        if response.json()['state'].lower() == 'error':
-            result = json.loads(response.content)['result'].strip()
-            raise TgnError(f'wait for post {response.url} failed - {result}')
-        if response.json()['state'].lower() == 'success':
-            return response
-        progress_url = json.loads(response.content)[u'url']
+    def wait_for_complete(self, response: Response, timeout: Optional[int] = 128) -> Response:
+        """ Wait for non-blocking REST operation to complete """
+
+        response_data = response.json()
+        progress_url = response_data['url']
+
         if 'http' not in progress_url:
             # sometimes the progress url is relative, for example in version 8.50 linux loadconfig
             progress_url = self.server_url + progress_url
+
         for _ in range(timeout):
-            response = self.get(progress_url)
-            if type(response.json()) == dict:
-                state = response.json()['state']
-            else:
-                state = response.json()[0]['state']
-            if state.lower() not in ['in_progress', 'down']:
-                return response
             time.sleep(1)
-        raise TgnError('{} operation failed, state is {} after {} seconds'.
-                       format(self.session, response.json()['state'], timeout))
+
+            if 'errors' in response_data:
+                raise TgnError(response_data['errors'][0])
+
+            state = response_data.get('state', '').lower()
+
+            if state == 'error':
+                result = json.loads(response.content)['result'].strip()
+                raise TgnError(f'wait for post {response.url} failed - {result}')
+            elif state == 'success':
+                return response
+
+            response = self.get(progress_url)
+            response_data = response.json()
+
+            if type(response_data) is not dict:
+                response_data = response_data[0]
+
+        raise TgnError(f'{self.session} operation failed, state is {state} after {timeout} seconds')
 
     def request(self, command, url, headers={'content-type': 'application/json'}, data=None, **kwargs):
         if self.api_key:
@@ -133,7 +144,7 @@ class IxnRestWrapper:
     def post(self, url, data={}):
         response = self.request(requests.post, url, data=data)
         if response.status_code != 201 and 'id' in response.json():
-            return self.waitForComplete(url, response)
+            return self.wait_for_complete(response)
         return response
 
     def options(self, url):
@@ -192,7 +203,7 @@ class IxnRestWrapper:
         response = self.request(requests.post, upload_url, data=configContent, headers=upload_headers,
                                 params=upload_params)
         if 'id' in response.json():
-            self.waitForComplete(upload_url, response)
+            self.wait_for_complete(response)
 
         load_config_data = {'arg1': basename}
         load_config_url = self.root_url + 'ixnetwork/operations/loadconfig'
