@@ -50,9 +50,9 @@ class IxnProtocolRouter(IxnProtocol):
 
     interface_attribute = 'interfaces'
 
-    def __init__(self, **data):
+    def __init__(self, parent, **data):
         data['objType'] = self.objType
-        super(IxnProtocolRouter, self).__init__(**data)
+        super().__init__(parent, **data)
         for ixn_router_int in self.get_children('interface'):
             int_ref = ixn_router_int.get_attribute(self.interface_attribute)
             self.ixn_ints[ixn_router_int] = self.root.get_object_by_ref(int_ref)
@@ -124,6 +124,9 @@ class IxnLdpRouter(IxnProtocolRouter):
 
     objType = 'router'
     interface_attribute = 'protocolInterface'
+
+    def get_endpoints(self, l3=None, end=TrafficEnd.both):
+        return self.get_objects_by_type('advFecRange')
 
 
 class IxnRouteRange(IxnObject, TgnL3):
@@ -203,6 +206,13 @@ class IxnIgmpHost(IxnProtocolServer):
 class IxnIgmpQuerier(IxnProtocolServer):
     """ Represents IXN IGMP querier. """
     pass
+
+
+class IxnMldHost(IxnProtocolServer):
+    """ Represents IXN IGMP host. """
+
+    def get_endpoints(self, l3=None, end=TrafficEnd.both):
+        return self.get_objects_by_type('groupRange')
 
 
 class IxnStpBridge(IxnProtocolRouter):

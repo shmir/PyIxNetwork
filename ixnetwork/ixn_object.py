@@ -127,9 +127,9 @@ class IxnObject(TgnObject):
         return child_obj if child_obj else child_obj_type(parent=self, objType=objType, objRef=child_obj_ref)
 
     def get_name(self):
-        name = self.api.getAttribute(self.obj_ref(), 'name')
+        name = self.api.getAttribute(self.ref, 'name')
         if name == '::ixNet::OK':
-            name = self.obj_parent().obj_name() + self.obj_ref()[len(self.obj_parent().obj_ref()):]
+            name = self.ref
         return name
 
     def get_enabled(self):

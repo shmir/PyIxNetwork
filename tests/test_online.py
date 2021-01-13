@@ -140,6 +140,7 @@ def test_quick_test(ixnetwork: IxnApp, locations: List[str]) -> None:
     ixnetwork.quick_test_apply('QuickTest1')
     ixnetwork.quick_test_start('QuickTest1', blocking=True)
     ixnetwork.quick_test_stop('QuickTest1')
+    ixnetwork.root.quick_tests['QuickTest1'].get_report('quick_test_report.pdf')
 
 
 def test_dd_stats(ixnetwork: IxnApp, locations: List[str]) -> None:

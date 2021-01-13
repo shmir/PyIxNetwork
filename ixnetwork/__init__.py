@@ -1,16 +1,17 @@
 
+from .ixn_hw import IxnHw, IxnChassis, IxnCard, IxnPhyPort
+from .ixn_interface import IxnInterface, IxnInterfaceL3
+from .ixn_object import IxnObject
 from .ixn_port import IxnPort
-from .ixn_traffic import IxnTrafficItem
-from .ixn_protocol import (IxnBgpRouter, IxnOspfRouter, IxnOspfV3Router, IxnBgpRouteRange, IxnOspfRouteRange,
+from .ixn_protocol import (IxnProtocol, IxnBgpRouter, IxnOspfRouter, IxnOspfV3Router, IxnBgpRouteRange, IxnOspfRouteRange,
                            IxnPimsmRouter, IxnIgmpHost, IxnIgmpQuerier, IxnPimsmSource, IxnStpBridge, IxnOpenFlowDevice,
                            IxnLacp, IxnIsisRouter, IxnIsisRouteRange, IxnLdpRouter, IxnLdpRouteRange,
-                           IxnRsvpNeighborPair, IxnStaticIp, IxnBfdfRouter, IxnOspfv3RouteRange)
-from .ixn_interface import IxnInterface, IxnInterfaceL3
+                           IxnRsvpNeighborPair, IxnStaticIp, IxnBfdfRouter, IxnOspfv3RouteRange, IxnMldHost)
+from .ixn_protocol_stack import IxnRange
+from .ixn_root import IxnRoot, IxnQuickTest
 from .ixn_topology import (IxnTopology, IxnNgpfEthernet, IxnNgpfVlan, IxnNgpfIpv4, IxnNgpfIpv6, IxnDeviceGroup,
                            IxnNetworkGroup)
-from .ixn_root import IxnRoot, IxnQuickTest
-from .ixn_protocol_stack import IxnRange
-from .ixn_hw import IxnHw, IxnChassis, IxnCard, IxnPhyPort
+from .ixn_traffic import IxnTrafficItem
 
 
 TYPE_2_OBJECT = {'availableHardware': IxnHw,
@@ -20,7 +21,8 @@ TYPE_2_OBJECT = {'availableHardware': IxnHw,
                  'device': IxnOpenFlowDevice,
                  'deviceGroup': IxnDeviceGroup,
                  'ethernet': IxnNgpfEthernet,
-                 'host': IxnIgmpHost,
+                 'host': {'igmp': IxnIgmpHost,
+                          'mld': IxnMldHost},
                  'interface': {'vport': IxnInterface},
                  'ip': IxnStaticIp,
                  'ipv4': {'interface': IxnInterfaceL3,

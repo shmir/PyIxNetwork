@@ -48,9 +48,8 @@ class IxnInterface(IxnObject):
 
         :param parent: parent interface object.
         """
-
         data['objType'] = 'interface'
-        super(IxnInterface, self).__init__(**data)
+        super().__init__(**data)
 
     def _create(self, **attributes):
         """ Create new interface on IxNetwork.
