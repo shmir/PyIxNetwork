@@ -3,7 +3,7 @@ chassis_900 = '192.168.65.36'
 chassis_910 = '192.168.65.21'
 
 linux_900 = '192.168.65.34:443'
-linux_910 = '192.168.65.38:443'
+linux_910 = '192.168.65.23:443'
 
 windows_900 = 'localhost:11009'
 windows_910 = 'localhost:11009'
@@ -32,5 +32,5 @@ server_properties = {'linux_900': {'server': linux_900,
 license_servers = ['192.168.42.61']
 
 # Default for options.
-api = ['tcl']
-server = ['windows_910']
+api = ['rest']
+server = ['linux_910']
