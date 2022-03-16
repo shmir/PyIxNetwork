@@ -43,7 +43,7 @@ class IxnTclWrapper(TgnTclWrapper):
         buildNumber = self.getAttribute(self.getRoot() + '/globals', 'buildNumber')
         major_server_version = re.findall(r'^[\d]+.[\d]+', buildNumber)[0]
         if major_client_version != major_server_version:
-            raise TgnError('Client version {} != Server version {}'.format(major_client_version, major_server_version))
+            raise TgnError(f'Client version {major_client_version} != Server version {major_server_version}')
         return client_version
 
     def disconnect(self):

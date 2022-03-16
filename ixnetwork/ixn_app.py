@@ -1,11 +1,11 @@
 """
 Classes and utilities to manage IXN application.
 """
-
 from os import path
 import time
 from collections import OrderedDict
 from logging import Logger
+from pathlib import Path
 from typing import Type, Optional, Union, Dict, List
 
 from trafficgenerator.tgn_utils import TgnError, is_true, ApiType
@@ -46,7 +46,7 @@ class IxnApp(TgnApp):
         :param logger: python logger (e.g. logging.getLogger('log'))
         :param api_wrapper: api wrapper object inheriting
         """
-        super(self.__class__, self).__init__(logger, api_wrapper)
+        super().__init__(logger, api_wrapper)
         IxnObject.str_2_class = TYPE_2_OBJECT
 
         self.root: Optional[IxnRoot] = None
@@ -82,15 +82,15 @@ class IxnApp(TgnApp):
         """ Perform ixNet commit command, NA (pass) for rest API. """
         self.api.commit()
 
-    def load_config(self, config_file_name: str) -> None:
+    def load_config(self, config_file_name: Path) -> None:
         """ Load ixncgf configuration file.
 
-        :param config_file_name: full path to ixncfg configuration file
+        :param config_file_name: Full path to ixncfg configuration file.
         """
         self.root.objects = OrderedDict()
-        prefs = self.root.get_child_static('globals').get_child_static('preferences')
-        prefs.set_attributes(connectPortsOnLoadConfig=False)
-        self.api.loadConfig(config_file_name.replace('\\', '/'))
+        preferences = self.root.get_child_static('globals').get_child_static('preferences')
+        preferences.set_attributes(connectPortsOnLoadConfig=False)
+        self.api.loadConfig(config_file_name.resolve().as_posix())
         self.commit()
         self.root.get_children('vport')
         self.root.hw = self.root.get_child_static('availableHardware')
