@@ -15,6 +15,8 @@ install:
 .PHONY: build
 build:
 	rm -rf dist/*
+	rm -rf *.egg-info
+	rm -rf build
 	python setup.py bdist_wheel
 
 upload:

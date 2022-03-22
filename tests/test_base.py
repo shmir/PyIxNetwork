@@ -1,7 +1,6 @@
-#
-# Auxiliary functions, no testing inside.
-#
-
+"""
+Auxiliary functions, no testing inside.
+"""
 import inspect
 from pathlib import Path
 from typing import List, Optional
@@ -10,7 +9,7 @@ from ixnetwork.ixn_app import IxnApp
 
 
 def load_config(ixnetwork: IxnApp, config_name: str) -> None:
-    """ Load configuration file to IxNetwork.
+    """Load configuration file to IxNetwork.
 
     :param ixnetwork: IxNetwork server.
     :param config_name: path to ixncfg file name. Either full path or shortcut (without ixncfg suffix) to config file
@@ -18,14 +17,14 @@ def load_config(ixnetwork: IxnApp, config_name: str) -> None:
     """
     config_file = Path(config_name)
     if not config_file.exists():
-        config_file = Path(__file__).parent.joinpath(f'configs/{config_name}.ixncfg')
+        config_file = Path(__file__).parent.joinpath(f"configs/{config_name}.ixncfg")
     ixnetwork.new_config()
-    ixnetwork.load_config(config_file.as_posix())
+    ixnetwork.load_config(config_file)
     ixnetwork.commit()
 
 
 def save_config(ixnetwork: IxnApp, config_file: Optional[str] = None) -> None:
-    """ Download and save configuration from IxNetwork.
+    """Download and save configuration from IxNetwork.
 
     :param ixnetwork: IxNetwork server.
     :param config_file: Path to ixncfg file name. If empty configuration will be saved as
@@ -33,12 +32,12 @@ def save_config(ixnetwork: IxnApp, config_file: Optional[str] = None) -> None:
     """
     if not config_file:
         test_name = inspect.stack()[1][3]
-        config_file = Path(__file__).parent.joinpath(f'configs/temp/{test_name}.ixncfg').as_posix()
+        config_file = Path(__file__).parent.joinpath(f"configs/temp/{test_name}.ixncfg").as_posix()
     ixnetwork.save_config(Path(config_file))
 
 
 def reserve_ports(ixnetwork: IxnApp, locations: List[str], wait_for_up: bool = True) -> None:
-    """ Reserve ports.
+    """Reserve ports.
 
     :param ixnetwork: IxNetwork server.
     :param locations: Ports locations as chassis/card/port.

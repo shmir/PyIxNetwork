@@ -1,9 +1,15 @@
 -r requirements.txt
 
 # Testing
-pytest<5.4
+pytest
 pytest-cov
 tox
+
+# Pipeline
+pre-commit
+black[d]
+pylint
+pylint_pytest
 
 # Packaging
 setuptools
@@ -12,6 +18,5 @@ wheel
 twine
 
 # Documentation
-sphinx
-sphinx_rtd_theme
-pygments
+mkdocs
+mkdocs-material
