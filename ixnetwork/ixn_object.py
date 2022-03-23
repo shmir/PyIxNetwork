@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import re
 from collections import OrderedDict
-from typing import Optional, Type
+from typing import List, Optional, Type
 
 from trafficgenerator.tgn_object import TgnObject
 from trafficgenerator.tgn_utils import TgnError, is_true
@@ -86,9 +86,10 @@ class IxnObject(TgnObject):
             raise ValueError(self.ref + " does not have attribute " + attribute)
         return str(value)
 
-    def get_list_attribute(self, attribute):
-        """
-        :return: attribute value as Python list.
+    def get_list_attribute(self, attribute: str) -> list:
+        """Returns attribute value as Python list.
+
+        :param attribute: Requested attribute.
         """
         list_attribute = self.api.getListAttribute(self.ref, attribute)
         # IXN returns '::ixNet::OK' for invalid attributes. We want error.
@@ -100,7 +101,7 @@ class IxnObject(TgnObject):
             ]
         return list_attribute
 
-    def get_children(self, *types: str):
+    def get_children(self, *types: str) -> List[IxnObject]:
         """Read (getList) children from IXN.
 
         Use this method to align with current IXN configuration.
@@ -131,22 +132,23 @@ class IxnObject(TgnObject):
         child_obj_type = self.get_obj_class(objType)
         return child_obj if child_obj else child_obj_type(parent=self, objType=objType, objRef=child_obj_ref)
 
-    def get_name(self):
+    def get_name(self) -> str:
+        """Get object name. If object has no name return object reference."""
         name = self.api.getAttribute(self.ref, "name")
         if name == IXNETWORK_OK:
             name = self.ref
         return name
 
-    def get_enabled(self):
+    def get_enabled(self) -> bool:
         enabled = self.get_attribute("enabled")
         return is_true(enabled) if enabled != IXNETWORK_OK else True
 
-    def set_attributes(self, commit=False, **attributes):
+    def set_attributes(self, commit=False, **attributes) -> None:
         self.api.setAttributes(self.ref, **attributes)
         if commit:
             self.api.commit()
 
-    def set_enabled(self, enabled):
+    def set_enabled(self, enabled: bool) -> None:
         self.set_attributes(enabled=enabled)
 
     def execute(self, command, *arguments):

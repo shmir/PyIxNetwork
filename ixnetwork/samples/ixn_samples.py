@@ -155,10 +155,6 @@ class IxnSamples:
         self.ixn.root.quick_tests["Test1"].get_report(report_path)
         print(report_path)
 
-    def dd_stats(self) -> None:
-        self.load_config()
-        self.dd_stats = IxnDrillDownStatistics(self.ixn.root, "layer23TrafficItem")
-
     def inventory(self) -> None:
 
         chassis = self.ixn.root.hw.get_chassis(port1_location.split("/")[0])

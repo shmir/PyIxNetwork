@@ -20,7 +20,7 @@ server_properties = {
     },
     "windows_910": {
         "server": windows_910,
-        "locations": [f"{chassis_910}/4/1", f"{chassis_910}/4/2"],
+        "locations": [f"{chassis_910}/1/1", f"{chassis_910}/1/2"],
         "auth": None,
         "install_dir": "C:/Program Files (x86)/Ixia/IxNetwork/9.10.2007.7",
     },
@@ -35,5 +35,5 @@ server_properties = {
 license_servers = ["172.30.150.123"]
 
 # Default for options.
-api = ["rest"]
+api = ["tcl"]
 server = ["windows_910"]

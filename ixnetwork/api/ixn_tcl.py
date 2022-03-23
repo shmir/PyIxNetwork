@@ -63,7 +63,7 @@ class IxnTclWrapper(TgnTclWrapper):
 
     def getList(self, objRef, childList):
         children_list = self.ixnCommand("getList", objRef, childList)
-        return tcl_list_2_py_list(children_list)
+        return tcl_list_2_py_list(tcl_str(children_list))
 
     def getAttribute(self, objRef, attribute):
         """Get current value of the requested attribute."""

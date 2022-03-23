@@ -27,7 +27,6 @@ def init_ixn(api: ApiType, logger: Logger, install_dir: Optional[str] = None) ->
     :param str install_dir: IXN installation directory, applicable for Tcl only
     :return: IXN object
     """
-
     if api == ApiType.tcl:
         api_wrapper = IxnTclWrapper(logger, install_dir)
     elif api == ApiType.rest:
@@ -40,7 +39,7 @@ def init_ixn(api: ApiType, logger: Logger, install_dir: Optional[str] = None) ->
 class IxnApp(TgnApp):
     """IxNetwork driver. Equivalent to IxNetwork Application."""
 
-    def __init__(self, logger: Type[Logger], api_wrapper: Union[IxnTclWrapper, IxnRestWrapper]) -> None:
+    def __init__(self, logger: Logger, api_wrapper: Union[IxnTclWrapper, IxnRestWrapper]) -> None:
         """Set all kinds of application level objects - logger, api, etc.
 
         :param logger: python logger (e.g. logging.getLogger('log'))
@@ -49,11 +48,11 @@ class IxnApp(TgnApp):
         super().__init__(logger, api_wrapper)
         IxnObject.str_2_class = TYPE_2_OBJECT
 
-        self.root: Optional[IxnRoot] = None
+        self.api_server = ""
+        self.api_port = -1
+        self.root: IxnRoot = None
 
-    def connect(
-        self, api_server: str = "localhost", api_port: Optional[int] = 11009, auth: Optional[List[str]] = None
-    ) -> None:
+    def connect(self, api_server: str = "localhost", api_port: int = 11009, auth: Optional[List[str]] = None) -> None:
         """Connect to API server.
 
         :param api_server: API server IP address
@@ -63,7 +62,7 @@ class IxnApp(TgnApp):
         self.api_server = api_server
         self.api_port = api_port
         self.api.connect(api_server, api_port, auth)
-        self.root = IxnRoot(objRef=self.api.getRoot(), objType="root", parent=None)
+        self.root = IxnRoot(objRef=self.api.getRoot(), objType="root")
         self.root.logger = self.logger
         self.root.api = self.api
         IxnObject.root = self.root
@@ -114,7 +113,8 @@ class IxnApp(TgnApp):
     # IxNetwork GUI commands.
     #
 
-    def reserve(self, ports: Dict[IxnPort, str], force=False, wait_for_up=True, timeout=80) -> None:
+    @staticmethod
+    def reserve(ports: Dict[IxnPort, str], force=False, wait_for_up=True, timeout=80) -> None:
         """Reserve port and optionally wait for port to come up.
 
         :param ports: dict of <port, ip/module/port'>.
@@ -190,13 +190,13 @@ class IxnApp(TgnApp):
         # Must wait before reading state
         time.sleep(2)
         for protocol_obj in protocol_objs:
-            runningState = protocol_obj.get_attribute("runningState")
+            running_state = protocol_obj.get_attribute("runningState")
             timer = 16
-            while timer and runningState != action_state[action]:
+            while timer and running_state != action_state[action]:
                 time.sleep(1)
-                runningState = protocol_obj.get_attribute("runningState")
+                running_state = protocol_obj.get_attribute("runningState")
                 timer -= 1
-            if runningState != action_state[action]:
+            if running_state != action_state[action]:
                 raise TgnError("Failed to {} port {} protocol {}".format(action, port.obj_name(), protocol))
 
     def quick_test_apply(self, name) -> None:

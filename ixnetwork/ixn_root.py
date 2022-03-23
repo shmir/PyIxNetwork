@@ -18,7 +18,7 @@ from ixnetwork.ixn_traffic import IxnTrafficItem
 
 class IxnRoot(IxnObject):
     def __init__(self, **data):
-        super(IxnRoot, self).__init__(**data)
+        super().__init__(parent=None, **data)
         self.hw = None
 
     def get_ports(self) -> Dict[str, IxnPort]:

@@ -10,11 +10,6 @@ from ixnetwork.ixn_app import IxnRoot
 from ixnetwork.ixn_object import IxnObject
 
 
-def remove_all_tcl_views() -> None:
-    IxnRoot.root.execute("removeAllTclViews")
-    IxnRoot.root.api.commit()
-
-
 class IxnStatisticsView:
     """Base class for all statistics view.
 
@@ -187,6 +182,11 @@ class IxnDrillDownStatistics(IxnStatisticsView):
         IxnRoot.root.api.commit()
         dd.execute("doDrillDown", tcl_str(dd.ref))
         time.sleep(10)
+
+
+def remove_all_tcl_views() -> None:
+    IxnRoot.root.execute("removeAllTclViews")
+    IxnRoot.root.api.commit()
 
 
 view_2_caption = {

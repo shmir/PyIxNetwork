@@ -6,7 +6,6 @@ Note that in many places there are (relatively) long delays to make sure the tes
 Test setup:
 Two IXN ports connected back to back.
 """
-
 import json
 import logging
 import time
@@ -15,7 +14,14 @@ from typing import List
 import pytest
 
 from ixnetwork.ixn_app import IxnApp
-from ixnetwork.ixn_statistics_view import IxnFlowStatistics, IxnPortStatistics, IxnTrafficItemStatistics
+from ixnetwork.ixn_statistics_view import (
+    IxnDrillDownStatistics,
+    IxnFlowStatistics,
+    IxnPortStatistics,
+    IxnTrafficItemStatistics,
+    IxnUserDefinedStatistics,
+    remove_all_tcl_views,
+)
 
 from .test_base import load_config, reserve_ports
 
@@ -124,6 +130,25 @@ def test_gui_traffic(ixnetwork: IxnApp, locations: List[str]) -> None:
     flow_stats = IxnFlowStatistics()
     flow_stats.read_stats()
     assert int(flow_stats.get_stat("Port 2/Port 1/Traffic Item 1", "Tx Frames")) == 800
+
+
+def test_drill_down_stats(ixnetwork: IxnApp, locations: List[str]) -> None:
+    """Test drill down statistics."""
+    logger.info(test_gui_traffic.__doc__)
+
+    load_config(ixnetwork, "sample_ngpf_loopback")
+    reserve_ports(ixnetwork, locations, wait_for_up=True)
+
+    ixnetwork.regenerate()
+    ixnetwork.traffic_apply()
+    ixnetwork.l23_traffic_start()
+    time.sleep(8)
+    remove_all_tcl_views()
+    dd_stats = IxnDrillDownStatistics("layer23TrafficItem")
+    dd_stats.set_udf("Drill down per IPv4 :Source Address")
+    udf_stats = IxnUserDefinedStatistics()
+    udf_stats.read_stats()
+    print(udf_stats.statistics)
 
 
 def test_quick_test(ixnetwork: IxnApp, locations: List[str]) -> None:
