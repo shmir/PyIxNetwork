@@ -144,8 +144,9 @@ def test_drill_down_stats(ixnetwork: IxnApp, locations: List[str]) -> None:
     ixnetwork.l23_traffic_start()
     time.sleep(8)
     remove_all_tcl_views()
-    dd_stats = IxnDrillDownStatistics("layer23TrafficItem")
-    dd_stats.set_udf("Drill down per IPv4 :Source Address")
+    dd_stats = IxnDrillDownStatistics("PyIxNetwork-IPv4", "layer23TrafficItem")
+    dd_stats.set_filter("IPv4 - 1000fps")
+    dd_stats.set_udf("Drill down per IPv4 :Source Address", 0)
     udf_stats = IxnUserDefinedStatistics()
     udf_stats.read_stats()
     print(udf_stats.statistics)
@@ -166,38 +167,3 @@ def test_quick_test(ixnetwork: IxnApp, locations: List[str]) -> None:
     ixnetwork.quick_test_start("QuickTest1", blocking=True)
     ixnetwork.quick_test_stop("QuickTest1")
     ixnetwork.root.quick_tests["QuickTest1"].get_report("quick_test_report.pdf")
-
-
-def test_dd_stats(ixnetwork: IxnApp, locations: List[str]) -> None:
-    """Test traffic operations equivalent to GUI operations.
-
-    Sometimes ARP fails on IxVM? To be sure, send automatic ARP (seems more stable)
-    """
-    logger.info(test_gui_traffic.__doc__)
-
-    load_config(ixnetwork, "test_dd_ngpf")
-    reserve_ports(ixnetwork, locations, wait_for_up=True)
-    ixnetwork.protocols_start()
-    time.sleep(4)
-
-    ixnetwork.regenerate()
-    ixnetwork.traffic_apply()
-    # ixnetwork.l23_traffic_start()
-    # time.sleep(8)
-    # ixnetwork.l23_traffic_stop()
-    # time.sleep(4)
-    # port_stats = IxnPortStatistics()
-    # port_stats.read_stats()
-    # print(json.dumps(port_stats.get_all_stats(), indent=1))
-    # print(json.dumps(port_stats.get_object_stats('Port 1'), indent=1))
-    # assert(int(port_stats.get_stat('Port 1', 'Frames Tx.')) >= 1200)
-    # ixnetwork.l23_traffic_start(blocking=True)
-    # time.sleep(4)
-    # ti_stats = IxnTrafficItemStatistics()
-    # ti_stats.read_stats()
-    # print(json.dumps(ti_stats.get_all_stats(), indent=1))
-    # print(json.dumps(ti_stats.get_object_stats('Traffic Item 1'), indent=1))
-    # assert(int(ti_stats.get_object_stats('Traffic Item 1')['Tx Frames']) == 1600)
-    # flow_stats = IxnFlowStatistics()
-    # flow_stats.read_stats()
-    # assert(int(flow_stats.get_stat('Port 2/Port 1/Traffic Item 1', 'Tx Frames')) == 800)

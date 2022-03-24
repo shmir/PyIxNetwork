@@ -17,12 +17,13 @@ class IxnStatisticsView:
     """
 
     def __init__(self, name: str) -> None:
-        """
+        """Get requested view object from IXN.
+
         :param name: Statistics view name.
         """
         self.name_caption = view_2_caption.get(name, "Port Name")
         statistics = IxnRoot.root.get_child_static("statistics")
-        if type(IxnRoot.root.api) is IxnRestWrapper:
+        if isinstance(IxnRoot.root.api, IxnRestWrapper):
             views = statistics.get_children("view")
             for view in views:
                 if view.get_attribute("caption") == name:
@@ -39,7 +40,6 @@ class IxnStatisticsView:
 
     def read_stats(self) -> None:
         """Reads the statistics view from IXN and saves it in statistics dictionary."""
-
         captions, rows = self._get_pages()
         name_caption_index = captions.index(self.name_caption)
         captions.pop(name_caption_index)
@@ -139,7 +139,6 @@ class IxnFlowStatistics(IxnStatisticsView):
         Flow statistics require special implementation as the statistics name is dynamic and changes based on the
         configuration.
         """
-
         captions, rows = self._get_pages()
         name_caption_index = captions.index("Tx Frames")
         for _ in range(name_caption_index):
@@ -154,33 +153,42 @@ class IxnFlowStatistics(IxnStatisticsView):
             self.statistics[name] = row
 
 
-class IxnDrillDownStatistics(IxnStatisticsView):
-    def __init__(self, type):
+class IxnDrillDownStatistics:
+    """Drill-down statistics view."""
+
+    TYPE_2_AVAILABLE = {"layer23TrafficItem": "availableTrafficItemFilter", "layer23TrafficPort": "availablePortFilter"}
+    TYPE_2_FILTER_CHILD = {"layer23TrafficItem": "layer23TrafficItemFilter", "layer23TrafficPort": "layer23TrafficPortFilter"}
+    TYPE_2_FILTER_ATTR = {"layer23TrafficItem": "trafficItemFilterIds", "layer23TrafficPort": "portFilterIds"}
+
+    def __init__(self, caption: str, type_: str) -> None:
+        self.type = type_
         statistics = IxnRoot.root.get_child_static("statistics")
         self.ixn_view = IxnObject(parent=statistics, objType="view")
-        self.ixn_view.set_attributes(caption="Yoram")
-        self.ixn_view.set_attributes(commit=True, type=type)
+        self.ixn_view.set_attributes(caption=caption)
+        self.ixn_view.set_attributes(commit=True, type=self.type)
         self.ixn_view._data["objRef"] = self.ixn_view.api.remapIds(self.ixn_view.ref)
 
-        availableTrafficItemFilter = self.ixn_view.get_children("availableTrafficItemFilter")
-
-        filter = self.ixn_view.get_child_static("layer23TrafficItemFilter")
-        filter.set_attributes(trafficItemFilterIds=py_list_to_tcl_list([r.ref for r in availableTrafficItemFilter]))
+    # "layer23TrafficItemFilter"
+    def set_filter(self, row: str) -> None:
+        available_traffic_item_filter = self.ixn_view.get_children(IxnDrillDownStatistics.TYPE_2_AVAILABLE[self.type])
+        filter_obj = self.ixn_view.get_child_static(IxnDrillDownStatistics.TYPE_2_FILTER_CHILD[self.type])
+        filter_attr = IxnDrillDownStatistics.TYPE_2_FILTER_ATTR[self.type]
+        filter_obj.set_attributes(**{filter_attr: py_list_to_tcl_list([r.ref for r in available_traffic_item_filter])})
         for statistic in self.ixn_view.get_children("statistic"):
             statistic.set_attributes(enabled=True)
         self.ixn_view.set_attributes(commit=True, visible=True, enabled=True)
 
-    def set_udf(self, option):
+    def set_udf(self, option: str, row_index: int) -> None:
         ti_stats = IxnTrafficItemStatistics()
-        dd = ti_stats.ixn_view.get_child_static("drillDown")
-        dd.set_attributes(commit=True, targetRowIndex=0)
-        dd.get_attribute("availableDrillDownOptions")
-        dd.set_attributes(commit=True, targetDrillDownOption=option)
-        dd.get_attribute("targetRowIndex")
-        dd.get_attribute("targetRow")
-        dd.get_attribute("targetDrillDownOption")
+        drill_down = ti_stats.ixn_view.get_child_static("drillDown")
+        drill_down.set_attributes(commit=True, targetRowIndex=row_index)
+        drill_down.get_attribute("availableDrillDownOptions")
+        drill_down.set_attributes(commit=True, targetDrillDownOption=option)
+        drill_down.get_attribute("targetRowIndex")
+        drill_down.get_attribute("targetRow")
+        drill_down.get_attribute("targetDrillDownOption")
         IxnRoot.root.api.commit()
-        dd.execute("doDrillDown", tcl_str(dd.ref))
+        drill_down.execute("doDrillDown", tcl_str(drill_down.ref))
         time.sleep(10)
 
 

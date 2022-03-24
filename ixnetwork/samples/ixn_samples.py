@@ -4,7 +4,6 @@ Stand alone samples for IXN package functionality.
 Setup:
 Two IXN ports connected back to back.
 """
-
 import logging
 import sys
 import time
@@ -77,7 +76,7 @@ class IxnSamples:
         # Now we can iterate and print all objects:
         print("Name\tObject Reference\tPython Object")
         for port in ports:
-            print("{}\t{}\t{}".format(port.obj_name(), port.obj_ref(), port))
+            print(f"{port.name}\t{port.ref}\t{port}")
 
         # But, frequently used objects (like ports, protocols, etc.) can be accessed specifically:
         ports = self.ixn.root.ports
@@ -86,7 +85,7 @@ class IxnSamples:
         # Now we can iterate and print all objects:
         print("Name\tObject Reference\tPython Object")
         for name, obj in ports.items():
-            print("{}\t{}\t{}".format(name, obj.obj_ref(), obj))
+            print(f"{name}\t{obj.ref}\t{obj}")
 
     def get_set_attribute(self) -> None:
         self.load_config()
@@ -131,16 +130,16 @@ class IxnSamples:
         time.sleep(8)
         self.ixn.l23_traffic_stop()
         time.sleep(2)
-        port_stats = IxnPortStatistics(self.ixn.root)
+        port_stats = IxnPortStatistics()
         port_stats.read_stats()
-        ti_stats = IxnTrafficItemStatistics(self.ixn.root)
+        ti_stats = IxnTrafficItemStatistics()
         ti_stats.read_stats()
         print(port_stats.get_object_stats(list(self.ixn.root.ports.keys())[0]))
         print(port_stats.get_counters("Frames Tx."))
         print(ti_stats.get_counter(list(self.ixn.root.traffic_items.keys())[0], "Rx Frames"))
-        dd_stats = IxnDrillDownStatistics(self.ixn.root, "layer23TrafficItem")
+        dd_stats = IxnDrillDownStatistics("layer23TrafficItem")
         dd_stats.set_udf("Drill down per IPv4 :Source Address")
-        udf_stats = IxnUserDefinedStatistics(self.ixn.root)
+        udf_stats = IxnUserDefinedStatistics()
         udf_stats.read_stats()
         print(udf_stats.statistics)
 
