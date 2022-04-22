@@ -1,5 +1,5 @@
 """
-@author yoram@ignissoft.com
+Implements IxNetwork API over IxNetwork Tcl package - IxTclNetwork.
 """
 import re
 from os import path

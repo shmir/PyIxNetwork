@@ -19,7 +19,6 @@ class IxnTopologyBaseClass(IxnObject):
         """
         :return: dictionary {name: object} of all device groups.
         """
-
         return {o.obj_name(): o for o in self.get_objects_or_children_by_type("deviceGroup")}
 
     def action(self, action, timeout=64, *arguments):
@@ -28,7 +27,7 @@ class IxnTopologyBaseClass(IxnObject):
         while self.get_attribute("status") != self.action_2_status[action] and time.time() - now <= timeout:
             time.sleep(1)
         if time.time() - now > timeout:
-            raise TgnError("Failed to {} protocols after {} seconds".format(action, time.time() - now))
+            raise TgnError(f"Failed to {action} protocols after {time.time() - now} seconds")
 
     def start(self):
         """Start the protocol.
@@ -48,32 +47,32 @@ class IxnTopologyBaseClass(IxnObject):
 class IxnTopology(IxnTopologyBaseClass):
     """Represents IXN topology."""
 
-    def __init__(self, **data):
+    def __init__(self, **data: object) -> None:
         data["objType"] = "topology"
         data["parent"] = self.root
-        super(self.__class__, self).__init__(**data)
+        super().__init__(**data)
 
 
 class IxnDeviceGroup(IxnTopologyBaseClass):
     """Represents IXN device group."""
 
-    def __init__(self, **data):
+    def __init__(self, **data: object) -> None:
         data["objType"] = "deviceGroup"
-        super(self.__class__, self).__init__(**data)
+        super().__init__(**data)
 
 
 class IxnNetworkGroup(IxnTopologyBaseClass):
     """Represents IXN network group."""
 
-    def __init__(self, **data):
+    def __init__(self, **data: object) -> None:
         data["objType"] = "networkGroup"
-        super(self.__class__, self).__init__(**data)
+        super().__init__(**data)
 
 
 class IxnNextGenProtocol(IxnTopologyBaseClass):
     """Represents IXN NGPF."""
 
-    def __init__(self, **data):
+    def __init__(self, **data: object) -> None:
         data["objType"] = self.protocol
         super(IxnNextGenProtocol, self).__init__(**data)
 

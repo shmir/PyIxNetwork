@@ -67,14 +67,12 @@ class IxnRoot(IxnObject):
 
     def _wait_traffic_states(self, timeout, *states):
         for _ in range(timeout):
-            if self.get_child_static("traffic").get_attribute("state") in states:
+            state = self.get_child_static("traffic").get_attribute("state")
+            if state in states:
                 return
             time.sleep(1)
-        raise TgnError(
-            "Traffic failed to reach {} state, traffic is {} after {} seconds".format(
-                states, self.get_child_static("traffic").get_attribute("state"), timeout
-            )
-        )
+        state = self.get_child_static("traffic").get_attribute("state")
+        raise TgnError(f"Traffic failed to reach {states} state, traffic is {state} after {timeout} seconds")
 
 
 class IxnQuickTest(IxnObject):
@@ -94,7 +92,7 @@ class IxnQuickTest(IxnObject):
         """
         self.execute("start", self.ref)
         if blocking:
-            return self.wait_quick_test_status(False, timeout)
+            self.wait_quick_test_status(False, timeout)
 
     def stop(self) -> None:
         """Apply QuickTest."""

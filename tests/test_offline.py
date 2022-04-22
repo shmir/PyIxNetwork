@@ -1,6 +1,7 @@
 """
 IxNetwork package tests that can run in offline mode.
 """
+# pylint: disable=redefined-outer-name
 import logging
 
 import pytest
@@ -62,11 +63,11 @@ def test_analyze_config_classical(ixnetwork: IxnApp) -> None:
 
     vports = ixnetwork.root.get_objects_by_type("vport")
     assert len(vports) == 2
-    assert type(vports[0]) is IxnPort
+    assert isinstance(vports[0], IxnPort)
 
 
 @pytest.mark.usefixtures("skip_if_linux")
-def test_get_children_classical(ixnetwork: IxnApp):
+def test_get_children_classical(ixnetwork: IxnApp) -> None:
     """Test get children methods for classical protocols."""
     logger.info(test_get_children_classical.__doc__)
 
@@ -84,7 +85,7 @@ def test_get_children_classical(ixnetwork: IxnApp):
 
 
 @pytest.mark.usefixtures("skip_if_linux")
-def test_get_children_ngpf(ixnetwork: IxnApp):
+def test_get_children_ngpf(ixnetwork: IxnApp) -> None:
     """Test get children methods for ngpf protocols."""
     logger.info(test_get_children_ngpf.__doc__)
 
@@ -96,7 +97,7 @@ def test_get_children_ngpf(ixnetwork: IxnApp):
 
 
 @pytest.mark.usefixtures("skip_if_linux")
-def test_build_config_classical(ixnetwork: IxnApp):
+def test_build_config_classical(ixnetwork: IxnApp) -> None:
     """Test configuration build with basic objects - ports, interfaces, and traffic items."""
     logger.info(test_build_config_classical.__doc__)
 
@@ -131,7 +132,7 @@ def test_build_config_classical(ixnetwork: IxnApp):
     save_config(ixnetwork)
 
 
-def test_build_config_ngpf(ixnetwork: IxnApp):
+def test_build_config_ngpf(ixnetwork: IxnApp) -> None:
     """Test configuration build with topologies."""
     logger.info(test_build_config_ngpf.__doc__)
 

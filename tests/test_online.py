@@ -6,6 +6,7 @@ Note that in many places there are (relatively) long delays to make sure the tes
 Test setup:
 Two IXN ports connected back to back.
 """
+# pylint: disable=redefined-outer-name
 import json
 import logging
 import time

@@ -1,7 +1,6 @@
 """
-:author: yoram@ignissoft.com
+Implements IxNetwork API over IxNetwork REST server.
 """
-
 import copy
 import json
 import re
@@ -27,7 +26,6 @@ class IxnRestWrapper:
 
         :param logger: application logger, if stream handler and log level is DEBUG -> enable IXN Python debug.
         """
-
         self.logger = logger
         self.api_key = None
 
@@ -56,7 +54,7 @@ class IxnRestWrapper:
 
         response = self.post(self.server_url + "/api/v1/sessions", data={"applicationType": "ixnrest"})
         if "id" in response.json():
-            self.session = "/api/v1/sessions/{}/".format(response.json()["id"])
+            self.session = f"/api/v1/sessions/{response.json()['id']}/"
         else:
             self.session = response.json()["links"][0]["href"] + "/"
         self.root_url = self.server_url + self.session
@@ -119,13 +117,13 @@ class IxnRestWrapper:
             kwargs_to_print["data"] = "actual octet-stream not logged..."
         kwargs_to_print["headers"] = headers
         kwargs_to_print["data"] = data
-        self.logger.debug("{} - {} - {}".format(command.__name__, url, kwargs_to_print))
+        self.logger.debug(f"{command.__name__} - {url} - {kwargs_to_print}")
 
         if type(data) == dict:
             response = command(url, verify=False, headers=headers, json=data, **kwargs)
         else:
             response = command(url, verify=False, headers=headers, data=data, **kwargs)
-        self.logger.debug("{}".format(response))
+        self.logger.debug(f"{response}")
         if response.status_code >= 400:
             error = None
             if response.text:
@@ -171,10 +169,10 @@ class IxnRestWrapper:
     def commit(self) -> None:
         pass
 
-    def execute(self, command, obj_ref=None, valid_on_linux=True, *arguments) -> None:
+    def execute(self, command: str, obj_ref: Optional[str] = None, valid_on_linux: bool = True, *arguments: object) -> None:
         data = {}
         if obj_ref:
-            operations_url = "{}/operations/".format(re.sub(r"\/[0-9]+", "", obj_ref.replace(self.session, "")))
+            operations_url = f"{re.sub(r'/[0-9]+', '', obj_ref.replace(self.session, ''))}/operations/"
         else:
             operations_url = "ixnetwork/operations/"
         for argument in arguments:
@@ -325,4 +323,4 @@ class IxnRestWrapper:
                 return
             except TgnError:
                 time.sleep(1)
-        raise TgnError("failed to connect - {}".format(self.get(url).json()["errors"]))
+        raise TgnError(f"failed to connect - {self.get(url).json()['errors']}")

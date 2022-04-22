@@ -6,6 +6,7 @@ from trafficgenerator.tgn_tcl import py_list_to_tcl_list, tcl_str
 from trafficgenerator.tgn_utils import TgnError, is_false
 
 from ixnetwork.api.ixn_rest import IxnRestWrapper
+from ixnetwork.api.ixn_tcl import IxnTclWrapper
 from ixnetwork.ixn_app import IxnRoot
 from ixnetwork.ixn_object import IxnObject
 
@@ -93,7 +94,7 @@ class IxnStatisticsView:
         """
         return int(self.get_stat(obj_name, counter_name))
 
-    def _get_pages(self):
+    def _get_pages(self) -> tuple:
         page = self.ixn_view.get_child_static("page")
         if is_false(page.get_attribute("isReady")):
             raise TgnError(f'"{page.obj}" not ready')
@@ -173,7 +174,10 @@ class IxnDrillDownStatistics:
         available_traffic_item_filter = self.ixn_view.get_children(IxnDrillDownStatistics.TYPE_2_AVAILABLE[self.type])
         filter_obj = self.ixn_view.get_child_static(IxnDrillDownStatistics.TYPE_2_FILTER_CHILD[self.type])
         filter_attr = IxnDrillDownStatistics.TYPE_2_FILTER_ATTR[self.type]
-        filter_obj.set_attributes(**{filter_attr: py_list_to_tcl_list([r.ref for r in available_traffic_item_filter])})
+        available_traffic_item_filter_refs = [r.ref for r in available_traffic_item_filter if r.name == row]
+        if isinstance(IxnRoot.root.api, IxnTclWrapper):
+            available_traffic_item_filter_refs = py_list_to_tcl_list(available_traffic_item_filter_refs)
+        filter_obj.set_attributes(**{filter_attr: available_traffic_item_filter_refs})
         for statistic in self.ixn_view.get_children("statistic"):
             statistic.set_attributes(enabled=True)
         self.ixn_view.set_attributes(commit=True, visible=True, enabled=True)
@@ -188,7 +192,8 @@ class IxnDrillDownStatistics:
         drill_down.get_attribute("targetRow")
         drill_down.get_attribute("targetDrillDownOption")
         IxnRoot.root.api.commit()
-        drill_down.execute("doDrillDown", tcl_str(drill_down.ref))
+        drill_down_ref = tcl_str(drill_down.ref) if isinstance(IxnRoot.root.api, IxnTclWrapper) else drill_down.ref
+        drill_down.execute("doDrillDown", drill_down_ref)
         time.sleep(10)
 
 

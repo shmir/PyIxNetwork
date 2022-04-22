@@ -117,7 +117,7 @@ class IxnObject(TgnObject):
             children_objs.update(self._build_children_objs(child_type, children_list))
         return list(children_objs.values())
 
-    def get_child_static(self, objType, seq_number=None):
+    def get_child_static(self, obj_type: str, seq_number: Optional[int] = None) -> IxnObject:
         """Returns IxnObject representing the requested child without reading it from the IXN.
 
         Statically build the child object reference based on the requested object type and sequence number and build
@@ -125,12 +125,12 @@ class IxnObject(TgnObject):
         Ideally we would prefer to never use this function and always read the child dynamically but this has huge
         impact on performance so we use the static approach wherever possible.
         """
-        child_obj_ref = self.ref + "/" + objType
+        child_obj_ref = self.ref + "/" + obj_type
         if seq_number:
             child_obj_ref += ":" + str(seq_number)
         child_obj = self.get_object_by_ref(child_obj_ref)
-        child_obj_type = self.get_obj_class(objType)
-        return child_obj if child_obj else child_obj_type(parent=self, objType=objType, objRef=child_obj_ref)
+        child_obj_type = self.get_obj_class(obj_type)
+        return child_obj if child_obj else child_obj_type(parent=self, objType=obj_type, objRef=child_obj_ref)
 
     def get_name(self) -> str:
         """Get object name. If object has no name return object reference."""

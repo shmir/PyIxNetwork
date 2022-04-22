@@ -178,10 +178,10 @@ class IxnApp(TgnApp):
         """
         self.protocol_action(protocol, "stop")
 
-    def protocol_action(self, protocol, action) -> None:
+    def protocol_action(self, protocol: str, action: str) -> None:
         action_state = {"start": "started", "stop": "stopped"}
         protocol_objs = []
-        for port in self.root.get_objects_by_type("vport"):
+        for port in self.root.ports.values():
             protocols = port.get_child_static("protocols")
             protocol_obj = protocols.get_child_static(protocol)
             if is_true(protocol_obj.get_attribute("enabled")):
@@ -197,13 +197,16 @@ class IxnApp(TgnApp):
                 running_state = protocol_obj.get_attribute("runningState")
                 timer -= 1
             if running_state != action_state[action]:
-                raise TgnError("Failed to {} port {} protocol {}".format(action, port.obj_name(), protocol))
+                raise TgnError(f"Failed to {action} protocol {protocol}")
 
-    def quick_test_apply(self, name) -> None:
+    def quick_test_apply(self, name: str) -> None:
+        """Apply quick test configuration."""
         self.root.quick_tests[name].apply()
 
-    def quick_test_start(self, name, blocking=False, timeout=3600):
-        return self.root.quick_tests[name].start(blocking, timeout)
+    def quick_test_start(self, name, blocking: bool = False, timeout: int = 3600) -> None:
+        """Start quick test."""
+        self.root.quick_tests[name].start(blocking, timeout)
 
-    def quick_test_stop(self, name):
+    def quick_test_stop(self, name: str) -> None:
+        """Stop quick test."""
         return self.root.quick_tests[name].stop()

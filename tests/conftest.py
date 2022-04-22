@@ -3,7 +3,7 @@ Pytest conftest for ixnetwork package testing.
 """
 import logging
 from pathlib import Path
-from typing import List
+from typing import Iterable, List
 
 import pytest
 from _pytest.config.argparsing import Parser
@@ -20,9 +20,8 @@ def pytest_addoption(parser: Parser) -> None:
 
 
 @pytest.fixture(scope="session")
-def ixnetwork(request: SubRequest, logger: logging.Logger, api: ApiType, server_properties: dict) -> IxnApp:
+def ixnetwork(request: SubRequest, logger: logging.Logger, api: ApiType, server_properties: dict) -> Iterable[IxnApp]:
     """Yields connected IxNetwork object."""
-
     server_ip = server_properties["server"].split(":")[0]
     server_port = int(server_properties["server"].split(":")[1])
     if api == ApiType.tcl and server_port == 11009:
@@ -53,7 +52,7 @@ def locations(server_properties: dict) -> List[str]:
 
 
 @pytest.fixture
-def skip_if_linux(server_properties):
+def skip_if_linux(server_properties: dict) -> None:
     """Skip test on Linux servers."""
     server_port = int(server_properties["server"].split(":")[1])
     if server_port == 443:
