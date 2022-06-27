@@ -1,5 +1,5 @@
 """
-@author yoram@ignissoft.com
+IxNetwork Traffic classes and functionality.
 """
 import os
 from enum import Enum

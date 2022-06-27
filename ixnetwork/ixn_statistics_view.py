@@ -1,3 +1,6 @@
+"""
+IxNetwork Statistics Views.
+"""
 import time
 from collections import OrderedDict
 from typing import Dict, List
@@ -17,30 +20,33 @@ class IxnStatisticsView:
     Note that Flow Statistics are poorly supported in this version as the object name spans over multiple column.
     """
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, name_caption: str) -> None:
         """Get requested view object from IXN.
 
         :param name: Statistics view name.
+        :param name_caption: The name caption of the statistics view == the name of the key column in the statistics table.
         """
-        self.name_caption = view_2_caption.get(name, "Port Name")
+        self.name = name
+        self.name_caption = name_caption
         statistics = IxnRoot.root.get_child_static("statistics")
         if isinstance(IxnRoot.root.api, IxnRestWrapper):
             views = statistics.get_children("view")
             for view in views:
-                if view.get_attribute("caption") == name:
+                if view.get_attribute("caption") == self.name:
                     self.ixn_view = view
                     break
         else:
-            self.ixn_view = statistics.get_child_static(f'view:"{name}"')
+            self.ixn_view = statistics.get_child_static(f'view:"{self.name}"')
 
-        self.captions = []
-        self.statistics = OrderedDict()
+        self.captions: List[str] = []
+        self.statistics: Dict[str, str] = OrderedDict()
 
-    def __repr__(self) -> str:
-        return self.ixn_view
+    def __str__(self) -> str:
+        """Return IxNetwork statistics view name as the object name."""
+        return self.name
 
     def read_stats(self) -> None:
-        """Reads the statistics view from IXN and saves it in statistics dictionary."""
+        """Read the statistics view from IXN and saves it in statistics dictionary."""
         captions, rows = self._get_pages()
         name_caption_index = captions.index(self.name_caption)
         captions.pop(name_caption_index)
@@ -58,21 +64,21 @@ class IxnStatisticsView:
         return all_stats
 
     def get_object_stats(self, obj_name: str) -> Dict[str, str]:
-        """Returns table of all statistics values for the requested object.
+        """Return table of all statistics values for the requested object.
 
         :param obj_name: requested object name
         """
         return dict(zip(self.captions, self.statistics[obj_name]))
 
     def get_stats(self, stat_name: str) -> List[str]:
-        """Returns list of all values of the requested statistic for all objects.
+        """Return list of all values of the requested statistic for all objects.
 
         :param stat_name: requested statistics name.
         """
         return [self.get_stat(r, stat_name) for r in self.statistics.keys()]
 
     def get_stat(self, obj_name: str, stat_name: str) -> str:
-        """Returns the value of the requested statics for the requested object.
+        """Return the value of the requested statics for the requested object.
 
         :param obj_name: requested object name.
         :param stat_name: requested statistics name.
@@ -80,14 +86,14 @@ class IxnStatisticsView:
         return self.statistics[obj_name][self.captions.index(stat_name)]
 
     def get_counters(self, counter_name: str) -> List[int]:
-        """Returns list of all int values of the requested counter for all objects.
+        """Return list of all int values of the requested counter for all objects.
 
         :param counter_name: requested counter name.
         """
         return [int(c) for c in self.get_stats(counter_name)]
 
     def get_counter(self, obj_name: str, counter_name: str) -> int:
-        """Returns the int value of the requested counter for the requested object.
+        """Return the int value of the requested counter for the requested object.
 
         :param obj_name: requested object name.
         :param counter_name: requested counter name.
@@ -111,31 +117,38 @@ class IxnPortStatistics(IxnStatisticsView):
     """Port statistics view."""
 
     def __init__(self) -> None:
-        super().__init__("Port Statistics")
+        """Get Port Statistics view object from IXN."""
+        super().__init__("Port Statistics", "Port Name")
 
 
 class IxnTrafficItemStatistics(IxnStatisticsView):
     """Traffic items view."""
 
     def __init__(self) -> None:
-        super().__init__("Traffic Item Statistics")
+        """Get Traffic Item Statistics view object from IXN."""
+        super().__init__("Traffic Item Statistics", "Traffic Item")
 
 
 class IxnUserDefinedStatistics(IxnStatisticsView):
     """User defined statistics view."""
 
-    def __init__(self) -> None:
-        super().__init__("User Defined Statistics")
+    def __init__(self, name_caption: str) -> None:
+        """Get User Defined Statistics view object from IXN.
+
+        :param name_caption: The name caption of the statistics view == the name of the key column in the statistics table.
+        """
+        super().__init__("User Defined Statistics", name_caption)
 
 
 class IxnFlowStatistics(IxnStatisticsView):
     """Floe statistics view."""
 
     def __init__(self) -> None:
-        super().__init__("Flow Statistics")
+        """Get Flow Statistics view object from IXN."""
+        super().__init__("Flow Statistics", "Tx Frames")
 
     def read_stats(self) -> None:
-        """Reads the statistics view from IXN and saves it in statistics dictionary.
+        """Read the statistics view from IXN and saves it in statistics dictionary.
 
         Flow statistics require special implementation as the statistics name is dynamic and changes based on the
         configuration.
@@ -155,7 +168,12 @@ class IxnFlowStatistics(IxnStatisticsView):
 
 
 class IxnDrillDownStatistics:
-    """Drill-down statistics view."""
+    """Drill-down statistics view.
+
+    Current implementation supports only layer23TrafficPort and layer23TrafficItem.
+
+    :TODO: Extend to all types on drill down.
+    """
 
     TYPE_2_AVAILABLE = {"layer23TrafficItem": "availableTrafficItemFilter", "layer23TrafficPort": "availablePortFilter"}
     TYPE_2_FILTER_CHILD = {"layer23TrafficItem": "layer23TrafficItemFilter", "layer23TrafficPort": "layer23TrafficPortFilter"}
@@ -169,8 +187,8 @@ class IxnDrillDownStatistics:
         self.ixn_view.set_attributes(commit=True, type=self.type)
         self.ixn_view._data["objRef"] = self.ixn_view.api.remapIds(self.ixn_view.ref)
 
-    # "layer23TrafficItemFilter"
     def set_filter(self, row: str) -> None:
+        """Set drill down filter object."""
         available_traffic_item_filter = self.ixn_view.get_children(IxnDrillDownStatistics.TYPE_2_AVAILABLE[self.type])
         filter_obj = self.ixn_view.get_child_static(IxnDrillDownStatistics.TYPE_2_FILTER_CHILD[self.type])
         filter_attr = IxnDrillDownStatistics.TYPE_2_FILTER_ATTR[self.type]
@@ -182,7 +200,9 @@ class IxnDrillDownStatistics:
             statistic.set_attributes(enabled=True)
         self.ixn_view.set_attributes(commit=True, visible=True, enabled=True)
 
-    def set_udf(self, option: str, row_index: int) -> None:
+    @staticmethod
+    def drill_down(option: str, row_index: int) -> None:
+        """Perform the drill-down operation."""
         ti_stats = IxnTrafficItemStatistics()
         drill_down = ti_stats.ixn_view.get_child_static("drillDown")
         drill_down.set_attributes(commit=True, targetRowIndex=row_index)
@@ -198,13 +218,6 @@ class IxnDrillDownStatistics:
 
 
 def remove_all_tcl_views() -> None:
+    """Perform removeAllTclViews."""
     IxnRoot.root.execute("removeAllTclViews")
     IxnRoot.root.api.commit()
-
-
-view_2_caption = {
-    "Flow Statistics": None,
-    "Port Statistics": "Port Name",
-    "Traffic Item Statistics": "Traffic Item",
-    "User Defined Statistics": "IPv4 :Source Address",
-}

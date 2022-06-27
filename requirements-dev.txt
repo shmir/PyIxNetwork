@@ -7,7 +7,6 @@ tox
 
 # Pipeline
 pre-commit
-black[d]
 pylint
 pylint_pytest
 

@@ -7,7 +7,6 @@ Test setup:
 Two IXN ports connected back to back.
 """
 # pylint: disable=redefined-outer-name
-import json
 import logging
 import time
 from typing import List
@@ -52,7 +51,7 @@ def test_release_ports(ixnetwork: IxnApp, locations: List[str]) -> None:
 
 
 def test_ports_online(ixnetwork: IxnApp, locations: List[str]) -> None:
-    """Test ports on line."""
+    """Test ports online."""
     logger.info(test_release_ports.__doc__)
 
     load_config(ixnetwork, "test_config_ngpf")
@@ -118,15 +117,11 @@ def test_gui_traffic(ixnetwork: IxnApp, locations: List[str]) -> None:
     time.sleep(4)
     port_stats = IxnPortStatistics()
     port_stats.read_stats()
-    print(json.dumps(port_stats.get_all_stats(), indent=1))
-    print(json.dumps(port_stats.get_object_stats("Port 1"), indent=1))
     assert int(port_stats.get_stat("Port 1", "Frames Tx.")) >= 1200
     ixnetwork.l23_traffic_start(blocking=True)
     time.sleep(4)
     ti_stats = IxnTrafficItemStatistics()
     ti_stats.read_stats()
-    print(json.dumps(ti_stats.get_all_stats(), indent=1))
-    print(json.dumps(ti_stats.get_object_stats("Traffic Item 1"), indent=1))
     assert int(ti_stats.get_object_stats("Traffic Item 1")["Tx Frames"]) == 1600
     flow_stats = IxnFlowStatistics()
     flow_stats.read_stats()
@@ -147,10 +142,9 @@ def test_drill_down_stats(ixnetwork: IxnApp, locations: List[str]) -> None:
     remove_all_tcl_views()
     dd_stats = IxnDrillDownStatistics("PyIxNetwork-IPv4", "layer23TrafficItem")
     dd_stats.set_filter("IPv4 - 1000fps")
-    dd_stats.set_udf("Drill down per IPv4 :Source Address", 0)
-    udf_stats = IxnUserDefinedStatistics()
+    dd_stats.drill_down("Drill down per IPv4 :Source Address", 0)
+    udf_stats = IxnUserDefinedStatistics("IPv4 :Source Address")
     udf_stats.read_stats()
-    print(udf_stats.statistics)
 
 
 def test_quick_test(ixnetwork: IxnApp, locations: List[str]) -> None:

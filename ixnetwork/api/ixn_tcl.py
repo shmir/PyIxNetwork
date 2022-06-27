@@ -52,7 +52,7 @@ class IxnTclWrapper(TgnTclWrapper):
             raise TgnError(f"Client version {major_client_version} != Server version {major_server_version}")
         return client_version
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         pass
 
     def execute(self, command, obj_ref=None, valid_on_linux=True, *arguments):
@@ -61,19 +61,19 @@ class IxnTclWrapper(TgnTclWrapper):
             flatten_arguments.append(" ".join(argument) if type(argument) in [list, tuple] else argument)
         return self.ixnCommand("exec " + command, *flatten_arguments)
 
-    def getList(self, objRef, childList):
-        children_list = self.ixnCommand("getList", objRef, childList)
+    def getList(self, obj_ref: str, childList):
+        children_list = self.ixnCommand("getList", obj_ref, childList)
         return tcl_list_2_py_list(tcl_str(children_list))
 
-    def getAttribute(self, objRef, attribute):
+    def getAttribute(self, obj_ref: str, attribute: str) -> str:
         """Get current value of the requested attribute."""
-        return self.ixnCommand("getAttribute", tcl_str(objRef), "-" + attribute)
+        return self.ixnCommand("getAttribute", tcl_str(obj_ref), "-" + attribute)
 
-    def getListAttribute(self, objRef, attribute):
-        return tcl_list_2_py_list(self.getAttribute(objRef, attribute))
+    def getListAttribute(self, obj_ref: str, attribute: str) -> list:
+        return tcl_list_2_py_list(self.getAttribute(obj_ref, attribute))
 
-    def help(self, objRef):
-        output = self.ixnCommand("help", objRef)
+    def help(self, obj_ref: str) -> tuple:
+        output = self.ixnCommand("help", obj_ref)
         children_list = None
         if "Child Lists:" in output:
             children = output.split("Child Lists:")[1].split("Attributes:")[0].split("Execs:")[0]
@@ -94,16 +94,16 @@ class IxnTclWrapper(TgnTclWrapper):
     def getVersion(self) -> str:
         return self.ixnCommand("getVersion")
 
-    def loadConfig(self, config_file_name) -> None:
+    def loadConfig(self, config_file_name: str) -> None:
         self.execute("loadConfig", None, True, self.ixnCommand("readFrom", tcl_file_name(config_file_name)))
 
-    def saveConfig(self, config_file_name) -> None:
+    def saveConfig(self, config_file_name: str) -> None:
         self.execute("saveConfig", None, True, self.ixnCommand("writeTo", tcl_file_name(config_file_name)))
 
     def newConfig(self) -> None:
         self.execute("newConfig")
 
-    def setAttributes(self, obj_ref, **attributes) -> None:
+    def setAttributes(self, obj_ref: str, **attributes) -> None:
         string_attributes = {}
         for attribute, value in attributes.items():
             string_attributes[attribute] = py_list_to_tcl_list(value) if type(value) is list else value

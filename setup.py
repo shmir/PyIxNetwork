@@ -7,7 +7,7 @@ from setuptools import find_packages, setup
 
 
 def main() -> None:
-    """Packaging script."""
+    """Package script."""
     with open("requirements.txt", "r") as requirements:
         install_requires = requirements.read().splitlines()
     with open("README.md", "r") as readme:
@@ -38,6 +38,7 @@ def main() -> None:
             "Programming Language :: Python :: 3.7",
             "Programming Language :: Python :: 3.8",
             "Programming Language :: Python :: 3.9",
+            "Programming Language :: Python :: 3.10",
         ],
     )
 
