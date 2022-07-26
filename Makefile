@@ -1,6 +1,6 @@
 #
 # Makefile to build and upload to local pypi servers.
-# To upload to pypi.org use plain twine upload.
+# To upload to pypi.org use github actions.
 #
 
 repo=localhost
@@ -15,11 +15,11 @@ clean:
 install:
 	make clean
 	python -m pip install -U pip
-	pip install -U -r requirements-dev.txt
+	pip install -U -r requirements.txt
 
 build:
 	make clean
-	python setup.py bdist_wheel
+	python -m build . --wheel
 
 upload:
 	make build
