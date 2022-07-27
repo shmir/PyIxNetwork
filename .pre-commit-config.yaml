@@ -26,7 +26,7 @@ repos:
         language_version: python3.9
         args: [
           --max-line-length=127,
-          '--ignore=D200'
+          '--ignore=D200,D107,D101,D102,D103,D105,F811,F401'
         ]
   - repo: local
     hooks:
@@ -37,12 +37,12 @@ repos:
         types: [python]
         args: [
           --max-line-length=127,
-          '--disable=logging-fstring-interpolation',
-          '--good-names=_,rc,ti,ip',
+          '--disable=fixme,logging-fstring-interpolation,logging-not-lazy,missing-function-docstring,missing-class-docstring,invalid-name,attribute-defined-outside-init',
+          '--good-names=_,rc,ti,ip,l3',
           '--load-plugins=pylint_pytest'
         ]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.960
+    rev: v0.971
     hooks:
     -   id: mypy
         verbose: true

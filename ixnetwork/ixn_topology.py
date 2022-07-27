@@ -3,7 +3,6 @@ Classes and utilities to manage IXN topologies and NGPF.
 
 @author yoram@ignissoft.com
 """
-
 import time
 
 from trafficgenerator.tgn_utils import TgnError
@@ -21,6 +20,7 @@ class IxnTopologyBaseClass(IxnObject):
         """
         return {o.obj_name(): o for o in self.get_objects_or_children_by_type("deviceGroup")}
 
+    # pylint: disable=keyword-arg-before-vararg
     def action(self, action, timeout=64, *arguments):
         self.execute(action, (self.ref,) + arguments)
         now = time.time()
@@ -72,9 +72,11 @@ class IxnNetworkGroup(IxnTopologyBaseClass):
 class IxnNextGenProtocol(IxnTopologyBaseClass):
     """Represents IXN NGPF."""
 
+    protocol = ""
+
     def __init__(self, **data: object) -> None:
         data["objType"] = self.protocol
-        super(IxnNextGenProtocol, self).__init__(**data)
+        super().__init__(**data)
 
 
 class IxnNgpfEthernet(IxnNextGenProtocol):

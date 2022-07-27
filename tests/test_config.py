@@ -1,3 +1,6 @@
+"""
+ixnetwork test configuration file.
+"""
 chassis_900 = "192.168.65.36"
 chassis_910 = "172.30.150.123"
 

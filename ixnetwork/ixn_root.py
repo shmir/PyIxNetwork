@@ -1,10 +1,11 @@
 """
-@author yoram@ignissoft.com
+Classes and functions to manage IxNetwork root object..
 """
 from __future__ import annotations
 
 import time
 from io import BytesIO
+from pathlib import Path
 from typing import Dict, Optional, Union
 
 from trafficgenerator.tgn_utils import TgnError, is_true
@@ -17,33 +18,35 @@ from ixnetwork.ixn_traffic import IxnTrafficItem
 
 
 class IxnRoot(IxnObject):
+    """IxNetwork root object."""
+
     def __init__(self, **data):
         super().__init__(parent=None, **data)
         self.hw = None
 
     def get_ports(self) -> Dict[str, IxnPort]:
-        """Returns all vports."""
+        """Return all vports."""
         return {o.name: o for o in self.get_objects_or_children_by_type("vport")}
 
     ports = property(get_ports)
 
     def get_topologies(self) -> Dict[str, IxnTopology]:
-        """Returns all topologies."""
+        """Return all topologies."""
         return {o.name: o for o in self.get_objects_or_children_by_type("topology")}
 
     topologies = property(get_topologies)
 
     def get_traffic_items(self) -> Dict[str, IxnTrafficItem]:
-        """Returns all traffic items."""
+        """Return all traffic items."""
         traffic = self.get_child_static("traffic")
         return {o.name: o for o in traffic.get_objects_or_children_by_type("trafficItem")}
 
     traffic_items = property(get_traffic_items)
 
     def get_quick_tests(self) -> Dict[str, IxnQuickTest]:
-        """Returns list of quick tests."""
+        """Return list of quick tests."""
         quick_test = self.get_child_static("quickTest")
-        return {o.name: o for o in quick_test.get_objects_or_children_by_type() if type(o) == IxnQuickTest}
+        return {o.name: o for o in quick_test.get_objects_or_children_by_type() if isinstance(o, IxnQuickTest)}
 
     quick_tests = property(get_quick_tests)
 
@@ -78,7 +81,7 @@ class IxnRoot(IxnObject):
 class IxnQuickTest(IxnObject):
     def __init__(self, **data) -> None:
         data["objType"] = "quickTest"
-        super(self.__class__, self).__init__(**data)
+        super().__init__(**data)
 
     def apply(self) -> None:
         """Apply QuickTest."""
@@ -109,18 +112,18 @@ class IxnQuickTest(IxnObject):
         for _ in range(timeout):
             is_running = results.get_attribute("isRunning")
             if is_true(is_running) == status:
-                return is_running
+                return
             time.sleep(1)
         raise TgnError(f"Quick test failed, quick test running state is {is_running} after {timeout} seconds")
 
-    def get_report(self, report_path: Union[str, BytesIO]) -> None:
+    def get_report(self, report_path: Union[Path, BytesIO]) -> None:
         """Get QuickTest report from server to local machine.
 
         :param report_path: full path to destination local path.
         """
-        if type(self.api) is IxnRestWrapper:
+        if isinstance(self.api, IxnRestWrapper):
             report_url = self.execute("generateReport", self.ref)
-            self.api.getFile(report_url, report_path)
+            self.api.get_file(report_url, report_path if isinstance(report_path, BytesIO) else report_path.as_posix())
         else:
             self.set_attributes(commit=True, outputPath=report_path)
             self.execute("generateReport", self.ref)

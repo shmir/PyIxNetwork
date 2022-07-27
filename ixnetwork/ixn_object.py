@@ -26,12 +26,12 @@ def extract_ixn_full_obj_type_from_obj_ref(obj_ref):
 class IxnObject(TgnObject):
     """Base class for all IXN classes."""
 
-    str_2_class = {}
+    str_2_class: dict = {}
 
-    root: Optional[ixnetwork.IxnRoot] = None
+    root: Optional[ixnetwork.ixn_root.IxnRoot] = None
 
     def get_obj_class(self, obj_type: str) -> Type[IxnObject]:
-        """Returns the object class based on parent and object types.
+        """Return the object class based on parent and object types.
 
         In most cases the object class can be derived from object type alone but sometimes the same object type name is
         used for different object types so the parent (or even grandparent) type is required in order to determine the
@@ -43,10 +43,10 @@ class IxnObject(TgnObject):
         :return: object class if specific class else IxnObject.
         """
         if obj_type in IxnObject.str_2_class:
-            if type(IxnObject.str_2_class[obj_type]) is dict:
+            if isinstance(IxnObject.str_2_class[obj_type], dict):
                 if self.type in IxnObject.str_2_class[obj_type]:
                     return IxnObject.str_2_class[obj_type][self.type]
-                elif self.parent.type in IxnObject.str_2_class[obj_type]:
+                if self.parent.type in IxnObject.str_2_class[obj_type]:
                     return IxnObject.str_2_class[obj_type][self.parent.type]
             else:
                 return IxnObject.str_2_class[obj_type]
@@ -65,7 +65,7 @@ class IxnObject(TgnObject):
         self.api.commit()
         return self.api.remapIds(obj_ref)
 
-    def get_attributes(self, *attributes):
+    def get_attributes(self, *attributes: str) -> dict:
         if not attributes:
             return self.get_all_attributes()
         attributes_values = {}
@@ -87,7 +87,7 @@ class IxnObject(TgnObject):
         return str(value)
 
     def get_list_attribute(self, attribute: str) -> list:
-        """Returns attribute value as Python list.
+        """Return attribute value as Python list.
 
         :param attribute: Requested attribute.
         """
@@ -95,7 +95,7 @@ class IxnObject(TgnObject):
         # IXN returns '::ixNet::OK' for invalid attributes. We want error.
         if list_attribute == [IXNETWORK_OK]:
             raise TgnError(self.ref + " does not have attribute " + attribute)
-        if type(list_attribute) is not list:
+        if isinstance(list_attribute, str):
             list_attribute = [
                 list_attribute,
             ]
@@ -118,7 +118,7 @@ class IxnObject(TgnObject):
         return list(children_objs.values())
 
     def get_child_static(self, obj_type: str, seq_number: Optional[int] = None) -> IxnObject:
-        """Returns IxnObject representing the requested child without reading it from the IXN.
+        """Return IxnObject representing the requested child without reading it from the IXN.
 
         Statically build the child object reference based on the requested object type and sequence number and build
         the IxnObject with this calculated object reference.
@@ -154,15 +154,15 @@ class IxnObject(TgnObject):
     def execute(self, command, *arguments):
         return self.api.execute(command, self.ref, True, *arguments)
 
-    def help(self):
-        return self.api.help(self.ref)
+    def help_(self):
+        return self.api.help_(self.ref)
 
     def get_all_attributes(self):
-        _, attributes, _ = self.help()
+        _, attributes, _ = self.help_()
         return {a: self.get_attribute(a) for a in attributes}
 
     def get_all_child_types(self):
-        children, _, _ = self.help()
+        children, _, _ = self.help_()
         return children
 
     def get_objects_from_attribute(self, attribute):
@@ -174,13 +174,11 @@ class IxnObject(TgnObject):
             objects.append(obj)
         return objects
 
-    def get_ref_indices(self):
-        """
-        :return: list of all indices in object reference.
-        """
+    def get_ref_indices(self) -> list:
+        """Return list of all indices in object reference."""
         ixn_obj = self
         ref_indices = []
         while ixn_obj != ixn_obj.root:
-            ref_indices.append(ixn_obj.ref.split(":")[-1])
+            ref_indices.append(ixn_obj.ref.rsplit(":", maxsplit=1)[-1])
             ixn_obj = ixn_obj.parent
         return ref_indices[::-1]

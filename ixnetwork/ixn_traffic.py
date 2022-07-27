@@ -20,33 +20,33 @@ class TrafficEnd(Enum):
 
 
 class IxnTrafficItem(IxnObject):
-    """Base class for all traffic items"""
+    """Base class for all traffic items."""
 
     def __init__(self, **data: str) -> None:
         """Create new traffic item object in the API."""
         data["objType"] = "trafficItem"
         data["parent"] = self.root.get_child_static("traffic")
-        super(IxnTrafficItem, self).__init__(**data)
+        super().__init__(**data)
         if "objRef" not in data:
             # Set traffic item type.
             self.set_attributes(commit=True, trafficItemType=type_2_obj[type(self)])
         # Change new class to one of its sub-classes based on traffic item type.
-        self.__class__ = type_2_obj[self.get_attribute("trafficItemType")]
+        self.__class__ = type_2_obj[self.get_attribute("trafficItemType")]  # type: ignore
 
-    def _create(self) -> str:
+    def _create(self, **attributes) -> str:
         """Create new object on IxNetwork.
 
         :return: IXN object reference.
         """
         if "name" in self._data:
-            obj_ref = self.api.add(self.obj_parent(), self.obj_type(), name=self.obj_name())
+            obj_ref = self.api.add(self.parent, self.type, name=self.name, **attributes)
         else:
-            obj_ref = self.api.add(self.obj_parent(), self.obj_type())
+            obj_ref = self.api.add(self.parent, self.type, **attributes)
         self.api.commit()
         return self.api.remapIds(obj_ref)
 
     def get_flow_groups(self) -> Dict[str, IxnObject]:
-        """Returns all flow groups of the traffic item."""
+        """Return all flow groups of the traffic item."""
         return {o.name: o for o in self.get_objects_or_children_by_type("highLevelStream")}
 
     flow_groups = property(get_flow_groups)
