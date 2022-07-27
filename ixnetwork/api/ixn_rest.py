@@ -10,9 +10,12 @@ from os import path
 from typing import Optional, Union
 
 import requests
+import urllib3
+from urllib3.exceptions import InsecureRequestWarning
+from requests.exceptions import SSLError
 from trafficgenerator.tgn_utils import TgnError
 
-requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
+urllib3.disable_warnings(InsecureRequestWarning)
 
 Response = requests.models.Response
 
@@ -49,7 +52,7 @@ class IxnRestWrapper:
         try:
             self.server_url = f"https://{ip}:{port}"
             self.get(self.server_url + "/api/v1/sessions", timeout=4)
-        except Exception:
+        except SSLError:
             self.server_url = f"http://{ip}:{port}"
 
         response = self.post(self.server_url + "/api/v1/sessions", data={"applicationType": "ixnrest"})
