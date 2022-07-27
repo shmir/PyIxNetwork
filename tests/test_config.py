@@ -38,5 +38,5 @@ server_properties = {
 license_servers = ["172.30.150.123"]
 
 # Default for options.
-api = ["tcl"]
+api = ["rest"]
 server = ["windows_910"]

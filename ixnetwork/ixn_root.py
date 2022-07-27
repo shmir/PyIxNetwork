@@ -125,5 +125,5 @@ class IxnQuickTest(IxnObject):
             report_url = self.execute("generateReport", self.ref)
             self.api.get_file(report_url, report_path if isinstance(report_path, BytesIO) else report_path.as_posix())
         else:
-            self.set_attributes(commit=True, outputPath=report_path)
+            self.set_attributes(commit=True, outputPath=report_path.as_posix())
             self.execute("generateReport", self.ref)

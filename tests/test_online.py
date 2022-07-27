@@ -7,12 +7,15 @@ Test setup:
 Two IXN ports connected back to back.
 """
 # pylint: disable=redefined-outer-name
+import io
 import logging
 import time
+from pathlib import Path
 from typing import List
 
 import pytest
 
+from ixnetwork.api.ixn_rest import IxnRestWrapper
 from ixnetwork.ixn_app import IxnApp
 from ixnetwork.ixn_statistics_view import (
     IxnDrillDownStatistics,
@@ -161,4 +164,10 @@ def test_quick_test(ixnetwork: IxnApp, locations: List[str]) -> None:
     ixnetwork.quick_test_apply("QuickTest1")
     ixnetwork.quick_test_start("QuickTest1", blocking=True)
     ixnetwork.quick_test_stop("QuickTest1")
-    ixnetwork.root.quick_tests["QuickTest1"].get_report("quick_test_report.pdf")
+    quick_test_report = Path(__file__).parent.joinpath("configs/temp/quick_test_report.ixncfg")
+    ixnetwork.root.quick_tests["QuickTest1"].get_report(quick_test_report)
+    assert quick_test_report.exists()
+    if isinstance(ixnetwork.api, IxnRestWrapper):
+        output = io.BytesIO()
+        ixnetwork.root.quick_tests["QuickTest1"].get_report(output)
+        assert output.getvalue()
