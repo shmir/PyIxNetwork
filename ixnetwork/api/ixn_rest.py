@@ -11,9 +11,9 @@ from typing import Optional, Union
 
 import requests
 import urllib3
-from urllib3.exceptions import InsecureRequestWarning
 from requests.exceptions import SSLError
 from trafficgenerator.tgn_utils import TgnError
+from urllib3.exceptions import InsecureRequestWarning
 
 urllib3.disable_warnings(InsecureRequestWarning)
 
