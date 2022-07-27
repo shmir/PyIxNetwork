@@ -1,9 +1,6 @@
 """
 Classes and utilities to manage IXN protocol interface objects.
-
-@author yoram@ignissoft.com
 """
-
 from trafficgenerator.tgn_object import TgnL3
 from trafficgenerator.tgn_utils import TgnError, is_true
 
@@ -13,15 +10,14 @@ from ixnetwork.ixn_object import IxnObject
 def filter_ints_based_on_vlan(interfaces, vlan, count=1):
     """Filter list of interfaces based on VLAN presence or absence criteria.
 
+    :TODO: add vlanEnable and vlanCount to interface/range/deviceGroup classes.
+
     :param interfaces: list of interfaces to filter.
     :param vlan: boolean indicating whether to filter interfaces with or without VLAN.
     :param vlan: number of expected VLANs (note that when vlanEnable == False, vlanCount == 1)
     :return: interfaces with VLAN(s) if vlan == True and vlanCount == count else interfaces without
         VLAN(s).
-
-    :todo: add vlanEnable and vlanCount to interface/range/deviceGroup classes.
     """
-
     filtered_interfaces = []
     for interface in interfaces:
         if interface.type == "interface":

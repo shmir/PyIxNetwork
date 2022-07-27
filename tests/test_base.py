@@ -34,6 +34,7 @@ def save_config(ixnetwork: IxnApp, config_file: Optional[str] = None) -> None:
         test_name = inspect.stack()[1][3]
         config_file = Path(__file__).parent.joinpath(f"configs/temp/{test_name}.ixncfg").as_posix()
     ixnetwork.save_config(Path(config_file))
+    assert Path(config_file).exists()
 
 
 def reserve_ports(ixnetwork: IxnApp, locations: List[str], wait_for_up: bool = True) -> None:

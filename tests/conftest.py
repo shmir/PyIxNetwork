@@ -9,6 +9,8 @@ from typing import Iterable, List
 import pytest
 from _pytest.config.argparsing import Parser
 from _pytest.fixtures import SubRequest
+
+# pylint: disable=unused-import
 from trafficgenerator.tgn_conftest import api, logger, pytest_generate_tests, server, server_properties, tgn_pytest_addoption
 from trafficgenerator.tgn_utils import ApiType, get_test_config
 
@@ -22,7 +24,7 @@ def pytest_addoption(parser: Parser) -> None:
 
 @pytest.fixture(scope="session")
 def ixnetwork(request: SubRequest, logger: logging.Logger, api: ApiType, server_properties: dict) -> Iterable[IxnApp]:
-    """Yields connected IxNetwork object."""
+    """Yield connected IxNetwork object."""
     server_ip = server_properties["server"].split(":")[0]
     server_port = int(server_properties["server"].split(":")[1])
     if api == ApiType.tcl and server_port == 11009:
@@ -37,7 +39,7 @@ def ixnetwork(request: SubRequest, logger: logging.Logger, api: ApiType, server_
     ixnetwork.connect(server_ip, server_port, auth)
     if api == ApiType.rest:
         license_servers = get_test_config(request.config.getoption("--tgn-config")).license_servers
-        ixnetwork.api.set_licensing(licensingServers=license_servers)
+        ixnetwork.api.set_licensing(licensing_servers=license_servers)
 
     yield ixnetwork
 
@@ -48,7 +50,7 @@ def ixnetwork(request: SubRequest, logger: logging.Logger, api: ApiType, server_
 
 @pytest.fixture(scope="session")
 def locations(server_properties: dict) -> List[str]:
-    """Yields ports locations."""
+    """Yield ports locations."""
     return server_properties["locations"]
 
 

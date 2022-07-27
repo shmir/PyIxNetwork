@@ -1,7 +1,6 @@
 """
 Classes and utilities to manage IXN classical protocols objects.
 """
-
 from collections import OrderedDict
 from ipaddress import ip_address
 from itertools import chain
@@ -23,7 +22,7 @@ class IxnProtocol(IxnObject):
 
     @classmethod
     def get_protocols_with_int(cls, ixn_int):
-        return list(p for p in cls.get_objects_of_class() if ixn_int in p.ixn_ints.values())
+        return [p for p in cls.get_objects_of_class() if ixn_int in p.ixn_ints.values()]
 
     @classmethod
     def get_protocols_with_port(cls, ixn_port, l3, vlan=None):
@@ -41,7 +40,7 @@ class IxnProtocolServer(IxnProtocol):
         for int_ref in self.get_attribute("interfaces").split(" "):
             self.ixn_ints[int_ref] = self.root.get_object_by_ref(int_ref)
 
-    def get_endpoints(self, l3=None, end=TrafficEnd.both):
+    def get_endpoints(self, l3: str = None, end: TrafficEnd = TrafficEnd.both) -> list:  # pylint: disable=unused-argument
         return []
 
 
@@ -49,15 +48,16 @@ class IxnProtocolRouter(IxnProtocol):
     """Base class for IXN router (e.g. OSPF router etc.)."""
 
     interface_attribute = "interfaces"
+    obj_type = ""
 
     def __init__(self, parent, **data):
-        data["objType"] = self.objType
+        data["objType"] = self.obj_type
         super().__init__(parent, **data)
         for ixn_router_int in self.get_children("interface"):
             int_ref = ixn_router_int.get_attribute(self.interface_attribute)
             self.ixn_ints[ixn_router_int] = self.root.get_object_by_ref(int_ref)
 
-    def get_endpoints(self, l3=None, end=TrafficEnd.both):
+    def get_endpoints(self, l3: str = None, end: TrafficEnd = TrafficEnd.both) -> list:  # pylint: disable=unused-argument
         return self.get_objects_by_type("routeRange")
 
 
@@ -71,12 +71,12 @@ class IxnBgpRouter(IxnProtocolServer):
         dutIpAddress = self.get_attribute("dutIpAddress")
         self.__class__ = IxnBgpRouterIpV4 if ip_address(dutIpAddress).version == 4 else IxnBgpRouterIpV6
 
-    def get_endpoints(self, l3=None, end=TrafficEnd.both):
+    def get_endpoints(self, l3: str = None, end: TrafficEnd = TrafficEnd.both) -> list:
         return self.get_objects_by_type("routeRange")
 
     @classmethod
     def get_protocols_with_port(cls, ixn_port, l3, vlan=None):
-        cls = IxnBgpRouterIpV4 if is_ipv4(l3) else IxnBgpRouterIpV6
+        cls = IxnBgpRouterIpV4 if is_ipv4(l3) else IxnBgpRouterIpV6  # pylint: disable=self-cls-assignment
         return super(IxnBgpRouter, cls).get_protocols_with_port(ixn_port, l3, vlan)
 
 
@@ -91,46 +91,50 @@ class IxnBgpRouterIpV6(IxnBgpRouter):
 class IxnOspfRouter(IxnProtocolRouter):
     """Represents IXN OSPF router."""
 
-    objType = "router"
+    obj_type = "router"
 
 
 class IxnOspfV3Router(IxnProtocolRouter):
     """Represents IXN OSPFv3 router."""
 
-    objType = "router"
+    obj_type = "router"
 
 
 class IxnPimsmRouter(IxnProtocolRouter):
     """Represents IXN PIM-SM router."""
 
-    objType = "router"
+    obj_type = "router"
 
-    def get_endpoints(self, l3=None, end=TrafficEnd.both):
+    def get_endpoints(self, l3: str = None, end: TrafficEnd = TrafficEnd.both) -> list:
         return self.get_object_by_type("interface").get_objects_by_type("joinPrune")
 
 
 class IxnIsisRouter(IxnProtocolRouter):
     """Represents IXN ISIS router."""
 
-    objType = "router"
+    obj_type = "router"
     interface_attribute = "interfaceId"
 
-    def get_endpoints(self, l3=None, end=TrafficEnd.both):
+    def get_endpoints(self, l3: str = None, end: TrafficEnd = TrafficEnd.both) -> list:
         return self.get_objects_with_attribute("routeRange", "type", l3)
 
 
 class IxnLdpRouter(IxnProtocolRouter):
     """Represents IXN LDP router."""
 
-    objType = "router"
+    obj_type = "router"
     interface_attribute = "protocolInterface"
 
-    def get_endpoints(self, l3=None, end=TrafficEnd.both):
+    def get_endpoints(self, l3: str = None, end: TrafficEnd = TrafficEnd.both) -> list:
         return self.get_objects_by_type("advFecRange")
 
 
 class IxnRouteRange(IxnObject, TgnL3):
     """Base class for IXN route ranges."""
+
+    def __int__(self):
+        self.networkNumber = None
+        self.numberOfRoutes = None
 
     def ip(self):
         return self.networkNumber
@@ -199,41 +203,37 @@ class IxnLdpRouteRange(IxnRouteRange):
 class IxnIgmpHost(IxnProtocolServer):
     """Represents IXN IGMP host."""
 
-    def get_endpoints(self, l3=None, end=TrafficEnd.both):
+    def get_endpoints(self, l3: str = None, end: TrafficEnd = TrafficEnd.both) -> list:
         return self.get_objects_by_type("group")
 
 
 class IxnIgmpQuerier(IxnProtocolServer):
     """Represents IXN IGMP querier."""
 
-    pass
-
 
 class IxnMldHost(IxnProtocolServer):
     """Represents IXN IGMP host."""
 
-    def get_endpoints(self, l3=None, end=TrafficEnd.both):
+    def get_endpoints(self, l3: str = None, end: TrafficEnd = TrafficEnd.both) -> list:
         return self.get_objects_by_type("groupRange")
 
 
 class IxnStpBridge(IxnProtocolRouter):
     """Represents IXN STP bridge."""
 
-    objType = "bridge"
+    obj_type = "bridge"
     interface_attribute = "interfaceId"
 
 
 class IxnOpenFlowDevice(IxnProtocolRouter):
     """Represents IXN OpenFlow device."""
 
-    objType = "device"
+    obj_type = "device"
     interface_attribute = "protocolInterfaces"
 
 
 class IxnLacp(IxnObject):
     """Represents IXN LACP object."""
-
-    pass
 
 
 class IxnRsvpNeighborPair(IxnProtocolServer):
@@ -248,13 +248,12 @@ class IxnRsvpNeighborPair(IxnProtocolServer):
                     self.ixn_ints[self] = ixn_int
                     return
 
-    def get_endpoints(self, l3=None, end=TrafficEnd.both):
+    def get_endpoints(self, l3: str = None, end: TrafficEnd = TrafficEnd.both) -> list:
         if end == TrafficEnd.source:
             return [ep for ep in self.get_objects_by_type("destinationRange") if ep.get_attribute("behavior") == "ingress"]
-        elif end == TrafficEnd.destination:
+        if end == TrafficEnd.destination:
             return [ep for ep in self.get_objects_by_type("destinationRange") if ep.get_attribute("behavior") == "egress"]
-        else:
-            return self.get_objects_by_type("destinationRange")
+        return self.get_objects_by_type("destinationRange")
 
 
 class IxnStaticIp(IxnProtocolServer, TgnL3):
@@ -265,7 +264,7 @@ class IxnStaticIp(IxnProtocolServer, TgnL3):
         int_ref = self.get_attribute("protocolInterface")
         self.ixn_ints[self] = self.root.get_object_by_ref(int_ref)
 
-    def get_endpoints(self, l3=None, end=TrafficEnd.both):
+    def get_endpoints(self, l3: str = None, end: TrafficEnd = TrafficEnd.both) -> list:
         return [self]
 
     def ip(self):
@@ -283,4 +282,4 @@ class IxnStaticIp(IxnProtocolServer, TgnL3):
 class IxnBfdfRouter(IxnProtocolRouter):
     """Represents IXN BFD router."""
 
-    objType = "router"
+    obj_type = "router"

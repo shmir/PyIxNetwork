@@ -3,6 +3,7 @@ Implements IxNetwork API over IxNetwork REST server.
 """
 import copy
 import json
+import logging
 import re
 import time
 from io import BytesIO
@@ -20,11 +21,13 @@ urllib3.disable_warnings(InsecureRequestWarning)
 Response = requests.models.Response
 
 
+# pylint: disable=too-many-public-methods, too-many-instance-attributes
 class IxnRestWrapper:
+    """IxNetwork API over IxNetwork REST server."""
 
     null = "null"
 
-    def __init__(self, logger):
+    def __init__(self, logger: logging.Logger) -> None:
         """Init IXN REST package.
 
         :param logger: application logger, if stream handler and log level is DEBUG -> enable IXN Python debug.
@@ -80,8 +83,7 @@ class IxnRestWrapper:
     #
 
     def wait_for_complete(self, response: Response, timeout: Optional[int] = 128) -> Response:
-        """Wait for non-blocking REST operation to complete"""
-
+        """Wait for non-blocking REST operation to complete."""
         response_data = response.json()
         progress_url = response_data["url"]
 
@@ -100,18 +102,19 @@ class IxnRestWrapper:
             if state == "error":
                 result = json.loads(response.content)["result"].strip()
                 raise TgnError(f"wait for post {response.url} failed - {result}")
-            elif state == "success":
+            if state == "success":
                 return response
 
             response = self.get(progress_url)
             response_data = response.json()
 
-            if type(response_data) is not dict:
+            if not isinstance(response_data, dict):
                 response_data = response_data[0]
 
         raise TgnError(f"{self.session} operation failed, state is {state} after {timeout} seconds")
 
-    def request(self, command, url, headers={"content-type": "application/json"}, data=None, **kwargs):
+    def request(self, command, url: str, headers: dict = None, data: Optional[Union[dict, str]] = None, **kwargs) -> Response:
+        headers = headers if headers else {"content-type": "application/json"}
         if self.api_key:
             headers["x-api-key"] = self.api_key
 
@@ -122,7 +125,7 @@ class IxnRestWrapper:
         kwargs_to_print["data"] = data
         self.logger.debug(f"{command.__name__} - {url} - {kwargs_to_print}")
 
-        if type(data) == dict:
+        if isinstance(data, dict):
             response = command(url, verify=False, headers=headers, json=data, **kwargs)
         else:
             response = command(url, verify=False, headers=headers, data=data, **kwargs)
@@ -142,25 +145,26 @@ class IxnRestWrapper:
             )
         return response
 
-    def get(self, url, **kwargs):
+    def get(self, url, **kwargs) -> Response:
         return self.request(requests.get, url=url, data=None, **kwargs)
 
-    def post(self, url, data={}):
+    def post(self, url: str, data: Optional[dict] = None) -> Response:
+        data = data if data else {}
         response = self.request(requests.post, url, data=data)
         if response.status_code != 201 and "id" in response.json():
             return self.wait_for_complete(response)
         return response
 
-    def options(self, url):
+    def options(self, url) -> Response:
         return self.request(requests.options, url)
 
-    def patch(self, url, data={}):
+    def patch(self, url: str, data: dict) -> None:
         response = self.request(requests.patch, url, data=data)
         if response.status_code != 200:
             raise TgnError(f"object {url} failed to set attributes {data}")
 
-    def delete(self, url):
-        return self.request(requests.delete, url)
+    def delete(self, url: str) -> None:
+        self.request(requests.delete, url)
 
     #
     # IxNetwork atomic API commands.
@@ -172,8 +176,11 @@ class IxnRestWrapper:
     def commit(self) -> None:
         pass
 
-    def execute(self, command: str, obj_ref: Optional[str] = None, valid_on_linux: bool = True, *arguments: object) -> None:
-        data = {}
+    # pylint: disable=keyword-arg-before-vararg
+    def execute(
+        self, command: str, obj_ref: Optional[str] = None, valid_on_linux: bool = True, *arguments: object
+    ) -> Optional[str]:
+        data: dict = {}
         if obj_ref:
             operations_url = f"{re.sub(r'/[0-9]+', '', obj_ref.replace(self.session, ''))}/operations/"
         else:
@@ -183,10 +190,11 @@ class IxnRestWrapper:
         try:
             response = self.post(self.root_url + operations_url + command, data)
             return response.json()["result"]
-        except Exception as e:
-            # Not supported on Linux servers.
-            if valid_on_linux or "is not a valid operation" not in repr(e):
-                raise e
+        except TgnError as err:
+            # Ignore error if command not supported on Linux servers.
+            if valid_on_linux or "is not a valid operation" not in repr(err):
+                raise err
+        return None
 
     def getVersion(self):
         return self.get(self.root_url + "ixnetwork/globals/").json()["buildNumber"]
@@ -212,14 +220,15 @@ class IxnRestWrapper:
         load_config_url = self.root_url + "ixnetwork/operations/loadconfig"
         self.post(load_config_url, data=load_config_data)
 
-    def saveConfig(self, config_file_name):
+    def save_config(self, config_file_name: str) -> None:
+        """Download ixncfg file from server to local file."""
         basename = path.basename(config_file_name)
         data = {"arg1": path.basename(config_file_name)}
         self.post(self.root_url + "ixnetwork/operations/saveconfig", data)
-        self.getFile(basename, config_file_name)
+        self.get_file(basename, config_file_name)
 
-    def getFile(self, remote_file_path, local_file_path: Union[str, BytesIO]):
-
+    def get_file(self, remote_file_path, local_file_path: Union[str, BytesIO]) -> None:
+        """Download file from server to local file or file-like object."""
         download_headers = {"content-type": "application/octet-stream"}
         download_url = self.root_url + "ixnetwork/files"
         download_params = {"filename": path.basename(remote_file_path)}
@@ -227,7 +236,7 @@ class IxnRestWrapper:
             download_params["absolute"] = path.dirname(remote_file_path)
         res = self.request(requests.get, download_url, headers=download_headers, params=download_params)
 
-        if type(local_file_path) is str:
+        if isinstance(local_file_path, str):
             with open(local_file_path, mode="wb") as f:
                 f.write(res.content)
         else:
@@ -235,31 +244,29 @@ class IxnRestWrapper:
 
     def getList(self, obj_ref, childList):
         response = self.get(self.server_url + obj_ref + "/" + childList)
-        if type(response.json()) is list:
+        if isinstance(response.json(), list):
             return [self._get_href(c) for c in response.json()]
-        else:
-            return [self._get_href(response.json())]
+        return [self._get_href(response.json())]
 
     def getAttribute(self, obj_ref, attribute):
         response = self.getAttributes(obj_ref)
         return response.get(attribute, "::ixNet::OK")
 
-    def getAttributes(self, objRef):
-        attributes = self.get(self.server_url + objRef).json()
+    def getAttributes(self, obj_ref: str) -> dict:
+        attributes = self.get(self.server_url + obj_ref).json()
         self.logger.debug(json.dumps(attributes, indent=2))
         return attributes
 
-    def getListAttribute(self, objRef, attribute):
-        value = self.getAttribute(objRef, attribute)
-        if type(value) is dict:
+    def getListAttribute(self, obj_ref: str, attribute: str) -> list:
+        value = self.getAttribute(obj_ref, attribute)
+        if isinstance(value, dict):
             return [v[0] for v in value.values()]
-        elif len(value) > 0 and type(value[0]) is list:
+        if len(value) > 0 and isinstance(value[0], list):
             return [v[0] for v in value]
-        else:
-            return value
+        return value
 
-    def help(self, objRef):
-        response = self.options(self.server_url + objRef)
+    def help_(self, obj_ref):
+        response = self.options(self.server_url + obj_ref)
         children = response.json()["custom"]["children"]
         children_list = [c["name"] for c in children]
         attributes = response.json()["custom"]["attributes"]
@@ -276,25 +283,25 @@ class IxnRestWrapper:
         :param attributes: additional attributes.
         @return: IXN object reference.
         """
-
         response = self.post(self.server_url + parent.ref + "/" + obj_type, attributes)
         return self._get_href(response.json())
 
     def setAttributes(self, obj_ref, **attributes):
         self.patch(self.server_url + obj_ref, attributes)
 
-    def remapIds(self, objRef):
-        return objRef
+    def remapIds(self, obj_ref):
+        return obj_ref
 
     #
     # IxNetwork object commands.
     #
 
-    def set_licensing(self, licensingServers=["localhost"], mode="mixed", tier="tier3"):
+    def set_licensing(self, licensing_servers: list = None, mode: str = "mixed", tier: str = "tier3") -> None:
+        licensing_servers = licensing_servers if licensing_servers else ["localhost"]
         licensing_url = self.root_url + "ixnetwork/globals/licensing"
         licensing = self.get(licensing_url).json()
-        if licensing["licensingServers"] != licensingServers or licensing["mode"] != mode or licensing["tier"] != tier:
-            self.patch(licensing_url, {"licensingServers": licensingServers, "mode": mode, "tier": tier})
+        if licensing["licensingServers"] != licensing_servers or licensing["mode"] != mode or licensing["tier"] != tier:
+            self.patch(licensing_url, {"licensingServers": licensing_servers, "mode": mode, "tier": tier})
 
     def regenerate(self, _, traffic_items):
         non_quick_tis = [ti for ti in traffic_items if ti.get_attributes()["trafficItemType"] != "quick"]

@@ -1,8 +1,10 @@
-from .ixn_hw import IxnCard, IxnChassis, IxnHw, IxnPhyPort
-from .ixn_interface import IxnInterface, IxnInterfaceL3
-from .ixn_object import IxnObject
-from .ixn_port import IxnPort
-from .ixn_protocol import (
+"""
+pyixnetwork package.
+"""
+from ixnetwork.ixn_hw import IxnCard, IxnChassis, IxnHw, IxnPhyPort
+from ixnetwork.ixn_interface import IxnInterface, IxnInterfaceL3
+from ixnetwork.ixn_port import IxnPort
+from ixnetwork.ixn_protocol import (
     IxnBfdfRouter,
     IxnBgpRouter,
     IxnBgpRouteRange,
@@ -21,15 +23,22 @@ from .ixn_protocol import (
     IxnOspfv3RouteRange,
     IxnPimsmRouter,
     IxnPimsmSource,
-    IxnProtocol,
     IxnRsvpNeighborPair,
     IxnStaticIp,
     IxnStpBridge,
 )
-from .ixn_protocol_stack import IxnRange
-from .ixn_root import IxnQuickTest, IxnRoot
-from .ixn_topology import IxnDeviceGroup, IxnNetworkGroup, IxnNgpfEthernet, IxnNgpfIpv4, IxnNgpfIpv6, IxnNgpfVlan, IxnTopology
-from .ixn_traffic import IxnTrafficItem
+from ixnetwork.ixn_protocol_stack import IxnRange
+from ixnetwork.ixn_root import IxnQuickTest
+from ixnetwork.ixn_topology import (
+    IxnDeviceGroup,
+    IxnNetworkGroup,
+    IxnNgpfEthernet,
+    IxnNgpfIpv4,
+    IxnNgpfIpv6,
+    IxnNgpfVlan,
+    IxnTopology,
+)
+from ixnetwork.ixn_traffic import IxnTrafficItem
 
 TYPE_2_OBJECT = {
     "availableHardware": IxnHw,

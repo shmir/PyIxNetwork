@@ -28,7 +28,7 @@ class IxnEthernetEndpoint(IxnProtocolEndpoint):
         """
         data["parent"] = data["parent"].get_child_static("protocolStack")
         data["objType"] = "ethernetEndpoint"
-        super(self.__class__, self).__init__(**data)
+        super().__init__(**data)
 
 
 class IxnDcbxEndpoint(IxnProtocolEndpoint):
@@ -39,7 +39,7 @@ class IxnDcbxEndpoint(IxnProtocolEndpoint):
         """
         data["parent"] = IxnObject(parent=data["parent"].get_child_static("protocolStack"), objType="ethernet")
         data["objType"] = "dcbxEndpoint"
-        super(self.__class__, self).__init__(**data)
+        super().__init__(**data)
 
 
 class IxnFcoeClientEndpoint(IxnProtocolEndpoint):
@@ -50,7 +50,7 @@ class IxnFcoeClientEndpoint(IxnProtocolEndpoint):
         """
         data["parent"] = IxnObject(parent=data["parent"].get_child_static("protocolStack"), objType="ethernet")
         data["objType"] = "fcoeClientEndpoint"
-        super(self.__class__, self).__init__(**data)
+        super().__init__(**data)
 
 
 class IxnFcoeForwarderEndpoint(IxnProtocolEndpoint):
@@ -61,7 +61,7 @@ class IxnFcoeForwarderEndpoint(IxnProtocolEndpoint):
         """
         data["parent"] = IxnObject(parent=data["parent"].get_child_static("protocolStack"), objType="ethernet")
         data["objType"] = "fcoeFwdEndpoint"
-        super(self.__class__, self).__init__(**data)
+        super().__init__(**data)
 
 
 class IxnRange(IxnProtocolStack):
@@ -71,4 +71,4 @@ class IxnRange(IxnProtocolStack):
         :param parent: parent endpoint object.
         """
         data["objType"] = "range"
-        super(self.__class__, self).__init__(**data)
+        super().__init__(**data)

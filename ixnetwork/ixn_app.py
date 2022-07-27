@@ -4,9 +4,8 @@ Classes and utilities to manage IXN application.
 import time
 from collections import OrderedDict
 from logging import Logger
-from os import path
 from pathlib import Path
-from typing import Dict, List, Optional, Type, Union
+from typing import Dict, List, Optional, Union
 
 from trafficgenerator.tgn_app import TgnApp
 from trafficgenerator.tgn_utils import ApiType, TgnError, is_true
@@ -30,7 +29,7 @@ def init_ixn(api: ApiType, logger: Logger, install_dir: Optional[str] = None) ->
     if api == ApiType.tcl:
         api_wrapper = IxnTclWrapper(logger, install_dir)
     elif api == ApiType.rest:
-        api_wrapper = IxnRestWrapper(logger)
+        api_wrapper = IxnRestWrapper(logger)  # type: ignore
     else:
         raise TgnError(f"{api} API not supported - use {ApiType.tcl} or {ApiType.rest}")
     return IxnApp(logger, api_wrapper)
@@ -45,6 +44,7 @@ class IxnApp(TgnApp):
         :param logger: python logger (e.g. logging.getLogger('log'))
         :param api_wrapper: api wrapper object inheriting
         """
+        self.api: Union[IxnTclWrapper, IxnRestWrapper] = None
         super().__init__(logger, api_wrapper)
         IxnObject.str_2_class = TYPE_2_OBJECT
 
@@ -101,13 +101,13 @@ class IxnApp(TgnApp):
         self.api.newConfig()
         self.commit()
 
-    def save_config(self, config_file_name: str) -> None:
-        """Save ixncgf configuration file.
+    def save_config(self, config_file_name: Path) -> None:
+        """Save ixncfg configuration file.
 
         :param config_file_name: full path to ixncfg configuration file
         """
         self.commit()
-        self.api.saveConfig(path.abspath(config_file_name))
+        self.api.save_config(config_file_name.as_posix())
 
     #
     # IxNetwork GUI commands.

@@ -1,9 +1,7 @@
 """
 Classes and utilities to manage IXN HW.
-
-@author yoram@ignissoft.com
 """
-
+import re
 from collections import OrderedDict
 
 from ixnetwork.ixn_object import IxnObject
@@ -19,6 +17,10 @@ class IxnHw(IxnObject):
 
 
 class IxnPhyBase(IxnObject):
+
+    attributes_names: tuple = ()
+    children_types: dict = {}
+
     def get_inventory(self) -> None:
         self.attributes = self.get_attributes(*self.attributes_names)
         for child_var, child_type_index in self.children_types.items():
@@ -39,16 +41,14 @@ class IxnChassis(IxnPhyBase):
     def __init__(self, **data):
         data["parent"] = self.root.hw
         data["objType"] = "chassis"
-        super(self.__class__, self).__init__(**data)
+        super().__init__(**data)
         self.card_refs = self.api.getList(self.ref, "card")
         self.cards = OrderedDict()
 
-    def _create(self):
-        return super(self.__class__, self)._create(hostname=self._data["hostname"])
+    def _create(self, **attributes):
+        return super()._create(hostname=self._data["hostname"], **attributes)
 
     def get_card(self, card_id):
-        import re
-
         if card_id not in self.cards:
             for card_ref in self.card_refs:
                 if card_id == int(re.split("/|:", card_ref)[-1]):
@@ -63,7 +63,7 @@ class IxnCard(IxnPhyBase):
     children_types = {"ports": ("port", "portId")}
 
     def __init__(self, **data):
-        super(self.__class__, self).__init__(**data)
+        super().__init__(**data)
         self.port_refs = self.api.getList(self.ref, "port")
         self.ports = OrderedDict()
 
@@ -76,7 +76,7 @@ class IxnCard(IxnPhyBase):
 class IxnPhyPort(IxnPhyBase):
 
     attributes_names = ("description",)
-    children_types = {}
+    children_types: dict = {}
 
     def release(self) -> None:
         self.execute("clearOwnership", (self.ref,))

@@ -22,7 +22,9 @@ else:
     pkgIndex_tail = "lib/IxTclNetwork/pkgIndex.tcl"
 
 
+# pylint: disable=too-many-public-methods, unused-argument
 class IxnTclWrapper(TgnTclWrapper):
+    """IxNetwork API over IxNetwork Tcl package - IxTclNetwork."""
 
     null = "::ixNet::OBJ-null"
 
@@ -55,6 +57,7 @@ class IxnTclWrapper(TgnTclWrapper):
     def disconnect(self) -> None:
         pass
 
+    # pylint: disable=keyword-arg-before-vararg
     def execute(self, command, obj_ref=None, valid_on_linux=True, *arguments):
         flatten_arguments = []
         for argument in arguments:
@@ -72,7 +75,7 @@ class IxnTclWrapper(TgnTclWrapper):
     def getListAttribute(self, obj_ref: str, attribute: str) -> list:
         return tcl_list_2_py_list(self.getAttribute(obj_ref, attribute))
 
-    def help(self, obj_ref: str) -> tuple:
+    def help_(self, obj_ref: str) -> tuple:
         output = self.ixnCommand("help", obj_ref)
         children_list = None
         if "Child Lists:" in output:
@@ -97,7 +100,8 @@ class IxnTclWrapper(TgnTclWrapper):
     def loadConfig(self, config_file_name: str) -> None:
         self.execute("loadConfig", None, True, self.ixnCommand("readFrom", tcl_file_name(config_file_name)))
 
-    def saveConfig(self, config_file_name: str) -> None:
+    def save_config(self, config_file_name: str) -> None:
+        """Download ixncfg file from server to local file."""
         self.execute("saveConfig", None, True, self.ixnCommand("writeTo", tcl_file_name(config_file_name)))
 
     def newConfig(self) -> None:
@@ -106,11 +110,11 @@ class IxnTclWrapper(TgnTclWrapper):
     def setAttributes(self, obj_ref: str, **attributes) -> None:
         string_attributes = {}
         for attribute, value in attributes.items():
-            string_attributes[attribute] = py_list_to_tcl_list(value) if type(value) is list else value
+            string_attributes[attribute] = py_list_to_tcl_list(value) if isinstance(value, list) else value
         self.ixnCommand("setMultiAttribute", tcl_str(obj_ref), get_args_pairs(string_attributes))
 
     def add(self, parent, obj_type, **attributes) -> str:
-        """IXN API add command
+        """IXN API add command.
 
         :param parent: object parent - object will be created under this parent.
         :param obj_type: object type.
@@ -120,7 +124,7 @@ class IxnTclWrapper(TgnTclWrapper):
         return self.ixnCommand("add", parent.obj_ref(), obj_type, get_args_pairs(attributes))
 
     def remove(self, obj_ref) -> None:
-        """IXN API remove command
+        """IXN API remove command.
 
         :param obj_ref: object reference to remove.
         """

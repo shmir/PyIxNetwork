@@ -42,24 +42,24 @@ def test_analyze_config_classical(ixnetwork: IxnApp) -> None:
 
     ixnetwork.root.get_children("vport")
     port1 = ixnetwork.root.get_object_by_name("Port 1")
-    print("Port1 object reference = ", port1.ref)
-    print("Port1 name = ", port1.name)
-    print("Ports = ", ixnetwork.root.get_objects_by_type("vport"))
-    print("Port 1 all attributes: ", port1.get_attributes())
-    print("Port 1 some attributes: ", port1.get_attributes("state", "name"))
-    print("Port 1 state: " + port1.get_attribute("state"))
+    logger.info(f"Port1 object reference = {port1.ref}")
+    logger.info(f"Port1 name = {port1.name}")
+    logger.info(f"Ports = {ixnetwork.root.get_objects_by_type('vport')}")
+    logger.info(f"Port 1 all attributes: {port1.get_attributes()}")
+    logger.info(f"Port 1 some attributes: {port1.get_attributes('state', 'name')}")
+    logger.info(f"Port 1 state: {port1.get_attribute('state')}")
 
     for port in ixnetwork.root.get_objects_by_type("vport"):
         for interface in port.get_children("interface"):
-            print(interface.obj_name(), " = ", interface.obj_ref())
+            logger.info(interface.obj_name(), " = ", interface.obj_ref())
             ipv4 = interface.get_child("ipv4")
-            print(ipv4.obj_name(), " = ", ipv4.obj_ref())
+            logger.info(ipv4.obj_name(), " = ", ipv4.obj_ref())
             ipv6 = interface.get_child("ipv6")
             assert ipv6 is None
 
     for port in ixnetwork.root.get_objects_by_type("vport"):
         for ixn_obj in port.get_children():
-            print(f"{ixn_obj.name} = {ixn_obj.ref}")
+            logger.info(f"{ixn_obj.name} = {ixn_obj.ref}")
 
     vports = ixnetwork.root.get_objects_by_type("vport")
     assert len(vports) == 2
@@ -161,10 +161,7 @@ def _build_config_classical(ixnetwork: IxnApp, num_ports: int, num_ints: int) ->
     for port_num in range(1, num_ports + 1):
         port_name = f"Port-{port_num}"
         logger.info(f"Create Port {port_name}")
-        port = IxnPort(
-            parent=ixnetwork.root,
-            name=port_name,
-        )
+        port = IxnPort(parent=ixnetwork.root, name=port_name)
         for int_num in range(1, num_ints + 1):
             int_name = f"{port_name}-Int-{int_num}"
             logger.info(f"Create Interface {int_name}")

@@ -18,7 +18,7 @@ log_level = logging.DEBUG
 
 # API type = tcl, or rest. The default is tcl with DEBUG log messages for best visibility.
 api = ApiType.rest
-chassis = "172.30.150.123"
+chassis_ip = "172.30.150.123"
 api_server = "localhost"
 if api == ApiType.rest:
     api_port = 11009 if api_server == "localhost" else 443
@@ -26,8 +26,8 @@ else:
     api_port = 8009
 auth = ["admin", "admin"]
 
-port1_location = f"{chassis}/1/1"
-port2_location = f"{chassis}/1/2"
+port1_location = f"{chassis_ip}/1/1"
+port2_location = f"{chassis_ip}/1/2"
 
 license_server = ["172.30.150.123"]
 
@@ -41,7 +41,7 @@ logger.addHandler(logging.StreamHandler(sys.stdout))
 ixn = init_ixn(api, logger, install_dir)
 ixn.connect(api_server, api_port, auth)
 if api == ApiType.rest:
-    ixn.api.set_licensing(licensingServers=license_server)
+    ixn.api.set_licensing(licensing_servers=license_server)
 
 
 def load_config(config_file_path: Path) -> None:
@@ -60,7 +60,6 @@ def disconnect() -> None:
 
 def objects_access() -> None:
     """Access to different objects, using multiple methods."""
-
     # You can read all objects by calling the general method get_children
     ports = ixn.root.get_children("vport")
     assert len(ports) == 2
@@ -82,7 +81,7 @@ def objects_access() -> None:
 
     # Now we can iterate and logger.info all objects:
     logger.info("Name\tObject Reference\tPython Object")
-    for name, obj in ports.items():
+    for name, obj in ports.items():  # type: ignore
         logger.info(f"{name}\t{obj.ref}\t{obj}")
 
 
@@ -142,6 +141,7 @@ def traffic() -> None:
 
 
 def inventory() -> None:
+    """Get and print inventory."""
     chassis = ixn.root.hw.get_chassis(port1_location.split("/")[0])
     chassis.get_inventory()
 
