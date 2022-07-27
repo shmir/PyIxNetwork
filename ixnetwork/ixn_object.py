@@ -10,8 +10,6 @@ from typing import List, Optional, Type
 from trafficgenerator.tgn_object import TgnObject
 from trafficgenerator.tgn_utils import TgnError, is_true
 
-import ixnetwork
-
 IXNETWORK_OK = "::ixNet::OK"
 
 
@@ -28,7 +26,7 @@ class IxnObject(TgnObject):
 
     str_2_class: dict = {}
 
-    root: Optional[ixnetwork.ixn_root.IxnRoot] = None
+    root: Optional[IxnObject] = None
 
     def get_obj_class(self, obj_type: str) -> Type[IxnObject]:
         """Return the object class based on parent and object types.
