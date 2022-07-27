@@ -125,5 +125,7 @@ class IxnQuickTest(IxnObject):
             report_url = self.execute("generateReport", self.ref)
             self.api.get_file(report_url, report_path if isinstance(report_path, BytesIO) else report_path.as_posix())
         else:
+            if isinstance(report_path, BytesIO):
+                raise NotImplementedError("get_report over Tcl does not support file-like objects yet")
             self.set_attributes(commit=True, outputPath=report_path.as_posix())
             self.execute("generateReport", self.ref)
